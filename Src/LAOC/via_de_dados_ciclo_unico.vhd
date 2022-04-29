@@ -58,7 +58,7 @@ architecture comportamento of via_de_dados_ciclo_unico is
     component banco_registradores is
         generic (
             largura_dado : natural := 32;
-            largura_ende : natural := 32
+            largura_ende : natural := 5
         );
         port (
             ent_rs_ende : in std_logic_vector((largura_ende - 1) downto 0);
@@ -80,9 +80,46 @@ architecture comportamento of via_de_dados_ciclo_unico is
             entrada_a : in std_logic_vector((largura_dado - 1) downto 0);
             entrada_b : in std_logic_vector((largura_dado - 1) downto 0);
             seletor   : in std_logic_vector(3 downto 0);
-            saida     : out std_logic_vector((largura_dado - 1) downto 0)
+            saida     : out std_logic_vector((largura_dado - 1) downto 0);
+            zero      : out std_logic
         );
     end component;
+
+    component mux21 is
+        generic (
+            largura_dado : natural := 32
+        );
+        port (
+            dado_ent_0, dado_ent_1 : in std_logic_vector((largura_dado - 1) downto 0);
+            sele_ent               : in std_logic;
+            dado_sai               : out std_logic_vector((largura_dado - 1) downto 0)
+        );
+    end component;
+
+    component registrador is
+        generic (
+            largura_dado : natural := 32
+        );
+        port (
+            entrada_dados  : in std_logic_vector((largura_dado - 1) downto 0);
+            WE, clk, reset : in std_logic;
+            saida_dados    : out std_logic_vector((largura_dado - 1) downto 0)
+        );
+    end component;
+
+    component extensor is
+        generic (
+            largura_dado  : natural := 12
+            largura_saida : natural := 32
+        );
+
+        port (
+            entrada_Rs : in std_logic_vector((largura_dado - 1) downto 0);
+            saida      : out std_logic_vector((largura_saida - 1) downto 0)
+        );
+    end component;
+
+
 
     -- Declare todos os sinais auxiliares que serão necessários na sua via_de_dados_ciclo_unico a partir deste comentário.
     -- Você só deve declarar sinais auxiliares se estes forem usados como "fios" para interligar componentes.
@@ -103,6 +140,12 @@ architecture comportamento of via_de_dados_ciclo_unico is
     signal aux_novo_pc : std_logic_vector(pc_width - 1 downto 0);
     signal aux_we      : std_logic;
 
+    -- We are the champions:
+    -- ALU signals
+    signal aux_zero    : std_logic;
+
+
+
 begin
 
     -- A partir deste comentário faça associações necessárias das entradas declaradas na entidade da sua via_dados_ciclo_unico com
@@ -116,6 +159,9 @@ begin
     aux_we        <= controle(4); -- MemWrite
     saida         <= aux_data_outrt;
     pc_out        <= aux_pc_out;
+
+    -- We are the champions:
+    zero          <= aux_zero;
 
     -- A partir deste comentário instancie todos o componentes que serão usados na sua via_de_dados_ciclo_unico.
     -- A instanciação do componente deve começar com um nome que você deve atribuir para a referida instancia seguido de : e seguido do nome
@@ -131,7 +177,8 @@ begin
             entrada_a => aux_data_outrs,
             entrada_b => aux_data_outrt,
             seletor => aux_ula_ctrl,
-            saida => aux_data_in
+            saida => aux_data_in,
+            zero => aux_zero
          );
 
     instancia_banco_registradores : component banco_registradores
@@ -155,10 +202,100 @@ begin
             reset => reset
           );
 
-    instancia_somador : component somador
+    instancia_somador0 : component somador
         port map(
             entrada_a => aux_pc_out,
-            entrada_b => "0001",
+            entrada_b => std_logic_vector("0100"),
             saida => aux_novo_pc
+        );
+
+    instancia_somador1 : component somador
+        port map(
+            entrada_a => aux_pc_out,
+            entrada_b => std_logic_vector("0001"),
+            saida => aux_novo_pc
+        );
+
+    instancia_sign_extend : component extensor
+        port map(
+            -- entrada_Rs => aux_pc_out,
+            -- saida => aux_novo_pc
+        );
+
+    instancia_epc : component registrador
+        port map(
+            -- entrada_dados => aux_pc_out,
+            -- WE => std_logic_vector("0001"),
+            -- clk => std_logic_vector("0001"),
+            -- reset => std_logic_vector("0001"),
+            -- saida_dados => aux_novo_pc
+        );
+
+    instancia_mux_0 : component mux
+        port map(
+            -- dado_ent_0 => aux_pc_out,
+            -- dado_ent_1 => aux_pc_out,
+            -- sele_ent => std_logic_vector("0100"),
+            -- dado_sai => aux_novo_pc
+        );
+
+    instancia_mux_1 : component mux
+        port map(
+            -- dado_ent_0 => aux_pc_out,
+            -- dado_ent_1 => aux_pc_out,
+            -- sele_ent => std_logic_vector("0100"),
+            -- dado_sai => aux_novo_pc
+        );
+
+    instancia_mux_2 : component mux
+        port map(
+            -- dado_ent_0 => aux_pc_out,
+            -- dado_ent_1 => aux_pc_out,
+            -- sele_ent => std_logic_vector("0100"),
+            -- dado_sai => aux_novo_pc
+        );
+
+    instancia_mux_3 : component mux
+        port map(
+            -- dado_ent_0 => aux_pc_out,
+            -- dado_ent_1 => aux_pc_out,
+            -- sele_ent => std_logic_vector("0100"),
+            -- dado_sai => aux_novo_pc
+        );
+
+    instancia_mux_4 : component mux
+        port map(
+            -- dado_ent_0 => aux_pc_out,
+            -- dado_ent_1 => aux_pc_out,
+            -- sele_ent => std_logic_vector("0100"),
+            -- dado_sai => aux_novo_pc
+        );
+
+    instancia_mux_5 : component mux
+        port map(
+            -- dado_ent_0 => aux_pc_out,
+            -- dado_ent_1 => aux_pc_out,
+            -- sele_ent => std_logic_vector("0100"),
+            -- dado_sai => aux_novo_pc
+        );
+
+    instancia_mux_6 : component mux
+        port map(
+            -- dado_ent_0 => aux_pc_out,
+            -- dado_ent_1 => aux_pc_out,
+            -- sele_ent => std_logic_vector("0100"),
+            -- dado_sai => aux_novo_pc
+        );
+
+    instancia_endereço_interrupção : component banco_registradores
+        port map(
+            -- ent_rs_ende => aux_read_rs,
+            -- ent_rt_ende => aux_read_rt,
+            -- ent_rd_ende => aux_write_rd,
+            -- ent_rd_dado => aux_data_in,
+            -- sai_rs_dado => aux_data_outrs,
+            -- sai_rt_dado => aux_data_outrt,
+            -- clk => clock,
+            -- we => aux_reg_write
         );
 end architecture comportamento;

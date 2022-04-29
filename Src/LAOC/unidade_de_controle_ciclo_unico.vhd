@@ -78,7 +78,7 @@ begin
                     when "010" =>
                         ctrl_aux <= "10000000000010";
                     when others =>
-                        ctrl_aux <= "10000000000010";
+                        ctrl_aux <= "10000000000010"; -- nop
                 end case; -- funct3
             -- ADDI, SLTI, NOP
 

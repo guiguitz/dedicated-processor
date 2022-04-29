@@ -62,13 +62,28 @@ architecture comportamento of processador_ciclo_unico is
     component memi is
         generic (
             INSTR_WIDTH   : natural := 32; -- tamanho da instrução em número de bits
-            MI_ADDR_WIDTH : natural := 8   -- tamanho do endereço da memória de instruções em número de bits
+            MI_ADDR_WIDTH : natural := 12   -- tamanho do endereço da memória de instruções em número de bits
         );
         port (
             clk       : in std_logic;
             reset     : in std_logic;
             Endereco  : in std_logic_vector(MI_ADDR_WIDTH - 1 downto 0);
             Instrucao : out std_logic_vector(INSTR_WIDTH - 1 downto 0)
+        );
+    end component;
+
+    component memd is
+        generic (
+            number_of_words : natural := 4096; -- número de words que a sua memória é capaz de armazenar
+            MD_DATA_WIDTH   : natural := 32; -- tamanho da palavra em bits
+            MD_ADDR_WIDTH   : natural := 12  -- tamanho do endereco da memoria de dados em bits
+        );
+        port (
+            clk                 : in std_logic;
+            mem_write, mem_read : in std_logic; --sinais do controlador
+            write_data_mem      : in std_logic_vector(MD_DATA_WIDTH - 1 downto 0);
+            adress_mem          : in std_logic_vector(MD_ADDR_WIDTH - 1 downto 0);
+            read_data_mem       : out std_logic_vector(MD_DATA_WIDTH - 1 downto 0)
         );
     end component;
 
@@ -101,6 +116,16 @@ begin
         reset     => Chave_reset,
         Endereco  => aux_endereco,
         Instrucao => aux_instrucao
+    );
+
+    instancia_memd : memd
+    port map(
+        clk       => Clock,
+        mem_write     => Chave_reset,
+        mem_read     => Chave_reset,
+        write_data_mem     => Chave_reset,
+        adress_mem  => aux_endereco,
+        read_data_mem => aux_instrucao
     );
 
     instancia_unidade_de_controle_ciclo_unico : unidade_de_controle_ciclo_unico

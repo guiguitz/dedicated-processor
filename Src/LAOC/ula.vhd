@@ -55,34 +55,36 @@ begin
             -- when "1001" => -- SB = Store byte
             --     resultado_ula <= std_logic_vector(x"FF" and signed(entrada_b));
             --     zero <= "0";
-            when "1010" => -- BEQ = Subtração com sinal
+            when "1010" => -- BEQ = Branch Equal
                 resultado_ula <= std_logic_vector("0");
-                if (signed(entrada_a) == signed(entrada_b)) then
+                if (signed(entrada_a) = signed(entrada_b)) then
                     zero <= "1";
                 else
                     zero <= "0";
                 end if;
-            when "1011" => -- BNE = soma com sinal
-                resultado_ula <= std_logic_vector(signed(entrada_a) + signed(entrada_b));
-            when "1100" => -- SLT = soma com sinal
-                resultado_ula <= std_logic_vector(signed(entrada_a) + signed(entrada_b));
-            when "1101" => -- SLTI = soma com sinal
-                resultado_ula <= std_logic_vector(signed(entrada_a) + signed(entrada_b));
-
-            -- when "000" => -- ADD = soma com sinal
-            -- resultado_ula <= std_logic_vector(signed(entrada_a) + signed(entrada_b));
-            -- when "001" => -- SUBsoma estendida
-            -- resultado_ula <= std_logic_vector(signed(entrada_a) + signed(entrada_b));
-            -- when "010" => -- and lógico
-            -- resultado_ula <= entrada_a and entrada_b;
-            -- when "111" => -- or lógico
-            -- resultado_ula <= entrada_a or entrada_b;
-            -- when "110" => -- xor lógico
-            -- resultado_ula <= entrada_a xor entrada_b;
-            -- when "111" => -- not lógico
-            -- resultado_ula <= not(entrada_a);
-            -- when others => -- xnor lógico
-            -- resultado_ula <= entrada_a xnor entrada_b;
+            when "1011" => -- BNE = Branch Not Equal
+                resultado_ula <= std_logic_vector("0");
+                if (signed(entrada_a) /= signed(entrada_b)) then
+                    zero <= "1";
+                else
+                    zero <= "0";
+                end if;
+            when "1100" => -- SLT = Set On Less Than
+                if (signed(entrada_a) < signed(entrada_b)) then
+                    resultado_ula <= std_logic_vector("1");
+                else
+                    resultado_ula <= std_logic_vector("0");
+                end if;
+                zero <= "0";
+            when "1101" => -- SLTI = Set On Less Than Imme
+                if (signed(entrada_a) < signed(entrada_b)) then
+                    resultado_ula <= std_logic_vector("1");
+                else
+                    resultado_ula <= std_logic_vector("0");
+                end if;
+                zero <= "0";
+            when others =>
+                resultado_ula <= (others => '0');
         end case;
     end process;
     saida <= resultado_ula;
