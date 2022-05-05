@@ -1,0 +1,20 @@
+# vsim -t 1ns -lib work tb_somador -do "add wave -radix unsigned sim:/tb_somador/*" -do "view wave" -do "view structure" -do "view signals" -do "run 60ns" -do "wave zoom full" 
+# Start time: 10:55:03 on Feb 28,2022
+# Loading std.standard
+# Loading std.textio(body)
+# Loading ieee.std_logic_1164(body)
+# Loading work.tb_somador(teste)
+# Loading ieee.numeric_std(body)
+# Loading work.somador(fluxo_de_dados)
+# add wave -radix unsigned sim:/tb_somador/*
+# view wave
+# .main_pane.wave.interior.cs.body.pw.wf
+# view structure
+# .main_pane.structure.interior.cs.body.struct
+# view signals
+# .main_pane.objects.interior.cs.body.tree
+# run 60ns
+# wave zoom full
+# {0 ns} {63 ns}
+# End time: 10:55:14 on Feb 28,2022, Elapsed time: 0:00:11
+# Errors: 0, Warnings: 0

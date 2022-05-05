@@ -40,8 +40,10 @@ architecture comportamento of processador_ciclo_unico is
             instrucao : in std_logic_vector (INSTR_WIDTH - 1 downto 0);
             pc_out    : out std_logic_vector (PC_WIDTH - 1 downto 0);
             saida     : out std_logic_vector (DATA_WIDTH - 1 downto 0);
+            -- We are the champions:
             zero      : out std_logic;
-            negativo  : out std_logic
+            memd_data : out std_logic_vector(data_width - 1 downto 0);
+            memd_address : out std_logic_vector(data_width - 1 downto 0)
         );
     end component;
 
@@ -93,12 +95,18 @@ architecture comportamento of processador_ciclo_unico is
     -- componentes onde serão usados.
     -- Veja os exemplos abaixo:
 
-    -- A partir deste comentário faça associações necessárias das entradas declaradas na entidade do seu processador_ciclo_unico com 
+    -- A partir deste comentário faça associações necessárias das entradas declaradas na entidade do seu processador_ciclo_unico com
     -- os sinais que você acabou de definir.
     -- Veja os exemplos abaixo:
     signal aux_instrucao : std_logic_vector(PROC_INSTR_WIDTH - 1 downto 0);
     signal aux_controle  : std_logic_vector(DP_CTRL_BUS_WIDTH - 1 downto 0);
     signal aux_endereco  : std_logic_vector(PROC_ADDR_WIDTH - 1 downto 0);
+
+    -- We are the champions:
+    -- Signals for memd
+    signal aux_mmed_dp_memd_data : std_logic_vector(PROC_INSTR_WIDTH - 1 downto 0);
+    signal aux_dp_mmed_memd_address : std_logic_vector(PROC_INSTR_WIDTH - 1 downto 0);
+
 
 begin
     -- A partir deste comentário instancie todos o componentes que serão usados no seu processador_ciclo_unico.
@@ -121,11 +129,11 @@ begin
     instancia_memd : memd
     port map(
         clk       => Clock,
-        mem_write     => Chave_reset,
-        mem_read     => Chave_reset,
+        -- mem_write     => Chave_reset,
+        -- mem_read     => Chave_reset,
         write_data_mem     => Chave_reset,
-        adress_mem  => aux_endereco,
-        read_data_mem => aux_instrucao
+        adress_mem  => aux_dp_mmed_memd_address,
+        read_data_mem => aux_mmed_dp_memd_data
     );
 
     instancia_unidade_de_controle_ciclo_unico : unidade_de_controle_ciclo_unico
@@ -141,6 +149,8 @@ begin
         reset     => Chave_reset,
         controle  => aux_controle,
         instrucao => aux_instrucao,
+        memd_data => aux_mmed_dp_memd_data,
+        memd_address => aux_dp_mmed_memd_address,
         pc_out    => aux_endereco,
         saida     => Leds_vermelhos_saida
     );
