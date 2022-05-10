@@ -1,0 +1,193 @@
+Instalar e configurar Intel-Altera Quartus II Prime Lite Edition em:
+https://fpgasoftware.intel.com/?edition=lite
+Instalem e trabalhem somente com uma versão do Quartus II.
+Eu usarei a 15.1
+
+Instalar e configurar o MAX 10 FPGA device support em:
+https://fpgasoftware.intel.com/?edition=lite
+
+Instalar e configurar o ModelSim-Altera Edition (includes Starter Edition) em:
+https://fpgasoftware.intel.com/?edition=lite
+OBS.: Se você instalar versão igual ou superior a 21.1 o simulador ModelSim passará a se chamar Questa - Intel FPGA Edition(includes Starter Edition)
+
+Instalar e configurar GCC no Windows (ferramentas para compilação de fontes escritos em C / C++):
+Siga todas as instruções do link: https://terminaldeinformacao.com/2015/10/08/como-instalar-e-configurar-o-gcc-no-windows-mingw/
+Ou do documento: https://edisciplinas.usp.br/pluginfile.php/4251304/mod_resource/content/1/Instala%C3%A7%C3%A3o%20do%20compilador%20gcc%20no%20Windows.pdf
+
+Instalar e configurar GDB - depuração com GDB no Windows usando Visual Studio Code:
+Siga todas as instruções do link: https://medium.com/@pamirghimire/debugging-with-gdb-on-windows-using-visual-studio-code-81ba70b562f3
+
+Instalar e configurar GHDL
+Compilador e simulador VHDL: GHDL
+Para baixar (download) o GHDL para MS-Windows acesse o link abaixo:
+https://github.com/ghdl/ghdl/releases/download/v0.37/ghdl-0.37-mingw32-mcode.zip 
+Descompacte o arquivo .zip baixado para um diretório do seu computador.
+
+Instalar e configurar GTKWAVE
+Visualizador de formas de onda: GTKWAVE
+Para baixar (download) o GTKWAVE para MS-Windows acesse o link abaixo:
+https://sourceforge.net/projects/gtkwave/files/gtkwave-3.3.100-bin-win32/ 
+Descompacte o arquivo .zip baixado para um diretório do seu computador.
+
+Instalar e configurar VSCode - Ferramenta Integrada para Edição de código inteligente, execução de scripts, compiladores e simuladores.
+Sem custos. Construído em código aberto. Executad em todos os Sistemas Operacionais.
+https://code.visualstudio.com/
+
+Depois de instalar todos os softwares acima, você deverá:
+(1) Atualizar a variável de ambiente Path do Windows. Se você não sabe o que é isso, ou como fazer isso, siga o procedimento abaixo.
+(2) Reiniciar o Windows, para que a variável de ambiente editada possa ser reconhecida pelo Windows.
+
+Procedimento para atualizar a variável de ambiente Path no Windows:
+Copie o caminho do seu computador, onde se encontra instalado o programa executável que você deseja executar de qualquer parte do seu computador. Para isso faça o seguinte:
+(1) Abra o File Explorer (Explorador de Arquivos)
+(2) Vá até o diretório que contém o programa executável que você deseja executar de qualquer parte do seu computador (diretório bin).
+(3) Na parte superior da janela do "File Explorer", mais especificamente na parte que mostra o caminho das pastas do seu computador, clique na "seta para baixo" com o botão esquerdo do mouse.
+(4) Copie o caminho selecionado com "Ctrl C", ou com o botão direito do mouse sobre o caminho selecionado e em seguida clique em "Copiar". 
+(5) Ao final dessa operação uma string como essa: "C:\Users\UFMG\Documents\UFMG\LSD\ERE\GTKWAVE\bin" ficará salva no "Clipboard" ou "Área de transferência" virtual do seu computador.
+
+Passos para a edição da variável do ambiente PATH do Sistema Operacional MS-Windows:
+(1) Abre o File Explorer (Explorador de Arquivos)
+(2) Na parte esquerda do Explorer, clique na pasta "Este Computador" com o botão direito do mouse.
+(3) Selecione "Propriedades"
+(4) No lado esquerdo da janela que aparecerá na sua frente, clique em "Configurações Avançadas do Sistema".
+(5) Na parte de baixo da nova janela que aparecerá na sua frente, clique no botão "Variáveis de Ambiente..."
+(6) Na parte de baixo da nova janela que aparecerá na sua frente, selecione com o mouse a variável "Path"
+(7) Uma vez a variável Path esteja selecionada, clique no botão "Editar".
+(8) Clique no botão "novo" e faça um "paste" ou "Ctrl V" do caminho onde está instalado o binário do seu programa para o novo campo da variável path que se apresentou para você editar.
+(9) Clique em "OK" nessa janela.
+(10) Clique em "OK" nas demais janelas ainda abertas.
+(11) Reinicie o seu computador, para que o Sistema Operacional reconheça a variável de ambiente "Path" modificada.
+
+
+Comando para só compilar ("analisar") com o GHDL, quando a sua descrição VHDL não tiver um package padrão:
+ghdl -a --ieee=synopsys somador1.vhd
+
+Comando para só compilar ("analisar") com o GHDL, quando a sua descrição VHDL só tiver packages padrão:
+ghdl -a somador2.vhd
+ghdl -a tb_somador.vhd
+ghdl -e tb_somador
+ghdl -r tb_somador --vcd=tb_somador.vcd
+
+Comando para visualizar o resultado da simulação com o GTKWAVE, faça:
+gtkwave -f tb_somador.vcd
+
+Obs. 1: Pasta no seu computador é sinônimo de diretório.
+Obs. 2: Caractere especial do teclado é qualquer caractere não alfanumérico.
+Obs. 3: Nunca use nomes de arquivos ou diretórios com espaços, acentos ou caracteres especiais.
+Obs. 4: Além do que foi dito na observação 3, nunca inicie o nome dos seus arquivos ou diretórios com números ou qualquer caractere especial.
+
+
+Instalar e configurar a extensão TerosHDL no VSCode
+https://terostechnology.github.io/terosHDLdoc/about/about.html
+-- Isso será necessário para rodar GHDL/GTKWAVE/Yosys e/ou QuartusII/Modelsim e/ou Vivado de dentro do VSCode
+
+Instalar e configurar o Python na sua máquina com Windows 10:
+https://datatofish.com/add-python-to-windows-path/
+-- Isso será necessário, pois a extensão TerosHDL precisa do Python para rodar corretamente.
+
+Instalar e configurar o Yosys na sua máquina com Windows 10:
+https://github.com/YosysHQ/fpga-toolchain
+-- Isso só será necessário se você quiser ter uma ferramenta livre do tipo "Netlist viewer" e quiser rodá-la de dentro do VSCode.
+-- Como pré-requisito, você deverá ter instalado e configurado a variável de ambiente path do seu Windows com o ambiente do GHDL.
+
+Uma vez instaldo e configurado o path do Windows para reconhecer e executar o Yosys, você deve configurar o TerosHDL para executar o Yosys corretamente de dentro do VSCode para gerar o "Netlist viewer" do seu design (terceiro ícone da barra superior a direita de dentro do VSCode).
+
+Instalar e configurar o WSL (Windows Subsystem for Linux) na sua máquina com Windows 10:
+https://docs.microsoft.com/en-us/windows/wsl/install
+-- Útil para instalar apps por linha de comando de um terminal Linux sem instalar dual boot ou máquinas virtuais no seu Windows 10.
+
+Clonar do GitHub o projeto do NeoRV32 para uma pasta local da sua máquina (que será aberta depois pelo VSCode):
+The NEORV32 RISC-V Processor: User Guide
+https://stnolting.github.io/neorv32/ug/
+Digite WSL no campo: "Digite aqui para pesquisar" do Windows 10 e em seguida dê "Enter".
+Se quiser usar a distribuição Ubuntu instalada a partir do WSL para Windows 10, Digite Ubuntu no campo: "Digite aqui para pesquisar" do Windows 10 e em seguida dê "Enter".
+Comando que você deve dar a partir de uma janela do WSL (um terminal WSL), mais especificamente em uma pasta de documentos do seu usuário no Windows 10:
+git clone https://github.com/stnolting/neorv32.git
+Uma pasta com o nome neorv32 será criada no seu HD. É essa pasta que conterá o projeto com todos códigos fonte e scripts para você construir seu processador e seu SoC (microcontrolador).
+
+A figura do NeoRV32 e uma boa explicação introdutória, assim como uma organização de tudo o que se pode obter com o NeoRV32 pode ser obtida em:
+https://hackaday.io/project/174167-the-neorv32-risc-v-processor
+
+Repositório oficial do NeoRV32 no GitHub:
+https://github.com/stnolting/neorv32
+
+Git for windows:
+https://gitforwindows.org/
+
+Comandos para gerar os arquivos de compilação/análise/síntese/gravação pelo quartus_sh no kit DE10-Lite a partir de um Terminal de dentro do VS Code.
+O único cuidado é usar o arquivo de script TCL apropriado (modificado) para o seu projeto.
+O nome do script TCL funcional é: somador_quartus_sh.tcl
+O que deve-se adequar é o nome da top entity; dos arquivos .vhd; das pastas e do local das pastas onde se encontram os arquivos .vhd; e o mapeamento de pinos da sua top entity associado aos pinos da placa cujos recursos do kit DE10-Lite você precisa usar.
+PS C:\Users\UFMG\Downloads\somador> quartus_sh -t .\somador_quartus_sh.tcl
+PS C:\Users\UFMG\Downloads\somador> quartus_sh --flow compile somador
+PS C:\Users\UFMG\Downloads\somador> quartus_pgm --cable="USB-Blaster [USB-0]" --mode=JTAG -o "p;C:/Users/UFMG/Downloads/somador/somador_quartus_sh/output_files/somador.sof"
+Consulte: https://www.intel.com/content/dam/www/programmable/us/en/pdfs/literature/ug/ug-qpp-scripting.pdf
+Se tiver interesse de aprender mais sobre scripts TCL com o quartus II.
+
+Extensões úteis para o desenvolvimento de dentro do VSCode:
+(1) Remote Development: É um pacote de extensão que permite abrir qualquer pasta em um contêiner, em uma máquina remota ou em WSL e aproveitar o conjunto completo de recursos do VS Code.‎
+https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack
+
+(2) WaveTrace: WaveTrace é um visualizador interativo de forma de onda para desenvolvedores FPGA/RTL. É um visualisador alternativo ao GTKWAVE. WaveTrace é ideal para designs de pequeno a médio porte.
+https://marketplace.visualstudio.com/items?itemName=wavetrace.wavetrace
+
+(3) VHDL Formatter: extensão básica para a linguagem VHDL no VSCode.
+https://marketplace.visualstudio.com/items?itemName=Vinrobot.vhdl-formatter
+
+(4) VHDL de Pu Zhao: minha extensão preferida para a linguagem VHDL no VSCode.
+https://marketplace.visualstudio.com/items?itemName=puorc.awesome-vhdl
+
+(5) TerosHDL: ‎minha extensão preferida para a linguagem VHDL no VSCode. IDE versátil para projeto com ASICs/FPGAs: visualizador de máquina de estado, visualisador de netlists, linter, documentação, trechos, compatível com vários compiladores/sintetizadores/simuladores!‎ Aceita execução de scripts diretamente de um "Terminal".
+https://marketplace.visualstudio.com/items?itemName=teros-technology.teroshdl
+
+(6) Remote - WSL: A extensão Remote - WSL permite que você use o VS Code no Windows para criar aplicativos Linux que são executados no Subsistema Windows para Linux (WSL). Você tem toda a produtividade do Windows enquanto se desenvolve com ferramentas baseadas em Linux, tempos de execução e utilitários.
+Remote - WSL permite que você use VS Code no WSL, assim como faria pelo Windows.
+https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-wsl
+
+(7) GHDL Interface: Esta extensão permite que você invoque funções GHDL, bem como GTKWave. Além dele destaca os erros que foram relatados pelo GHDL no editor.
+https://marketplace.visualstudio.com/items?itemName=johannesbonk.ghdl-interface
+
+Complementares (não essenciais e/ou não necessários para a disciplina de LAOC):
+(8) Material Icon Theme: organiza as suas pastas e arquivos com ícones representativos dos apps e extensões instaladas no seu computador.
+https://marketplace.visualstudio.com/items?itemName=PKief.material-icon-theme
+
+(9) Portuguese (Brazil) Language Pack for Visual Studio Code: deixa o seu VS Code todo em Português.
+https://marketplace.visualstudio.com/items?itemName=MS-CEINTL.vscode-language-pack-pt-BR
+
+(10) Visual Studio Code Remote - Containers: a extensão Remote - Containers permite que você use um contêiner Docker como um ambiente de desenvolvimento completo.
+https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers
+
+(11) Remote - SSH: a extensão Remote - SSH permite que você use qualquer máquina remota com um servidor SSH como seu ambiente de desenvolvimento.
+https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh
+
+(12) PlatformIO IDE: IDE excepcional para desenvolvimento de Sistemas Embarcados com MCUs.
+PlatformIO IDE for VSCode
+PlatformIO is a professional collaborative platform for embedded development.
+A place where Developers and Teams have true Freedom! No more vendor lock-in!
+Open source, maximum permissive Apache 2.0 license
+Cross-platform IDE and Unified Debugger
+Static Code Analyzer and Remote Unit Testing
+Multi-platform and Multi-architecture Build System
+Firmware File Explorer and Memory Inspection.
+Platforms: Atmel AVR, Atmel SAM, Espressif 32, Espressif 8266, Freescale Kinetis, Infineon XMC, Intel ARC32, Intel MCS-51 (8051), Kendryte K210, Lattice iCE40, Maxim 32, Microchip PIC32, Nordic nRF51, Nordic nRF52, NXP LPC, RISC-V, Samsung ARTIK, Silicon Labs EFM32, ST STM32, ST STM8, Teensy, TI MSP430, TI Tiva, WIZNet W7500
+Frameworks: Arduino, ARTIK SDK, CMSIS, ESP-IDF, ESP8266 RTOS SDK, Freedom E SDK, Kendryte Standalone SDK, Kendryte FreeRTOS SDK, libOpenCM3, mbed, PULP OS, Pumbaa, Simba, SPL, STM32Cube, Tizen RT, WiringPi, Zephyr RTOS
+https://marketplace.visualstudio.com/items?itemName=platformio.platformio-ide
+
+(13) MIPS Support: extensão que facilita a edição de código assembly para o MIPS. Interface com o MARS.
+https://marketplace.visualstudio.com/items?itemName=kdarkhan.mips
+
+(14) Better MIPS Support: extensão que facilita a edição de código assembly para o MIPS. Interface com o MARS. Esta extensão do VSCode oferece melhor suporte de coloração MIPS e autocompletagem de trechos de códigos em assebly para o MIPS.
+https://marketplace.visualstudio.com/items?itemName=vasilescur.better-mips
+
+(15) C/C++: a extensão C/C++ adiciona suporte de idioma para C/C++ ao Visual Studio Code, incluindo recursos como IntelliSense e depuração.
+https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools
+
+(16) GitLens — Git supercharged: carregue os recursos do Git incorporados ao Visual Studio Code — visualize a autoria do código rapidamente via Git blame annotations and code lens, navegue e explore os repositórios do Git, obtenha insights valiosos através de comandos de comparação.
+https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens
+
+
+
+
+
+
+ 
