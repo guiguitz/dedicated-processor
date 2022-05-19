@@ -13,6 +13,7 @@ ghdl -a memi.vhd
 ghdl -a mux21.vhd
 ghdl -a pc.vhd
 ghdl -a somador.vhd
+ghdl -a interrupt_address_registers.vhd
 ghdl -a unidade_de_controle_ciclo_unico.vhd
 ghdl -a via_de_dados_ciclo_unico.vhd
 ghdl -a processador_ciclo_unico.vhd

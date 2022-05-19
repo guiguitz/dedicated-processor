@@ -6,6 +6,7 @@
 
 library IEEE;
 use IEEE.std_logic_1164.all;
+use ieee.numeric_std.all;
 
 entity via_de_dados_ciclo_unico is
     generic (
@@ -27,8 +28,9 @@ entity via_de_dados_ciclo_unico is
         saida     : out std_logic_vector(data_width - 1 downto 0);
         -- We are the champions:
         zero      : out std_logic;
-        memd_data : out std_logic_vector(data_width - 1 downto 0);
-        memd_address : out std_logic_vector(data_width - 1 downto 0)
+        memd_data : in std_logic_vector(data_width - 1 downto 0);
+        memd_address : out std_logic_vector(data_width - 1 downto 0);
+        memd_write_data : out std_logic_vector(data_width - 1 downto 0)
     );
 end entity via_de_dados_ciclo_unico;
 
@@ -113,7 +115,7 @@ architecture comportamento of via_de_dados_ciclo_unico is
 
     component extensor is
         generic (
-            largura_dado  : natural := 12
+            largura_dado  : natural := 12;
             largura_saida : natural := 32
         );
 
@@ -123,17 +125,29 @@ architecture comportamento of via_de_dados_ciclo_unico is
         );
     end component;
 
-    component deslocador is
+    component two_bits_shifter is
         generic (
-            largura_dado : natural;
+            largura_dado : natural := 32;
             largura_qtde : natural
         );
 
         port (
-            ent_rs_dado           : in std_logic_vector((largura_dado - 1) downto 0);
-            ent_rt_ende           : in std_logic_vector((largura_qtde - 1) downto 0); -- o campo de endereços de rt, representa a quantidade a ser deslocada nesse contexto.
-            ent_tipo_deslocamento : in std_logic_vector(1 downto 0);
-            sai_rd_dado           : out std_logic_vector((largura_dado - 1) downto 0)
+            input           : in std_logic_vector((largura_dado - 1) downto 0);
+            output           : out std_logic_vector((largura_dado - 1) downto 0)
+        );
+    end component;
+
+    component interrupt_address_registers is
+        generic (
+            largura_dado : natural := 32;
+            largura_ende : natural := 5
+        );
+
+        port (
+            address : in std_logic_vector((largura_ende - 1) downto 0);
+            input : in std_logic_vector((largura_dado - 1) downto 0);
+            output : out std_logic_vector((largura_dado - 1) downto 0);
+            clk, WE     : in std_logic
         );
     end component;
 
@@ -198,6 +212,7 @@ architecture comportamento of via_de_dados_ciclo_unico is
 
     -- adder_0:
     signal aux_a0_m2_m5_pc4 : std_logic_vector(pc_width - 1 downto 0);
+    signal aux_plus_four : unsigned(3 downto 0) := "0100";
 
     -- adder_1:
     signal aux_m4_a1_entrada_b : std_logic_vector(pc_width - 1 downto 0);
@@ -231,7 +246,7 @@ begin
     aux_we        <= controle(4); -- MemWrite
     saida         <= aux_data_outrt;
     pc_out        <= aux_pc_out;
-    
+
     -- We are the champions:
     aux_ctrl_m0_sele_ent   <= controle(1); -- PcSrc
     aux_ctrl_m1_sele_ent   <= controle(0); -- ItController
@@ -242,7 +257,7 @@ begin
     aux_mmi_se_entrada_Rs <= instrucao(31 downto 20);
     aux_ctrl_m2_sele_ent <= controle(13); -- RegDst
     aux_ctrl_m3_sele_ent <= controle(3); -- AluSrc
-    memd_data <= aux_reg_m3_mmed;
+    memd_write_data <= aux_reg_m3_mmed;
     aux_mmi_reg_ent_Rs_ende   <= instrucao(19 downto 15);
     aux_mmi_reg_ent_Rt_ende   <= instrucao(24 downto 20);
     aux_mmi_reg_ent_Rd_ende  <= instrucao(11 downto 7);
@@ -289,7 +304,7 @@ begin
     instancia_somador0 : component somador
         port map(
             entrada_a => aux_pc_out,
-            entrada_b => std_logic_vector("0100"),
+            entrada_b => std_logic_vector(aux_plus_four),
             saida => aux_a0_m2_m5_pc4
         );
 
@@ -306,16 +321,16 @@ begin
             saida => aux_se_m3_m4_shifter
         );
 
-    instancia_epc : component registrador
-        port map(
-            -- entrada_dados => aux_pc_out,
-            -- WE => std_logic_vector("0001"),
-            -- clk => std_logic_vector("0001"),
-            -- reset => std_logic_vector("0001"),
-            saida_dados => aux_epc_m0_dado_ent_0
-        );
+    -- instancia_epc : component registrador
+    --     port map(
+    --         entrada_dados => aux_m0_m1_dado_sai,
+    --         -- WE => std_logic_vector("0001"),
+    --         clk => clock,
+    --         -- reset => std_logic_vector("0001"),
+    --         saida_dados => aux_epc_m0_dado_ent_0
+    --     );
 
-    instancia_mux_0 : component mux
+    instancia_mux_0 : component mux21
         port map(
             dado_ent_0 => aux_epc_m0_dado_ent_0,
             dado_ent_1 => aux_m5_m0_dado_ent_1,
@@ -323,7 +338,7 @@ begin
             dado_sai => aux_m0_m1_dado_sai
         );
 
-    instancia_mux_1 : component mux
+    instancia_mux_1 : component mux21
         port map(
             dado_ent_0 => aux_m0_m1_dado_sai,
             dado_ent_1 => aux_ia_m1_dado_ent_1,
@@ -331,7 +346,7 @@ begin
             dado_sai => aux_m1_pc_entrada
         );
 
-    instancia_mux_2 : component mux
+    instancia_mux_2 : component mux21
         port map(
             dado_ent_0 => aux_a0_m2_m5_pc4,
             dado_ent_1 => aux_m6_m2_dado_ent_1,
@@ -339,7 +354,7 @@ begin
             dado_sai => aux_m2_reg_ent_Rd_dado
         );
 
-    instancia_mux_3 : component mux
+    instancia_mux_3 : component mux21
         port map(
             dado_ent_0 => aux_reg_m3_mmed,
             dado_ent_1 => aux_se_m3_m4_shifter,
@@ -347,7 +362,7 @@ begin
             dado_sai => aux_m3_ula_entrada_b
         );
 
-    instancia_mux_4 : component mux
+    instancia_mux_4 : component mux21
         port map(
             dado_ent_0 => aux_se_m3_m4_shifter,
             dado_ent_1 => aux_s0_m4_dado_ent_1,
@@ -355,7 +370,7 @@ begin
             dado_sai => aux_m4_a1_entrada_b
         );
 
-    instancia_mux_5 : component mux
+    instancia_mux_5 : component mux21
         port map(
             dado_ent_0 => aux_a0_m2_m5_pc4,
             dado_ent_1 => aux_a1_m5_dado_ent_1,
@@ -363,7 +378,7 @@ begin
             dado_sai => aux_m5_m0_dado_ent_1
         );
 
-    instancia_mux_6 : component mux
+    instancia_mux_6 : component mux21
         port map(
             dado_ent_0 => aux_alu_m6_dado_ent_0,
             dado_ent_1 => aux_mmed_m6_dado_ent_1,
@@ -371,24 +386,24 @@ begin
             dado_sai => aux_m6_m2_dado_ent_1
         );
 
-    instancia_endereço_interrupção : component banco_registradores
-        port map(
-            saida => aux_ia_m1_dado_ent_1,
-            -- ent_rs_ende => aux_read_rs,
-            -- ent_rt_ende => aux_read_rt,
-            -- ent_rd_ende => aux_write_rd,
-            -- ent_rd_dado => aux_data_in,
-            -- sai_rs_dado => aux_data_outrs,
-            -- sai_rt_dado => aux_data_outrt,
-            -- clk => clock,
-            -- we => aux_reg_write
-        );
+    -- instancia_interrupt_address_registers : component interrupt_address_registers
+    --     port map(
+    --         output => aux_ia_m1_dado_ent_1,
+    --         -- ent_rs_ende => aux_read_rs,
+    --         -- ent_rt_ende => aux_read_rt,
+    --         -- ent_rd_ende => aux_write_rd,
+    --         -- ent_rd_dado => aux_data_in,
+    --         -- sai_rs_dado => aux_data_outrs,
+    --         -- sai_rt_dado => aux_data_outrt,
+    --         clk => clock,
+    --         -- we => aux_reg_write
+    --     );
 
-    instancia_shifter : component deslocador -- TODO
+    instancia_shifter : component two_bits_shifter -- TODO
         port map(
-            entrada => aux_se_m3_m4_shifter
+            entrada => aux_se_m3_m4_shifter,
             saida => aux_s0_m4_dado_ent_1
-        )
+        );
 
     process (aux_zero, aux_branchNEQ, aux_branchEQ) is
     begin

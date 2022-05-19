@@ -42,8 +42,9 @@ architecture comportamento of processador_ciclo_unico is
             saida     : out std_logic_vector (DATA_WIDTH - 1 downto 0);
             -- We are the champions:
             zero      : out std_logic;
-            memd_data : out std_logic_vector(data_width - 1 downto 0);
+            memd_data : in std_logic_vector(data_width - 1 downto 0);
             memd_address : out std_logic_vector(data_width - 1 downto 0)
+            write_data : out std_logic_vector(data_width - 1 downto 0)
         );
     end component;
 
@@ -82,10 +83,9 @@ architecture comportamento of processador_ciclo_unico is
         );
         port (
             clk                 : in std_logic;
-            mem_write, mem_read : in std_logic; --sinais do controlador
-            write_data_mem      : in std_logic_vector(MD_DATA_WIDTH - 1 downto 0);
-            adress_mem          : in std_logic_vector(MD_ADDR_WIDTH - 1 downto 0);
-            read_data_mem       : out std_logic_vector(MD_DATA_WIDTH - 1 downto 0)
+            write_data      : in std_logic_vector(MD_DATA_WIDTH - 1 downto 0);
+            adress          : in std_logic_vector(MD_ADDR_WIDTH - 1 downto 0);
+            read_data       : out std_logic_vector(MD_DATA_WIDTH - 1 downto 0)
         );
     end component;
 
@@ -106,6 +106,7 @@ architecture comportamento of processador_ciclo_unico is
     -- Signals for memd
     signal aux_mmed_dp_memd_data : std_logic_vector(PROC_INSTR_WIDTH - 1 downto 0);
     signal aux_dp_mmed_memd_address : std_logic_vector(PROC_INSTR_WIDTH - 1 downto 0);
+    signal aux_dp_mmed_write_data : std_logic_vector(PROC_INSTR_WIDTH - 1 downto 0);
 
 
 begin
@@ -129,11 +130,9 @@ begin
     instancia_memd : memd
     port map(
         clk       => Clock,
-        -- mem_write     => Chave_reset,
-        -- mem_read     => Chave_reset,
-        write_data_mem     => Chave_reset,
-        adress_mem  => aux_dp_mmed_memd_address,
-        read_data_mem => aux_mmed_dp_memd_data
+        write_data     => aux_dp_mmed_write_data,
+        adress  => aux_dp_mmed_memd_address,
+        read_data => aux_mmed_dp_memd_data
     );
 
     instancia_unidade_de_controle_ciclo_unico : unidade_de_controle_ciclo_unico
@@ -151,6 +150,7 @@ begin
         instrucao => aux_instrucao,
         memd_data => aux_mmed_dp_memd_data,
         memd_address => aux_dp_mmed_memd_address,
+        memd_write_data => aux_dp_mmed_write_data,
         pc_out    => aux_endereco,
         saida     => Leds_vermelhos_saida
     );

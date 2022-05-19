@@ -30,59 +30,59 @@ begin
         case(seletor) is
             when "0001" => -- ADD = soma com sinal
                 resultado_ula <= std_logic_vector(signed(entrada_a) + signed(entrada_b));
-                zero <= "0";
+                zero <= '0';
             when "0010" => -- SUB = Subtração com sinal
                 resultado_ula <= std_logic_vector(signed(entrada_a) - signed(entrada_b));
-                zero <= "0";
+                zero <= '0';
             when "0011" => -- ADDI = soma com sinal
                 resultado_ula <= std_logic_vector(signed(entrada_a) + signed(entrada_b));
-                zero <= "0";
+                zero <= '0';
             when "0100" => -- SLL = Shift Left Logical
-                resultado_ula <= std_logic_vector(signed(entrada_a) sll signed(entrada_b));
-                zero <= "0";
+                resultado_ula <= std_logic_vector(unsigned(entrada_a) sll to_integer(unsigned(entrada_b)));
+                zero <= '0';
             when "0101" => -- SRL = Shift Right Logical
-                resultado_ula <= std_logic_vector(signed(entrada_a) srl signed(entrada_b));
-                zero <= "0";
+                resultado_ula <= std_logic_vector(unsigned(entrada_a) srl to_integer(unsigned(entrada_b)));
+                zero <= '0';
             when "0110" => -- LW = Load Word
                 resultado_ula <= std_logic_vector(signed(entrada_b));
-                zero <= "0";
+                zero <= '0';
             when "0111" => -- SW = Store Word
                 resultado_ula <= std_logic_vector(signed(entrada_b));
-                zero <= "0";
+                zero <= '0';
             when "1000" => -- LB = soma com sinal
                 resultado_ula <= std_logic_vector(signed(entrada_b));
-                zero <= "0";
+                zero <= '0';
             -- when "1001" => -- SB = Store byte
             --     resultado_ula <= std_logic_vector(x"FF" and signed(entrada_b));
-            --     zero <= "0";
+            --     zero <= '0';
             when "1010" => -- BEQ = Branch Equal
-                resultado_ula <= std_logic_vector("0");
+                resultado_ula <= (others => '0');
                 if (signed(entrada_a) = signed(entrada_b)) then
-                    zero <= "1";
+                    zero <= '1';
                 else
-                    zero <= "0";
+                    zero <= '0';
                 end if;
             when "1011" => -- BNE = Branch Not Equal
-                resultado_ula <= std_logic_vector("0");
+                resultado_ula <= (others => '0');
                 if (signed(entrada_a) /= signed(entrada_b)) then
-                    zero <= "1";
+                    zero <= '1';
                 else
-                    zero <= "0";
+                    zero <= '0';
                 end if;
             when "1100" => -- SLT = Set On Less Than
                 if (signed(entrada_a) < signed(entrada_b)) then
-                    resultado_ula <= std_logic_vector("1");
+                    resultado_ula <= (others => '1');
                 else
-                    resultado_ula <= std_logic_vector("0");
+                    resultado_ula <= (others => '0');
                 end if;
-                zero <= "0";
+                zero <= '0';
             when "1101" => -- SLTI = Set On Less Than Imme
                 if (signed(entrada_a) < signed(entrada_b)) then
-                    resultado_ula <= std_logic_vector("1");
+                    resultado_ula <= (others => '1');
                 else
-                    resultado_ula <= std_logic_vector("0");
+                    resultado_ula <= (others => '0');
                 end if;
-                zero <= "0";
+                zero <= '0';
             when others =>
                 resultado_ula <= (others => '0');
         end case;

@@ -14,7 +14,6 @@ entity memd is
     );
     port (
         clk                 : in std_logic;
-        mem_write, mem_read : in std_logic; --sinais do controlador
         write_data_mem      : in std_logic_vector(MD_DATA_WIDTH - 1 downto 0);
         adress_mem          : in std_logic_vector(MD_ADDR_WIDTH - 1 downto 0);
         read_data_mem       : out std_logic_vector(MD_DATA_WIDTH - 1 downto 0)
@@ -31,10 +30,8 @@ begin
     process (clk)
     begin
         if (rising_edge(clk)) then
-            if (mem_write = '1') then
-                ram(to_integer(unsigned(ram_addr))) <= write_data_mem;
-            end if;
+            ram(to_integer(unsigned(ram_addr))) <= write_data_mem;
         end if;
     end process;
-    read_data_mem <= ram(to_integer(unsigned(ram_addr))) when (mem_read = '1');
+    read_data_mem <= ram(to_integer(unsigned(ram_addr)));
 end comportamental;

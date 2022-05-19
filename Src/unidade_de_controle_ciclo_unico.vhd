@@ -66,7 +66,7 @@ begin
                 end case; -- funct3
             -- Rtype
 
-            when "0110011" => -- ADDI, SLTI, NOP
+            when "0010011" => -- ADDI, SLTI, NOP
                 case funct3 is
                     -- ADDI
                     when "000" =>
