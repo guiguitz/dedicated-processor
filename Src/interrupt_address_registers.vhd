@@ -5,39 +5,39 @@
 -- Banco de registradores com entradas e saída de dados de tamanho genérico
 -- entradas de endereço de tamanho genérico
 -- clock e sinal de WE
-library ieee;
-use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+USE ieee.numeric_std.ALL;
 
-entity interrupt_address_registers is
-    generic (
-        largura_dado : natural;
-        largura_ende : natural
+ENTITY interrupt_address_registers IS
+    GENERIC (
+        largura_dado : NATURAL;
+        largura_ende : NATURAL
     );
 
-    port (
-        address : in std_logic_vector((largura_ende - 1) downto 0);
-        input : in std_logic_vector((largura_dado - 1) downto 0);
-        output : out std_logic_vector((largura_dado - 1) downto 0);
-        clk, WE     : in std_logic
+    PORT (
+        address : IN STD_LOGIC_VECTOR((largura_ende - 1) DOWNTO 0);
+        input : IN STD_LOGIC_VECTOR((largura_dado - 1) DOWNTO 0);
+        output : OUT STD_LOGIC_VECTOR((largura_dado - 1) DOWNTO 0);
+        clk, WE : IN STD_LOGIC
     );
-end interrupt_address_registers;
+END interrupt_address_registers;
 
-architecture comportamental of interrupt_address_registers is
-    type registerfile is array(0 to ((2 ** largura_ende) - 1)) of std_logic_vector((largura_dado - 1) downto 0);
-    signal banco : registerfile;
-begin
-    leitura : process (clk) is
-    begin
+ARCHITECTURE comportamental OF interrupt_address_registers IS
+    TYPE registerfile IS ARRAY(0 TO ((2 ** largura_ende) - 1)) OF STD_LOGIC_VECTOR((largura_dado - 1) DOWNTO 0);
+    SIGNAL banco : registerfile;
+BEGIN
+    leitura : PROCESS (clk) IS
+    BEGIN
         output <= banco(to_integer(unsigned(address)));
-    end process;
+    END PROCESS;
 
-    escrita : process (clk) is
-    begin
-        if rising_edge(clk) then
-            if WE = '1' then
+    escrita : PROCESS (clk) IS
+    BEGIN
+        IF rising_edge(clk) THEN
+            IF WE = '1' THEN
                 banco(to_integer(unsigned(address))) <= input;
-            end if;
-        end if;
-    end process;
-end comportamental;
+            END IF;
+        END IF;
+    END PROCESS;
+END comportamental;

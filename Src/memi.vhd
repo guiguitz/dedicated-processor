@@ -3,41 +3,35 @@
 -- Departamento de Engenharia Eletronica
 -- Autoria: Professor Ricardo de Oliveira Duarte
 -- Memória de Programas ou Memória de Instruções de tamanho genérico
-library ieee;
-use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+USE ieee.numeric_std.ALL;
 
-entity memi is
-    generic (
-        INSTR_WIDTH   : natural; -- tamanho da instrucaoo em numero de bits
-        MI_ADDR_WIDTH : natural  -- tamanho do endereco da memoria de instrucoes em numero de bits
+ENTITY memi IS
+    GENERIC (
+        INSTR_WIDTH : NATURAL := 32; -- tamanho da instrução em número de bits
+        MI_ADDR_WIDTH : NATURAL := 32 -- tamanho do endereço da memória de instruções em número de bits
     );
-    port (
-        clk       : in std_logic;
-        reset     : in std_logic;
-        Endereco  : in std_logic_vector(MI_ADDR_WIDTH - 1 downto 0);
-        Instrucao : out std_logic_vector(INSTR_WIDTH - 1 downto 0)
+    PORT (
+        clk : IN STD_LOGIC;
+        reset : IN STD_LOGIC;
+        Endereco : IN STD_LOGIC_VECTOR(MI_ADDR_WIDTH - 1 DOWNTO 0);
+        Instrucao : OUT STD_LOGIC_VECTOR(INSTR_WIDTH - 1 DOWNTO 0)
     );
-end entity;
+END ENTITY;
 
-architecture comportamental of memi is
-    type rom_type is array (0 to 2 ** MI_ADDR_WIDTH - 1) of std_logic_vector(INSTR_WIDTH - 1 downto 0);
-    signal rom : rom_type;
-begin
-    process (clk, reset) is
-    begin
-        if (rising_edge(clk)) then
-            if (reset = '1') then
-                rom <= (
-                    -- 0      => X"00000200", -- exemplo de uma instrução qualquer de 16 bits (4 símbos em hexadecimal)
-                    -- 1      => X"00004302", -- exemplo de uma instrução qualquer de 16 bits (4 símbos em hexadecimal)
-                    -- 2      => X"0000C423", -- exemplo de uma instrução qualquer de 16 bits (4 símbos em hexadecimal)
-                    -- 3      => X"00002144", -- exemplo de uma instrução qualquer de 16 bits (4 símbos em hexadecimal)
-                    others => X"00000000"  -- exemplo de uma instrução qualquer de 16 bits (4 símbos em hexadecimal)
-                    );
-            else
+ARCHITECTURE comportamental OF memi IS
+    TYPE rom_type IS ARRAY (0 TO 2 ** (MI_ADDR_WIDTH - 20)) OF STD_LOGIC_VECTOR(INSTR_WIDTH - 1 DOWNTO 0);
+    SIGNAL rom : rom_type;
+BEGIN
+    PROCESS (clk, reset) IS
+    BEGIN
+        IF (rising_edge(clk)) THEN
+            IF (reset = '1') THEN
+                rom <= (OTHERS => X"00000000");
+            ELSE
                 Instrucao <= rom(to_integer(unsigned(Endereco)));
-            end if;
-        end if;
-    end process;
-end comportamental;
+            END IF;
+        END IF;
+    END PROCESS;
+END comportamental;

@@ -3,23 +3,23 @@
 -- Departamento de Engenharia Eletrônica
 -- Autoria: Professor Ricardo de Oliveira Duarte
 -- Somador de n bits unsigned
-library ieee;
-use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+USE ieee.numeric_std.ALL;
 
-entity somador is
-    generic (
-        largura_dado : natural
+ENTITY somador IS
+    GENERIC (
+        largura_dado : NATURAL
     );
 
-    port (
-        entrada_a : in std_logic_vector((largura_dado - 1) downto 0);
-        entrada_b : in std_logic_vector((largura_dado - 1) downto 0);
-        saida     : out std_logic_vector((largura_dado - 1) downto 0)
+    PORT (
+        entrada_a : IN STD_LOGIC_VECTOR((largura_dado - 1) DOWNTO 0);
+        entrada_b : IN STD_LOGIC_VECTOR((largura_dado - 1) DOWNTO 0);
+        saida : OUT STD_LOGIC_VECTOR((largura_dado - 1) DOWNTO 0)
     );
-end somador;
+END somador;
 
-architecture dataflow of somador is
-begin
-    saida <= std_logic_vector(unsigned(entrada_a) + unsigned(entrada_b));
-end dataflow;
+ARCHITECTURE dataflow OF somador IS
+BEGIN
+    saida <= STD_LOGIC_VECTOR(unsigned(entrada_a) + unsigned(entrada_b));
+END dataflow;

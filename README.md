@@ -15,6 +15,7 @@
 * [VSCode](https://code.visualstudio.com/download)
   * [TerosHDL v2.0.7](https://terostechnology.github.io/terosHDLdoc/about/installing.html)
   * [VHDL Formatter](https://marketplace.visualstudio.com/items?itemName=Vinrobot.vhdl-formatter)
+  * [istyle-verilog-formatter v1.23](https://github.com/thomasrussellmurphy/istyle-verilog-formatter/releases/tag/v1.23)
   * [VHDL](https://marketplace.visualstudio.com/items?itemName=puorc.awesome-vhdl)
   * [GHDL Interface](https://marketplace.visualstudio.com/items?itemName=johannesbonk.ghdl-interface)
 

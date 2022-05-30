@@ -3,64 +3,58 @@
 -- Departamento de Engenharia Eletrônica
 -- Autoria: Professor Ricardo de Oliveira Duarte
 -- Testbench para o processador_ciclo_unico
-library ieee;
-use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+USE ieee.numeric_std.ALL;
 -- Este arquivo irá gerar um sinal de clock e reset de modo a possibilitar a simulação do DUT processador_ciclo_unico
 
-entity tb_processador_ciclo_unico is
-end tb_processador_ciclo_unico;
+ENTITY tb_processador_ciclo_unico IS
+END tb_processador_ciclo_unico;
 
-architecture estimulos of tb_processador_ciclo_unico is
+ARCHITECTURE estimulos OF tb_processador_ciclo_unico IS
     -- Declarar a unidade sob teste
-    component processador_ciclo_unico
-        generic (
-            DATA_WIDTH        : natural := 32; -- tamanho do barramento de dados em bits
-            PROC_INSTR_WIDTH  : natural := 32; -- tamanho da instrução do processador em bits
-            PROC_ADDR_WIDTH   : natural := 12; -- tamanho do endereço da memória de programa do processador em bits
-            DP_CTRL_BUS_WIDTH : natural := 14 -- tamanho do barramento de controle em bits
+    COMPONENT processador_ciclo_unico
+        GENERIC (
+            DATA_WIDTH : NATURAL := 32; -- tamanho do barramento de dados em bits
+            PROC_INSTR_WIDTH : NATURAL := 32; -- tamanho da instrução do processador em bits
+            PROC_ADDR_WIDTH : NATURAL := 12; -- tamanho do endereço da memória de programa do processador em bits
+            DP_CTRL_BUS_WIDTH : NATURAL := 14 -- tamanho do barramento de controle em bits
         );
-        port (
-            Leds_vermelhos_saida : out std_logic_vector(31 downto 0);
-            reset : in std_logic;
-            Clock   : in std_logic
+        PORT (
+            reset : IN STD_LOGIC;
+            Clock : IN STD_LOGIC
         );
-    end component;
+    END COMPONENT;
 
-    signal Clock : std_logic;
-    signal rst : std_logic;
-    signal leds_vermelhos_saida : std_logic_vector(31 downto 0);
+    SIGNAL Clock : STD_LOGIC;
+    SIGNAL rst : STD_LOGIC;
 
     -- Definição das configurações de clock
-    constant PERIODO    : time := 20 ns;
-    constant DUTY_CYCLE : real := 0.5;
-    constant OFFSET     : time := 5 ns;
-begin
+    CONSTANT PERIODO : TIME := 20 ns;
+    CONSTANT DUTY_CYCLE : real := 0.5;
+    CONSTANT OFFSET : TIME := 5 ns;
+BEGIN
     -- instancia o componente
-    instancia : processador_ciclo_unico port map(Clock => Clock, reset => rst, leds_vermelhos_saida => leds_vermelhos_saida);
-
-
+    instancia : processador_ciclo_unico PORT MAP(Clock => Clock, reset => rst);
     -- processo para gerar o sinal de clock
-    gera_clock : process
-    begin
-        wait for OFFSET;
-        CLOCK_LOOP : loop
+    gera_clock : PROCESS
+    BEGIN
+        WAIT FOR OFFSET;
+        CLOCK_LOOP : LOOP
             Clock <= '0';
-            wait for (PERIODO - (PERIODO * DUTY_CYCLE));
+            WAIT FOR (PERIODO - (PERIODO * DUTY_CYCLE));
             Clock <= '1';
-            wait for (PERIODO * DUTY_CYCLE);
-        end loop CLOCK_LOOP;
-    end process gera_clock;
-
-
+            WAIT FOR (PERIODO * DUTY_CYCLE);
+        END LOOP CLOCK_LOOP;
+    END PROCESS gera_clock;
     -- processo para gerar o estimulo de reset
-    gera_reset : process (rst)
-    begin
+    gera_reset : PROCESS
+    BEGIN
         rst <= '0';
-        for i in 1 to 2 loop
-            wait until rising_edge(Clock);
-        end loop;
+        FOR i IN 1 TO 2 LOOP
+            WAIT UNTIL rising_edge(Clock);
+        END LOOP;
         rst <= '0';
-        wait;
-    end process gera_reset;
-end;
+        WAIT;
+    END PROCESS gera_reset;
+END;

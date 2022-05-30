@@ -3,31 +3,31 @@
 -- Departamento de Engenharia Eletrônica
 -- Autoria: Professor Ricardo de Oliveira Duarte
 -- Registrador de carga paralela de tamanho genérico com WE e reset síncrono em nível lógico 1
-library ieee;
-use ieee.std_logic_1164.all;
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
 
-entity registrador is
-    generic (
-        largura_dado : natural
+ENTITY registrador IS
+    GENERIC (
+        largura_dado : NATURAL
     );
-    port (
-        entrada_dados  : in std_logic_vector((largura_dado - 1) downto 0);
-        WE, clk, reset : in std_logic;
-        saida_dados    : out std_logic_vector((largura_dado - 1) downto 0)
+    PORT (
+        entrada_dados : IN STD_LOGIC_VECTOR((largura_dado - 1) DOWNTO 0);
+        WE, clk, reset : IN STD_LOGIC;
+        saida_dados : OUT STD_LOGIC_VECTOR((largura_dado - 1) DOWNTO 0)
     );
-end registrador;
+END registrador;
 
-architecture comportamental of registrador is
-begin
-    process (clk) is
-    begin
-        if (rising_edge(clk)) then
-            if (WE = '1') then
+ARCHITECTURE comportamental OF registrador IS
+BEGIN
+    PROCESS (clk) IS
+    BEGIN
+        IF (rising_edge(clk)) THEN
+            IF (WE = '1') THEN
                 saida_dados <= entrada_dados;
-            end if;
-            if (reset = '1') then
-                saida_dados <= (others =>'0');
-            end if;
-        end if;
-    end process;
-end comportamental;
+            END IF;
+            IF (reset = '1') THEN
+                saida_dados <= (OTHERS => '0');
+            END IF;
+        END IF;
+    END PROCESS;
+END comportamental;

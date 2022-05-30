@@ -3,32 +3,32 @@
 -- Departamento de Engenharia Eletrônica
 -- Autoria: Professor Ricardo de Oliveira Duarte
 -- Program Counter tamanho genérico
-library ieee;
-use ieee.std_logic_1164.all;
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
 
-entity pc is
-    generic (
-        PC_WIDTH : natural -- tamanho de PC em bits (complete)
+ENTITY pc IS
+    GENERIC (
+        PC_WIDTH : NATURAL -- tamanho de PC em bits (complete)
     );
-    port (
-        entrada : in std_logic_vector (PC_WIDTH - 1 downto 0);
-        saida   : out std_logic_vector(PC_WIDTH - 1 downto 0);
-        clk     : in std_logic;
-        we      : in std_logic;
-        reset   : in std_logic
+    PORT (
+        entrada : IN STD_LOGIC_VECTOR (PC_WIDTH - 1 DOWNTO 0);
+        saida : OUT STD_LOGIC_VECTOR(PC_WIDTH - 1 DOWNTO 0);
+        clk : IN STD_LOGIC;
+        we : IN STD_LOGIC;
+        reset : IN STD_LOGIC
     );
-end entity;
+END ENTITY;
 
-architecture comportamental of pc is
-begin
-    process (clk, we, reset) is
-    begin
-        if (reset = '1') then
-            saida <= (others => '0');
-        elsif (rising_edge(clk)) then
-            if (we = '1') then
+ARCHITECTURE comportamental OF pc IS
+BEGIN
+    PROCESS (clk, we, reset) IS
+    BEGIN
+        IF (reset = '1') THEN
+            saida <= (OTHERS => '0');
+        ELSIF (rising_edge(clk)) THEN
+            IF (we = '1') THEN
                 saida <= entrada;
-            end if;
-        end if;
-    end process;
-end comportamental;
+            END IF;
+        END IF;
+    END PROCESS;
+END comportamental;

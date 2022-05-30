@@ -3,28 +3,28 @@
 -- Departamento de Engenharia Eletronica
 -- Autoria: Professor Ricardo de Oliveira Duarte
 
-library ieee;
-use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+USE ieee.numeric_std.ALL;
 
-entity two_bits_shifter is
-    generic (
-        data_width : natural
+ENTITY two_bits_shifter IS
+    GENERIC (
+        data_width : NATURAL
     );
 
-    port (
-        input           : in std_logic_vector((data_width - 1) downto 0);
-        output          : out std_logic_vector((data_width - 1) downto 0)
+    PORT (
+        input : IN STD_LOGIC_VECTOR((data_width - 1) DOWNTO 0);
+        output : OUT STD_LOGIC_VECTOR((data_width - 1) DOWNTO 0)
     );
-end two_bits_shifter;
+END two_bits_shifter;
 
-architecture comportamental of two_bits_shifter is
-    signal r_Shift1     : std_logic_vector((data_width - 1) downto 0);
-    signal r_Unsigned_L : unsigned((data_width - 1) downto 0);
-begin
-    process (r_Unsigned_L, r_Shift1) is
-    begin
+ARCHITECTURE comportamental OF two_bits_shifter IS
+    SIGNAL r_Shift1 : STD_LOGIC_VECTOR((data_width - 1) DOWNTO 0);
+    SIGNAL r_Unsigned_L : unsigned((data_width - 1) DOWNTO 0);
+BEGIN
+    PROCESS (r_Unsigned_L, r_Shift1) IS
+    BEGIN
         -- Left Shift
         r_Unsigned_L <= shift_left(unsigned(r_Shift1), 1);
-    end process;
-end comportamental;
+    END PROCESS;
+END comportamental;

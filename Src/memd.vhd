@@ -2,36 +2,36 @@
 -- Escola de Engenharia
 -- Departamento de Engenharia Eletronica
 -- Autoria: Professor Ricardo de Oliveira Duarte
-library ieee;
-use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+USE ieee.numeric_std.ALL;
 
-entity memd is
-    generic (
-        number_of_words : natural; -- número de words que a sua memória é capaz de armazenar
-        MD_DATA_WIDTH   : natural; -- tamanho da palavra em bits
-        MD_ADDR_WIDTH   : natural  -- tamanho do endereco da memoria de dados em bits
+ENTITY memd IS
+    GENERIC (
+        number_of_words : NATURAL; -- número de words que a sua memória é capaz de armazenar
+        MD_DATA_WIDTH : NATURAL; -- tamanho da palavra em bits
+        MD_ADDR_WIDTH : NATURAL -- tamanho do endereco da memoria de dados em bits
     );
-    port (
-        clk                 : in std_logic;
-        write_data      : in std_logic_vector(MD_DATA_WIDTH - 1 downto 0);
-        memd_address          : in std_logic_vector(MD_ADDR_WIDTH - 1 downto 0);
-        read_data       : out std_logic_vector(MD_DATA_WIDTH - 1 downto 0)
+    PORT (
+        clk : IN STD_LOGIC;
+        write_data : IN STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0);
+        memd_address : IN STD_LOGIC_VECTOR(MD_ADDR_WIDTH - 1 DOWNTO 0);
+        read_data : OUT STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0)
     );
-end memd;
+END memd;
 
-architecture comportamental of memd is
+ARCHITECTURE comportamental OF memd IS
     --alocar espaço para a memoria e iniciar com 0
-    type data_mem is array (0 to number_of_words - 1) of std_logic_vector(MD_DATA_WIDTH - 1 downto 0);
-    signal ram      : data_mem := (others => (others => '0'));
-    signal ram_addr : std_logic_vector(MD_ADDR_WIDTH - 1 downto 0);
-begin
-    ram_addr <= memd_address(MD_ADDR_WIDTH - 1 downto 0);
-    process (clk)
-    begin
-        if (rising_edge(clk)) then
+    TYPE data_mem IS ARRAY (0 TO number_of_words - 1) OF STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0);
+    SIGNAL ram : data_mem := (OTHERS => (OTHERS => '0'));
+    SIGNAL ram_addr : STD_LOGIC_VECTOR(MD_ADDR_WIDTH - 1 DOWNTO 0);
+BEGIN
+    ram_addr <= memd_address(MD_ADDR_WIDTH - 1 DOWNTO 0);
+    PROCESS (clk)
+    BEGIN
+        IF (rising_edge(clk)) THEN
             ram(to_integer(unsigned(ram_addr))) <= write_data;
-        end if;
-    end process;
+        END IF;
+    END PROCESS;
     read_data <= ram(to_integer(unsigned(ram_addr)));
-end comportamental;
+END comportamental;

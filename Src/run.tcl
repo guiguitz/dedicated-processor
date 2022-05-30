@@ -17,8 +17,8 @@ ghdl -a processador_ciclo_unico.vhd
 ghdl -a tb_processador_ciclo_unico.vhd
 
 # # Elaborating SoC
-# ghdl -e tb_processador_ciclo_unico.vhd
-# ghdl -r tb_somador --vcd=tb_somador.vcd
+ghdl -e tb_processador_ciclo_unico
+ghdl -r tb_processador_ciclo_unico --vcd=tb_processador_ciclo_unico.vcd
 
 # # Wave view
-# gtkwave -f tb_somador.vcd
+gtkwave -f tb_processador_ciclo_unico.vcd  --script=gtkwave_print.tcl
