@@ -2,21 +2,20 @@
 -- Escola de Engenharia
 -- Departamento de Engenharia Eletrônica
 -- Autoria: Professor Ricardo de Oliveira Duarte
+
 library IEEE;
 use IEEE.std_logic_1164.all;
 
 entity processador_ciclo_unico is
     generic (
-        DATA_WIDTH        : natural; -- tamanho do barramento de dados em bits
-        PROC_INSTR_WIDTH  : natural; -- tamanho da instrução do processador em bits
-        PROC_ADDR_WIDTH   : natural; -- tamanho do endereço da memória de programa do processador em bits
-        DP_CTRL_BUS_WIDTH : natural  -- tamanho do barramento de controle em bits
+        DATA_WIDTH        : natural := 32; -- tamanho do barramento de dados em bits
+        PROC_INSTR_WIDTH  : natural := 32; -- tamanho da instrução do processador em bits
+        PROC_ADDR_WIDTH   : natural := 12; -- tamanho do endereço da memória de programa do processador em bits
+        DP_CTRL_BUS_WIDTH : natural := 14 -- tamanho do barramento de controle em bits
     );
     port (
-        --        Chaves_entrada             : in std_logic_vector(DATA_WIDTH-1 downto 0);
-        --        Chave_enter                : in std_logic;
         Leds_vermelhos_saida : out std_logic_vector(DATA_WIDTH - 1 downto 0);
-        Chave_reset          : in std_logic;
+        reset          : in std_logic;
         Clock                : in std_logic
     );
 end processador_ciclo_unico;
@@ -30,7 +29,9 @@ architecture comportamento of processador_ciclo_unico is
             DATA_WIDTH        : natural := 32; -- tamanho do dado em bits
             PC_WIDTH          : natural := 32;  -- tamanho da entrada de endereços da MI ou MP em bits (memi.vhd)
             FR_ADDR_WIDTH     : natural := 5;  -- tamanho da linha de endereços do banco de registradores em bits
-            INSTR_WIDTH       : natural := 32  -- tamanho da instrução em bits
+            ULA_CTRL_WIDTH    : natural := 4; -- tamanho da linha de controle da ULA
+            INSTR_WIDTH       : natural := 32;  -- tamanho da instrução em bits
+            MD_ADDR_WIDTH     : natural := 12  -- tamanho do endereco da memoria de dados em bits
         );
         port (
             -- declare todas as portas da sua via_dados_ciclo_unico aqui.
@@ -43,8 +44,8 @@ architecture comportamento of processador_ciclo_unico is
             -- We are the champions:
             zero      : out std_logic;
             memd_data : in std_logic_vector(data_width - 1 downto 0);
-            memd_address : out std_logic_vector(data_width - 1 downto 0)
-            write_data : out std_logic_vector(data_width - 1 downto 0)
+            memd_address : out std_logic_vector(MD_ADDR_WIDTH - 1 downto 0);
+            memd_write_data : out std_logic_vector(data_width - 1 downto 0)
         );
     end component;
 
@@ -65,7 +66,7 @@ architecture comportamento of processador_ciclo_unico is
     component memi is
         generic (
             INSTR_WIDTH   : natural := 32; -- tamanho da instrução em número de bits
-            MI_ADDR_WIDTH : natural := 12   -- tamanho do endereço da memória de instruções em número de bits
+            MI_ADDR_WIDTH : natural := 32   -- tamanho do endereço da memória de instruções em número de bits
         );
         port (
             clk       : in std_logic;
@@ -84,7 +85,7 @@ architecture comportamento of processador_ciclo_unico is
         port (
             clk                 : in std_logic;
             write_data      : in std_logic_vector(MD_DATA_WIDTH - 1 downto 0);
-            adress          : in std_logic_vector(MD_ADDR_WIDTH - 1 downto 0);
+            memd_address          : in std_logic_vector(MD_ADDR_WIDTH - 1 downto 0);
             read_data       : out std_logic_vector(MD_DATA_WIDTH - 1 downto 0)
         );
     end component;
@@ -100,12 +101,12 @@ architecture comportamento of processador_ciclo_unico is
     -- Veja os exemplos abaixo:
     signal aux_instrucao : std_logic_vector(PROC_INSTR_WIDTH - 1 downto 0);
     signal aux_controle  : std_logic_vector(DP_CTRL_BUS_WIDTH - 1 downto 0);
-    signal aux_endereco  : std_logic_vector(PROC_ADDR_WIDTH - 1 downto 0);
+    signal aux_endereco  : std_logic_vector(PROC_INSTR_WIDTH - 1 downto 0);
 
     -- We are the champions:
     -- Signals for memd
     signal aux_mmed_dp_memd_data : std_logic_vector(PROC_INSTR_WIDTH - 1 downto 0);
-    signal aux_dp_mmed_memd_address : std_logic_vector(PROC_INSTR_WIDTH - 1 downto 0);
+    signal aux_dp_mmed_memd_address : std_logic_vector(PROC_ADDR_WIDTH - 1 downto 0);
     signal aux_dp_mmed_write_data : std_logic_vector(PROC_INSTR_WIDTH - 1 downto 0);
 
 
@@ -122,7 +123,7 @@ begin
     instancia_memi : memi
     port map(
         clk       => Clock,
-        reset     => Chave_reset,
+        reset     => reset,
         Endereco  => aux_endereco,
         Instrucao => aux_instrucao
     );
@@ -130,8 +131,8 @@ begin
     instancia_memd : memd
     port map(
         clk       => Clock,
-        write_data     => aux_dp_mmed_write_data,
-        adress  => aux_dp_mmed_memd_address,
+        write_data => aux_dp_mmed_write_data,
+        memd_address  => aux_dp_mmed_memd_address,
         read_data => aux_mmed_dp_memd_data
     );
 
@@ -145,7 +146,7 @@ begin
     port map(
         -- declare todas as portas da sua via_dados_ciclo_unico aqui.
         clock     => Clock,
-        reset     => Chave_reset,
+        reset     => reset,
         controle  => aux_controle,
         instrucao => aux_instrucao,
         memd_data => aux_mmed_dp_memd_data,

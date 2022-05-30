@@ -14,9 +14,9 @@ entity memd is
     );
     port (
         clk                 : in std_logic;
-        write_data_mem      : in std_logic_vector(MD_DATA_WIDTH - 1 downto 0);
-        adress_mem          : in std_logic_vector(MD_ADDR_WIDTH - 1 downto 0);
-        read_data_mem       : out std_logic_vector(MD_DATA_WIDTH - 1 downto 0)
+        write_data      : in std_logic_vector(MD_DATA_WIDTH - 1 downto 0);
+        memd_address          : in std_logic_vector(MD_ADDR_WIDTH - 1 downto 0);
+        read_data       : out std_logic_vector(MD_DATA_WIDTH - 1 downto 0)
     );
 end memd;
 
@@ -26,12 +26,12 @@ architecture comportamental of memd is
     signal ram      : data_mem := (others => (others => '0'));
     signal ram_addr : std_logic_vector(MD_ADDR_WIDTH - 1 downto 0);
 begin
-    ram_addr <= adress_mem(MD_ADDR_WIDTH - 1 downto 0);
+    ram_addr <= memd_address(MD_ADDR_WIDTH - 1 downto 0);
     process (clk)
     begin
         if (rising_edge(clk)) then
-            ram(to_integer(unsigned(ram_addr))) <= write_data_mem;
+            ram(to_integer(unsigned(ram_addr))) <= write_data;
         end if;
     end process;
-    read_data_mem <= ram(to_integer(unsigned(ram_addr)));
+    read_data <= ram(to_integer(unsigned(ram_addr)));
 end comportamental;

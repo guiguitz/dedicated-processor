@@ -16,7 +16,8 @@ entity via_de_dados_ciclo_unico is
         pc_width          : natural; -- tamanho da entrada de endereços da MI ou MP em bits (memi.vhd)
         fr_addr_width     : natural; -- tamanho da linha de endereços do banco de registradores em bits
         ula_ctrl_width    : natural; -- tamanho da linha de controle da ULA
-        instr_width       : natural  -- tamanho da instrução em bits
+        instr_width       : natural;  -- tamanho da instrução em bits
+        MD_ADDR_WIDTH   : natural  -- tamanho do endereco da memoria de dados em bits
     );
     port (
         -- declare todas as portas da sua via_dados_ciclo_unico aqui.
@@ -29,7 +30,7 @@ entity via_de_dados_ciclo_unico is
         -- We are the champions:
         zero      : out std_logic;
         memd_data : in std_logic_vector(data_width - 1 downto 0);
-        memd_address : out std_logic_vector(data_width - 1 downto 0);
+        memd_address : out std_logic_vector(MD_ADDR_WIDTH - 1 downto 0);
         memd_write_data : out std_logic_vector(data_width - 1 downto 0)
     );
 end entity via_de_dados_ciclo_unico;
@@ -127,13 +128,12 @@ architecture comportamento of via_de_dados_ciclo_unico is
 
     component two_bits_shifter is
         generic (
-            largura_dado : natural := 32;
-            largura_qtde : natural
+            data_width : natural := 32
         );
 
         port (
-            input           : in std_logic_vector((largura_dado - 1) downto 0);
-            output           : out std_logic_vector((largura_dado - 1) downto 0)
+            input           : in std_logic_vector((data_width - 1) downto 0);
+            output          : out std_logic_vector((data_width - 1) downto 0)
         );
     end component;
 
@@ -212,7 +212,7 @@ architecture comportamento of via_de_dados_ciclo_unico is
 
     -- adder_0:
     signal aux_a0_m2_m5_pc4 : std_logic_vector(pc_width - 1 downto 0);
-    signal aux_plus_four : unsigned(3 downto 0) := "0100";
+    signal aux_plus_four : unsigned(pc_width - 1 downto 0) := x"00000004";
 
     -- adder_1:
     signal aux_m4_a1_entrada_b : std_logic_vector(pc_width - 1 downto 0);
@@ -399,10 +399,10 @@ begin
     --         -- we => aux_reg_write
     --     );
 
-    instancia_shifter : component two_bits_shifter -- TODO
+    instancia_shifter : component two_bits_shifter
         port map(
-            entrada => aux_se_m3_m4_shifter,
-            saida => aux_s0_m4_dado_ent_1
+            input => aux_se_m3_m4_shifter,
+            output => aux_s0_m4_dado_ent_1
         );
 
     process (aux_zero, aux_branchNEQ, aux_branchEQ) is

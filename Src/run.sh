@@ -1,5 +1,7 @@
 #!/bin/bash
 
+ghdl --clean
+
 # Analyzing vhdl files
 ghdl -a banco_registradores.vhd
 ghdl -a deslocador.vhd
@@ -20,8 +22,8 @@ ghdl -a processador_ciclo_unico.vhd
 ghdl -a tb_processador_ciclo_unico.vhd
 
 # # Elaborating SoC
-# ghdl -e tb_processador_ciclo_unico.vhd
-# ghdl -r tb_processador_ciclo_unico --vcd=tb_processador_ciclo_unico.vcd
+ghdl -e tb_processador_ciclo_unico
+ghdl -r tb_processador_ciclo_unico --vcd=tb_processador_ciclo_unico.vcd
 
 # # Wave view
 # gtkwave -f tb_processador_ciclo_unico.vcd
