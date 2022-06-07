@@ -6,7 +6,7 @@
 LIBRARY IEEE;
 USE IEEE.std_logic_1164.ALL;
 
-ENTITY processador_ciclo_unico IS
+ENTITY single_cycle_processor IS
     GENERIC (
         DATA_WIDTH : NATURAL := 32; -- tamanho do barramento de dados em bits
         PROC_INSTR_WIDTH : NATURAL := 32; -- tamanho da instrução do processador em bits
@@ -17,11 +17,11 @@ ENTITY processador_ciclo_unico IS
         reset : IN STD_LOGIC;
         Clock : IN STD_LOGIC
     );
-END processador_ciclo_unico;
+END single_cycle_processor;
 
-ARCHITECTURE comportamento OF processador_ciclo_unico IS
-    -- declare todos os componentes que serão necessários no seu processador_ciclo_unico a partir deste comentário
-    COMPONENT via_de_dados_ciclo_unico IS
+ARCHITECTURE comportamento OF single_cycle_processor IS
+    -- declare todos os componentes que serão necessários no seu single_cycle_processor a partir deste comentário
+    COMPONENT single_cycle_data_path IS
         GENERIC (
             -- declare todos os tamanhos dos barramentos (sinais) das portas da sua via_dados_ciclo_unico aqui.
             DP_CTRL_BUS_WIDTH : NATURAL := 14; -- tamanho do barramento de controle da via de dados (DP) em bits
@@ -48,7 +48,7 @@ ARCHITECTURE comportamento OF processador_ciclo_unico IS
         );
     END COMPONENT;
 
-    COMPONENT unidade_de_controle_ciclo_unico IS
+    COMPONENT single_cycle_control_unit IS
         GENERIC (
             INSTR_WIDTH : NATURAL := 32;
             OPCODE_WIDTH : NATURAL := 7;
@@ -89,13 +89,13 @@ ARCHITECTURE comportamento OF processador_ciclo_unico IS
         );
     END COMPONENT;
 
-    -- Declare todos os sinais auxiliares que serão necessários no seu processador_ciclo_unico a partir deste comentário.
+    -- Declare todos os sinais auxiliares que serão necessários no seu single_cycle_processor a partir deste comentário.
     -- Você só deve declarar sinais auxiliares se estes forem usados como "fios" para interligar componentes.
     -- Os sinais auxiliares devem ser compatíveis com o mesmo tipo (std_logic, std_logic_vector, etc.) e o mesmo tamanho dos sinais dos portos dos
     -- componentes onde serão usados.
     -- Veja os exemplos abaixo:
 
-    -- A partir deste comentário faça associações necessárias das entradas declaradas na entidade do seu processador_ciclo_unico com
+    -- A partir deste comentário faça associações necessárias das entradas declaradas na entidade do seu single_cycle_processor com
     -- os sinais que você acabou de definir.
     -- Veja os exemplos abaixo:
     SIGNAL aux_instrucao : STD_LOGIC_VECTOR(PROC_INSTR_WIDTH - 1 DOWNTO 0);
@@ -108,13 +108,13 @@ ARCHITECTURE comportamento OF processador_ciclo_unico IS
     SIGNAL aux_dp_mmed_memd_address : STD_LOGIC_VECTOR(PROC_ADDR_WIDTH - 1 DOWNTO 0);
     SIGNAL aux_dp_mmed_write_data : STD_LOGIC_VECTOR(PROC_INSTR_WIDTH - 1 DOWNTO 0);
 BEGIN
-    -- A partir deste comentário instancie todos o componentes que serão usados no seu processador_ciclo_unico.
+    -- A partir deste comentário instancie todos o componentes que serão usados no seu single_cycle_processor.
     -- A instanciação do componente deve começar com um nome que você deve atribuir para a referida instancia seguido de : e seguido do nome
     -- que você atribuiu ao componente.
     -- Depois segue o port map do referido componente instanciado.
     -- Para fazer o port map, na parte da esquerda da atribuição "=>" deverá vir o nome de origem da porta do componente e na parte direita da 
-    -- atribuição deve aparecer um dos sinais ("fios") que você definiu anteriormente, ou uma das entradas da entidade processador_ciclo_unico,
-    -- ou ainda uma das saídas da entidade processador_ciclo_unico.
+    -- atribuição deve aparecer um dos sinais ("fios") que você definiu anteriormente, ou uma das entradas da entidade single_cycle_processor,
+    -- ou ainda uma das saídas da entidade single_cycle_processor.
     -- Veja os exemplos de instanciação a seguir:
 
     instancia_memi : memi
@@ -133,13 +133,13 @@ BEGIN
         read_data => aux_mmed_dp_memd_data
     );
 
-    instancia_unidade_de_controle_ciclo_unico : unidade_de_controle_ciclo_unico
+    instancia_single_cycle_control_unit : single_cycle_control_unit
     PORT MAP(
         instrucao => aux_instrucao, -- instrução
         controle => aux_controle -- controle da via
     );
 
-    instancia_via_de_dados_ciclo_unico : via_de_dados_ciclo_unico
+    instancia_via_de_dados_ciclo_unico : single_cycle_data_path
     PORT MAP(
         -- declare todas as portas da sua via_dados_ciclo_unico aqui.
         clock => Clock,

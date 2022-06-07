@@ -2,13 +2,13 @@
 -- Escola de Engenharia
 -- Departamento de Engenharia Eletrônica
 -- Autoria: Professor Ricardo de Oliveira Duarte
--- Via de dados do processador_ciclo_unico
+-- Via de dados do single_cycle_processor
 
 LIBRARY IEEE;
 USE IEEE.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
 
-ENTITY via_de_dados_ciclo_unico IS
+ENTITY single_cycle_data_path IS
     GENERIC (
         -- declare todos os tamanhos dos barramentos (sinais) das portas da sua via_dados_ciclo_unico aqui.
         DP_CTRL_BUS_WIDTH : NATURAL := 14; -- tamanho do barramento de controle da via de dados (DP) em bits
@@ -33,11 +33,11 @@ ENTITY via_de_dados_ciclo_unico IS
         memd_address : OUT STD_LOGIC_VECTOR(MD_ADDR_WIDTH - 1 DOWNTO 0);
         memd_write_data : OUT STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0)
     );
-END ENTITY via_de_dados_ciclo_unico;
+END ENTITY single_cycle_data_path;
 
-ARCHITECTURE comportamento OF via_de_dados_ciclo_unico IS
+ARCHITECTURE comportamento OF single_cycle_data_path IS
 
-    -- declare todos os componentes que serão necessários na sua via_de_dados_ciclo_unico a partir deste comentário
+    -- declare todos os componentes que serão necessários na sua single_cycle_data_path a partir deste comentário
     COMPONENT pc IS
         GENERIC (
             PC_WIDTH : NATURAL := 32
@@ -103,7 +103,7 @@ ARCHITECTURE comportamento OF via_de_dados_ciclo_unico IS
         );
     END COMPONENT;
 
-    COMPONENT registrador IS
+    COMPONENT hdl_register IS
         GENERIC (
             largura_dado : NATURAL := 32
         );
@@ -151,7 +151,7 @@ ARCHITECTURE comportamento OF via_de_dados_ciclo_unico IS
         );
     END COMPONENT;
 
-    -- Declare todos os sinais auxiliares que serão necessários na sua via_de_dados_ciclo_unico a partir deste comentário.
+    -- Declare todos os sinais auxiliares que serão necessários na sua single_cycle_data_path a partir deste comentário.
     -- Você só deve declarar sinais auxiliares se estes forem usados como "fios" para interligar componentes.
     -- Os sinais auxiliares devem ser compatíveis com o mesmo tipo (std_logic, std_logic_vector, etc.) e o mesmo tamanho dos sinais dos portos dos
     -- componentes onde serão usados.
@@ -172,7 +172,7 @@ ARCHITECTURE comportamento OF via_de_dados_ciclo_unico IS
 
     -- We are the champions:
     -- Our Pattern: aux_<src>_<dst>_<dst_port>
-    -- ALU signals
+    -- ULA signals
     SIGNAL aux_zero : STD_LOGIC;
 
     -- mux_0 signals:
@@ -258,13 +258,13 @@ BEGIN
     aux_mmi_reg_ent_Rt_ende <= instrucao(24 DOWNTO 20);
     aux_mmi_reg_ent_Rd_ende <= instrucao(11 DOWNTO 7);
 
-    -- A partir deste comentário instancie todos o componentes que serão usados na sua via_de_dados_ciclo_unico.
+    -- A partir deste comentário instancie todos o componentes que serão usados na sua single_cycle_data_path.
     -- A instanciação do componente deve começar com um nome que você deve atribuir para a referida instancia seguido de : e seguido do nome
     -- que você atribuiu ao componente.
     -- Depois segue o port map do referido componente instanciado.
     -- Para fazer o port map, na parte da esquerda da atribuição "=>" deverá vir o nome de origem da porta do componente e na parte direita da
-    -- ou ainda uma das saídas da entidade via_de_dados_ciclo_unico.
-    -- atribuição deve aparecer um dos sinais ("fios") que você definiu anteriormente, ou uma das entradas da entidade via_de_dados_ciclo_unico,
+    -- ou ainda uma das saídas da entidade single_cycle_data_path.
+    -- atribuição deve aparecer um dos sinais ("fios") que você definiu anteriormente, ou uma das entradas da entidade single_cycle_data_path,
     -- Veja os exemplos de instanciação a seguir:
 
     instancia_ula1 : ula
@@ -317,7 +317,7 @@ BEGIN
         saida => aux_se_m3_m4_shifter
     );
 
-    -- instancia_epc : registrador
+    -- instancia_epc : hdl_register
     --     port map(
     --         entrada_dados => aux_m0_m1_dado_sai,
     --         -- WE => std_logic_vector("0001"),

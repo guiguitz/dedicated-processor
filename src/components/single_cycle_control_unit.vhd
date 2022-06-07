@@ -9,7 +9,7 @@ USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
 
 -- unidade de controle
-ENTITY unidade_de_controle_ciclo_unico IS
+ENTITY single_cycle_control_unit IS
     GENERIC (
         INSTR_WIDTH : NATURAL := 32;
         OPCODE_WIDTH : NATURAL := 7;
@@ -20,9 +20,9 @@ ENTITY unidade_de_controle_ciclo_unico IS
         instrucao : IN STD_LOGIC_VECTOR(INSTR_WIDTH - 1 DOWNTO 0); -- instrução
         controle : OUT STD_LOGIC_VECTOR(DP_CTRL_BUS_WIDTH - 1 DOWNTO 0) -- controle da via
     );
-END unidade_de_controle_ciclo_unico;
+END single_cycle_control_unit;
 
-ARCHITECTURE beh OF unidade_de_controle_ciclo_unico IS
+ARCHITECTURE beh OF single_cycle_control_unit IS
     -- As linhas abaixo não produzem erro de compilação no Quartus II, mas no Modelsim (GHDL) produzem.
     --signal inst_aux : std_logic_vector (INSTR_WIDTH-1 downto 0);            -- instrucao
     --signal opcode   : std_logic_vector (OPCODE_WIDTH-1 downto 0);           -- opcode
@@ -48,13 +48,13 @@ BEGIN
                 CASE funct3 IS
                         -- ADD
                     WHEN "000" =>
-                        ctrl_aux <= "10000000100110";
+                        ctrl_aux <= "10000000100110"; -- X'2026
                         -- SUB
                     WHEN "001" =>
                         ctrl_aux <= "10000001000110";
                         -- SLL
                     WHEN "010" =>
-                        ctrl_aux <= "10000010000110";
+                        ctrl_aux <= "10000010000110"; -- X'2086
                         -- SRL
                     WHEN "011" =>
                         ctrl_aux <= "10000010100110";
@@ -70,13 +70,13 @@ BEGIN
                 CASE funct3 IS
                         -- ADDI
                     WHEN "000" =>
-                        ctrl_aux <= "10000001101110";
+                        ctrl_aux <= "10000001101110"; -- X'206E
                         -- SLTI
                     WHEN "001" =>
                         ctrl_aux <= "10000110101110";
                         -- NOP
                     WHEN "010" =>
-                        ctrl_aux <= "10000000000010";
+                        ctrl_aux <= "10000000000010"; -- X'2002
                     WHEN OTHERS =>
                         ctrl_aux <= "10000000000010"; -- nop
                 END CASE; -- funct3
@@ -89,7 +89,7 @@ BEGIN
                         ctrl_aux <= "10001100001110";
                         -- LW
                     WHEN "010" =>
-                        ctrl_aux <= "10001011001110";
+                        ctrl_aux <= "10001011001110"; -- X'22CE
                     WHEN OTHERS =>
                         ctrl_aux <= "10000000000010"; -- nop
                 END CASE; -- funct3
@@ -102,13 +102,13 @@ BEGIN
                         ctrl_aux <= "10000100111010";
                         -- BNE
                     WHEN "001" =>
-                        ctrl_aux <= "10100101100010";
+                        ctrl_aux <= "10100101100010"; -- X'2962
                         -- SW
                     WHEN "010" =>
-                        ctrl_aux <= "10000011111010";
+                        ctrl_aux <= "10000011111010"; -- X'20FA
                         -- BEQ
                     WHEN "011" =>
-                        ctrl_aux <= "10010101000010";
+                        ctrl_aux <= "10010101000010"; -- X'2542
                     WHEN OTHERS =>
                         ctrl_aux <= "10000000000010"; -- nop
                 END CASE; -- funct3
@@ -116,7 +116,7 @@ BEGIN
 
             WHEN "0000010" => -- J
                 -- J
-                ctrl_aux <= "11110000000010";
+                ctrl_aux <= "11110000000010"; -- X'3C02
                 -- J
 
             WHEN "1101111" => -- JAL

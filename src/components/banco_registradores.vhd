@@ -32,8 +32,8 @@ ARCHITECTURE comportamental OF banco_registradores IS
 BEGIN
     leitura : PROCESS (clk) IS
     BEGIN
-        -- lê o registrador de endereço Rs da instrução apontada por PC no ciclo anterior,
-        -- lê o registrador de endereço Rt da instrução apontada por PC no ciclo anterior.
+        -- lê o hdl_register de endereço Rs da instrução apontada por PC no ciclo anterior,
+        -- lê o hdl_register de endereço Rt da instrução apontada por PC no ciclo anterior.
         sai_Rs_dado <= banco(to_integer(unsigned(ent_Rs_ende)));
         sai_Rt_dado <= banco(to_integer(unsigned(ent_Rt_ende)));
     END PROCESS;

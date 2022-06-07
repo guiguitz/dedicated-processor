@@ -6,7 +6,7 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 
-ENTITY registrador IS
+ENTITY hdl_register IS
     GENERIC (
         largura_dado : NATURAL
     );
@@ -15,9 +15,9 @@ ENTITY registrador IS
         WE, clk, reset : IN STD_LOGIC;
         saida_dados : OUT STD_LOGIC_VECTOR((largura_dado - 1) DOWNTO 0)
     );
-END registrador;
+END ENTITY;
 
-ARCHITECTURE comportamental OF registrador IS
+ARCHITECTURE comportamental OF hdl_register IS
 BEGIN
     PROCESS (clk) IS
     BEGIN
