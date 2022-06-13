@@ -8,10 +8,10 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 -- Este arquivo irá gerar um sinal de clock e reset de modo a possibilitar a simulação do DUT processador_ciclo_unico
 
-entity tb_processador_ciclo_unico is
-end tb_processador_ciclo_unico;
+entity tb_single_cycle_processor is
+end tb_single_cycle_processor;
 
-architecture estimulos of tb_processador_ciclo_unico is
+architecture estimulos of tb_single_cycle_processor is
 	-- Declarar a unidade sob teste
 	component processador_ciclo_unico
 		port (

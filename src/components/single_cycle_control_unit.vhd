@@ -34,6 +34,8 @@ ARCHITECTURE beh OF single_cycle_control_unit IS
     SIGNAL ctrl_aux : STD_LOGIC_VECTOR (13 DOWNTO 0); -- controle
     -- RegDst | Jump | Branch NEQ | Branch EQ | MemToReg | AluOp (4) | MemWrite | AluSrc | RegWrite | PcSrc | ITController
 
+    -- NOT USING MemWrite SO FAR.
+
 BEGIN
     inst_aux <= instrucao;
     -- A linha abaixo não produz erro de compilação no Quartus II, mas no Modelsim (GHDL) produz.

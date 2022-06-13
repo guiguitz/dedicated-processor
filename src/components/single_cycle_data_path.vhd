@@ -29,9 +29,9 @@ ENTITY single_cycle_data_path IS
         saida : OUT STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0);
         -- We are the champions:
         zero : OUT STD_LOGIC;
-        memd_data : IN STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0);
-        memd_address : OUT STD_LOGIC_VECTOR(MD_ADDR_WIDTH - 1 DOWNTO 0);
-        memd_write_data : OUT STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0)
+        memd_data : IN STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0); -- mmed 'Read Data'
+        memd_address : OUT STD_LOGIC_VECTOR(MD_ADDR_WIDTH - 1 DOWNTO 0); -- address
+        memd_write_data : OUT STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0) -- The data to be written in memory
     );
 END ENTITY single_cycle_data_path;
 
@@ -46,7 +46,6 @@ ARCHITECTURE comportamento OF single_cycle_data_path IS
             entrada : IN STD_LOGIC_VECTOR(PC_WIDTH - 1 DOWNTO 0);
             saida : OUT STD_LOGIC_VECTOR(PC_WIDTH - 1 DOWNTO 0);
             clk : IN STD_LOGIC;
-            we : IN STD_LOGIC;
             reset : IN STD_LOGIC
         );
     END COMPONENT;
@@ -168,7 +167,6 @@ ARCHITECTURE comportamento OF single_cycle_data_path IS
 
     SIGNAL aux_pc_out : STD_LOGIC_VECTOR(PC_WIDTH - 1 DOWNTO 0);
     SIGNAL aux_novo_pc : STD_LOGIC_VECTOR(PC_WIDTH - 1 DOWNTO 0);
-    SIGNAL aux_we : STD_LOGIC;
 
     -- We are the champions:
     -- Our Pattern: aux_<src>_<dst>_<dst_port>
@@ -239,7 +237,7 @@ BEGIN
     -- Veja os exemplos abaixo:
     aux_reg_write <= controle(2); -- RegWrite
     aux_ula_ctrl <= controle(8 DOWNTO 5); -- AluOp
-    aux_we <= controle(4); -- MemWrite
+    -- aux_we <= controle(4); -- MemWrite
     saida <= aux_data_outrt;
     pc_out <= aux_pc_out;
 
@@ -293,7 +291,7 @@ BEGIN
         entrada => aux_m1_pc_entrada,
         saida => aux_pc_out,
         clk => clock,
-        we => aux_we,
+        -- we => aux_we,
         reset => reset
     );
 

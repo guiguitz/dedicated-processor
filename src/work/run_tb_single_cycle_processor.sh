@@ -22,11 +22,12 @@ ghdl -a $COMPONENTS_PATH/interrupt_address_registers.vhd
 ghdl -a $COMPONENTS_PATH/single_cycle_control_unit.vhd
 ghdl -a $COMPONENTS_PATH/single_cycle_data_path.vhd
 ghdl -a $COMPONENTS_PATH/single_cycle_processor.vhd
-ghdl -a $TESTBENCHES_PATH/tb_processador_ciclo_unico.vhd
+ghdl -a $TESTBENCHES_PATH/tb_single_cycle_processor.vhd
+ghdl -a $TESTBENCHES_PATH/tb_single_cycle_processor.vhd
 
 # Elaborating SoC
-ghdl -e tb_processador_ciclo_unico
-ghdl -r tb_processador_ciclo_unico --vcd=tb_processador_ciclo_unico.vcd --stop-time=1us
+ghdl -e tb_single_cycle_processor
+ghdl -r tb_single_cycle_processor --vcd=tb_single_cycle_processor.vcd --stop-time=1us
 
 # # Wave view
-gtkwave -f tb_processador_ciclo_unico.vcd --script=gtkwave_print.tcl
+gtkwave -f tb_single_cycle_processor.vcd --script=gtkwave_print.tcl

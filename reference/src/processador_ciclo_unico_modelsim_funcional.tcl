@@ -31,12 +31,12 @@ set library_file_list {
         unidade_de_controle_ciclo_unico.vhd
         via_de_dados_ciclo_unico.vhd
         processador_ciclo_unico.vhd
-        tb_processador_ciclo_unico.vhd
+        tb_single_cycle_processor.vhd
     }
 }
 
 # A variável TCL top_level conterá a entidade de mais alto nível do projeto a ser simulado no ModelSim
-set top_level design_library.tb_processador_ciclo_unico
+set top_level design_library.tb_single_cycle_processor
 
 # A variável TCL wave_patterns pode conter uma lista de sinais ou padrões que vão ser carregados na janela Wave do ModelSim.
 # Para exibir todos os sinais do testbench basta incluir somente /* no interior da lista, assim como foi feito a seguir.
