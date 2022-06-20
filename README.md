@@ -4,7 +4,7 @@
 - [X] hdl_register testbench
 - [X] ULA testbench
 - [X] Instruction Memory (memi) testbench
-- [ ] Data Memory (memd) testbench
+- [X] Data Memory (memd) testbench
 - [ ] Add seven-segment LEDs to improve the debuggability
 - [ ] Translate all RTL code to English
 ## Single Cycle TODO
@@ -24,18 +24,6 @@
 
 ## Pipeline TODO
 - [ ] Draw DataPath
-- [ ] Implement the RTL for pipeline DataPath (`pipeline_data_path.vhd`)
-- [ ] Implement the RTL for pipeline Control Unit (`pipeline_control_unit.vhd`)
-- [ ] Implement the RTL for pipeline processor (`pipeline_processor.vhd`)
-- [ ] Implement the DataPath testbench (`tb_pipeline_data_path.vhd`)
-- [ ] Implement the Control Unit testbench (`tb_pipeline_control_unit.vhd`)
-- [ ] Implement the Processor testbench (`tb_pipeline_processor.vhd`)
-- [ ] Simulations with dummy instructions
-- [ ] Simulations with R-type instructions
-- [ ] Simulations with I-type instructions
-- [ ] Simulations with Branch-type instructions
-- [ ] Test on FPGA
-- [ ] Update the DataPath adding the correct signal/component names
 
 ## How to run
 ### DataPath testbenches
