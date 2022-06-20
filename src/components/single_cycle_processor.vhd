@@ -37,7 +37,7 @@ ARCHITECTURE comportamento OF single_cycle_processor IS
             instruction : IN STD_LOGIC_VECTOR (INSTR_WIDTH - 1 DOWNTO 0);
             pc_out : OUT STD_LOGIC_VECTOR (PC_WIDTH - 1 DOWNTO 0);
             memd_data : IN STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0);
-            memd_address : OUT STD_LOGIC_VECTOR(MD_ADDR_WIDTH - 1 DOWNTO 0);
+            address : OUT STD_LOGIC_VECTOR(MD_ADDR_WIDTH - 1 DOWNTO 0);
             memd_write_data : OUT STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0)
         );
     END COMPONENT;
@@ -73,15 +73,15 @@ ARCHITECTURE comportamento OF single_cycle_processor IS
 
     COMPONENT memd IS
         GENERIC (
-            number_of_words : NATURAL := 4096; -- número de words que a sua memória é capaz de armazenar
-            MD_DATA_WIDTH : NATURAL := 32; -- tamanho da palavra em bits
-            MD_ADDR_WIDTH : NATURAL := 12 -- tamanho do endereco da memoria de dados em bits
+            MD_DATA_WIDTH : NATURAL := 32; -- word size in bits
+            MD_ADDR_WIDTH : NATURAL := 12 -- size of data memory address in bits
         );
         PORT (
             clock : IN STD_LOGIC;
             write_data : IN STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0);
-            memd_address : IN STD_LOGIC_VECTOR(MD_ADDR_WIDTH - 1 DOWNTO 0);
-            read_data : OUT STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0)
+            address : IN STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0);
+            read_data : OUT STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0);
+            write_enable : IN STD_LOGIC
         );
     END COMPONENT;
 
@@ -107,7 +107,7 @@ BEGIN
     PORT MAP(
         clock => clock,
         write_data => aux_data_path_mmed_write_data,
-        memd_address => aux_data_path_mmed_memd_address,
+        address => aux_data_path_mmed_memd_address,
         read_data => aux_mmed_dp_memd_data
     );
 
@@ -125,7 +125,7 @@ BEGIN
         instruction => aux_instruction,
         pc_out => aux_data_path_memi_pc_out,
         memd_data => aux_mmed_dp_memd_data,
-        memd_address => aux_data_path_mmed_memd_address,
+        address => aux_data_path_mmed_memd_address,
         memd_write_data => aux_data_path_mmed_write_data
     );
 END comportamento;

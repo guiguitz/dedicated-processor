@@ -1,37 +1,34 @@
--- Universidade Federal de Minas Gerais
--- Escola de Engenharia
--- Departamento de Engenharia Eletronica
--- Autoria: Professor Ricardo de Oliveira Duarte
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
 
 ENTITY memd IS
     GENERIC (
-        number_of_words : NATURAL; -- número de words que a sua memória é capaz de armazenar
-        MD_DATA_WIDTH : NATURAL; -- tamanho da palavra em bits
-        MD_ADDR_WIDTH : NATURAL -- tamanho do endereco da memoria de dados em bits
+        MD_DATA_WIDTH : NATURAL := 32; -- word size in bits
+        MD_ADDR_WIDTH : NATURAL := 12 -- size of data memory address in bits
     );
     PORT (
         clock : IN STD_LOGIC;
         write_data : IN STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0);
-        memd_address : IN STD_LOGIC_VECTOR(MD_ADDR_WIDTH - 1 DOWNTO 0);
-        read_data : OUT STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0)
+        address : IN STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0);
+        read_data : OUT STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0);
+        write_enable : IN STD_LOGIC
     );
-END memd;
+END ENTITY;
 
 ARCHITECTURE comportamental OF memd IS
-    --alocar espaço para a memoria e iniciar com 0
-    TYPE data_mem IS ARRAY (0 TO number_of_words - 1) OF STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0);
-    SIGNAL ram : data_mem := (OTHERS => (OTHERS => '0'));
-    SIGNAL ram_addr : STD_LOGIC_VECTOR(MD_ADDR_WIDTH - 1 DOWNTO 0);
+    -- memd size: 2^12 Bytes = 4 kB
+    TYPE ram_type IS ARRAY (0 TO 2 ** MD_ADDR_WIDTH) OF STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0);
+    SIGNAL ram : ram_type := (OTHERS => (OTHERS => '0'));
 BEGIN
-    ram_addr <= memd_address(MD_ADDR_WIDTH - 1 DOWNTO 0);
     PROCESS (clock)
     BEGIN
         IF (rising_edge(clock)) THEN
-            ram(to_integer(unsigned(ram_addr))) <= write_data;
+            IF (write_enable = '1') THEN
+                ram(to_integer(unsigned(address))) <= write_data;
+            ELSE
+                read_data <= ram(to_integer(unsigned(address)));
+            END IF;
         END IF;
     END PROCESS;
-    read_data <= ram(to_integer(unsigned(ram_addr)));
 END comportamental;
