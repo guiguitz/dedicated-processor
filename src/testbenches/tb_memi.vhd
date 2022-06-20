@@ -9,8 +9,8 @@ ARCHITECTURE estimulos OF tb_memi IS
 
     COMPONENT memi IS
         GENERIC (
-            INSTR_WIDTH : NATURAL := 32; -- tamanho da instruction em número de bits
-            MI_ADDR_WIDTH : NATURAL := 32 -- tamanho do endereço da memória de instruções em número de bits
+            INSTR_WIDTH : NATURAL := 32;
+            MI_ADDR_WIDTH : NATURAL := 32
         );
         PORT (
             clock : IN STD_LOGIC;
@@ -25,7 +25,6 @@ ARCHITECTURE estimulos OF tb_memi IS
     SIGNAL aux_address : STD_LOGIC_VECTOR(32 - 1 DOWNTO 0);
     SIGNAL aux_instruction : STD_LOGIC_VECTOR(32 - 1 DOWNTO 0);
 
-    -- Definição das configurações de clock
     CONSTANT PERIOD : TIME := 20 ns;
     CONSTANT DUTY_CYCLE : real := 0.5;
     CONSTANT OFFSET : TIME := 5 ns;
