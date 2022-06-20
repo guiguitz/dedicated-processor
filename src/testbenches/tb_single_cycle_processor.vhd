@@ -23,7 +23,7 @@ ARCHITECTURE estimulos OF tb_single_cycle_processor IS
     CONSTANT HALF_OFFSET : TIME := 5 ns;
 
 BEGIN
-    instance : single_cycle_processor PORT MAP(reset, clock);
+    instance_single_cycle_processor : single_cycle_processor PORT MAP(reset, clock);
 
     generate_clock : PROCESS
     BEGIN

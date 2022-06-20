@@ -125,8 +125,8 @@ ARCHITECTURE comportamento OF single_cycle_data_path IS
         );
 
         PORT (
-            input : IN STD_LOGIC_VECTOR((data_width - 1) DOWNTO 0);
-            output : OUT STD_LOGIC_VECTOR((data_width - 1) DOWNTO 0)
+            operand : IN STD_LOGIC_VECTOR((data_width - 1) DOWNTO 0);
+            result : OUT STD_LOGIC_VECTOR((data_width - 1) DOWNTO 0)
         );
     END COMPONENT;
 
@@ -222,6 +222,7 @@ BEGIN
 
     aux_reg_write <= control(2); -- RegWrite
     aux_ula_ctrl <= control(8 DOWNTO 5); -- AluOp
+    aux_ctrl_m4_sele_ent <= control(12); -- Jump
     -- aux_we <= control(4); -- MemWrite
     pc_out <= aux_pc_adder0_mmi;
 
@@ -369,8 +370,8 @@ BEGIN
 
     instance_shifter : two_bits_shifter
     PORT MAP(
-        input => aux_se_m3_m4_shifter,
-        output => aux_s0_m4_dado_ent_1
+        operand => aux_se_m3_m4_shifter,
+        result => aux_s0_m4_dado_ent_1
     );
 
     PROCESS (aux_zero, aux_branchNEQ, aux_branchEQ) IS
