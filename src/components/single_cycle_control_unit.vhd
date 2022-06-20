@@ -27,7 +27,6 @@ ARCHITECTURE beh OF single_cycle_control_unit IS
     SIGNAL aux_opcode : STD_LOGIC_VECTOR (6 DOWNTO 0); -- opcode
     SIGNAL aux_funct3 : STD_LOGIC_VECTOR (2 DOWNTO 0); -- funct3
 
-    -- NOT USING MemWrite SO FAR.
     SIGNAL aux_control : STD_LOGIC_VECTOR (13 DOWNTO 0); -- control
     -- RegDst | Jump | Branch NEQ | Branch EQ | MemToReg | AluOp (4) | MemWrite | AluSrc | RegWrite | PcSrc | ITController
 

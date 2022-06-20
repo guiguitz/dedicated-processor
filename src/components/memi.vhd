@@ -1,22 +1,19 @@
--- Universidade Federal de Minas Gerais
--- Escola de Engenharia
--- Departamento de Engenharia Eletronica
--- Autoria: Professor Ricardo de Oliveira Duarte
--- Memória de Programas ou Memória de Instruções de tamanho genérico
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
 
 ENTITY memi IS
     GENERIC (
-        INSTR_WIDTH : NATURAL := 32; -- tamanho da instruction em número de bits
-        MI_ADDR_WIDTH : NATURAL := 32 -- tamanho do endereço da memória de instruções em número de bits
+        INSTR_WIDTH : NATURAL := 32; -- instruction size in number of bits
+        MI_ADDR_WIDTH : NATURAL := 32 -- instruction memory address size in number of bits
     );
     PORT (
         clock : IN STD_LOGIC;
         reset : IN STD_LOGIC;
         address : IN STD_LOGIC_VECTOR(MI_ADDR_WIDTH - 1 DOWNTO 0);
-        instruction : OUT STD_LOGIC_VECTOR(INSTR_WIDTH - 1 DOWNTO 0)
+        instruction : OUT STD_LOGIC_VECTOR(INSTR_WIDTH - 1 DOWNTO 0);
+        write_enable : IN STD_LOGIC;
+        write_instruction : IN STD_LOGIC_VECTOR(INSTR_WIDTH - 1 DOWNTO 0)
     );
 END ENTITY;
 
@@ -27,15 +24,10 @@ BEGIN
     PROCESS (clock, reset) IS
     BEGIN
         IF (rising_edge(clock)) THEN
-            IF (reset = '1') THEN
-                rom <= (
-                    0 => B"00000000000000000000000000000001",
-                    4 => B"00000000000000000000000000000010",
-                    8 => B"00000000000000000000000000000011",
-                    12 => B"00000000000000000000000000000100",
-                    16 => B"00000000000000000000000000000101",
-                    OTHERS => B"00000000000000000000000000000000"
-                    );
+            IF (write_enable = '1') THEN
+                rom(to_integer(unsigned(address))) <= write_instruction;
+            ELSIF (reset = '1') THEN
+                rom <= (OTHERS => (OTHERS => '0'));
             ELSE
                 instruction <= rom(to_integer(unsigned(address)));
             END IF;
