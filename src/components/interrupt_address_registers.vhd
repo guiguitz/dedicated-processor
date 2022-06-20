@@ -19,7 +19,7 @@ ENTITY interrupt_address_registers IS
         address : IN STD_LOGIC_VECTOR((largura_ende - 1) DOWNTO 0);
         input : IN STD_LOGIC_VECTOR((largura_dado - 1) DOWNTO 0);
         output : OUT STD_LOGIC_VECTOR((largura_dado - 1) DOWNTO 0);
-        clk, WE : IN STD_LOGIC
+        clock, WE : IN STD_LOGIC
     );
 END interrupt_address_registers;
 
@@ -27,14 +27,14 @@ ARCHITECTURE comportamental OF interrupt_address_registers IS
     TYPE registerfile IS ARRAY(0 TO ((2 ** largura_ende) - 1)) OF STD_LOGIC_VECTOR((largura_dado - 1) DOWNTO 0);
     SIGNAL banco : registerfile;
 BEGIN
-    leitura : PROCESS (clk) IS
+    leitura : PROCESS (clock) IS
     BEGIN
         output <= banco(to_integer(unsigned(address)));
     END PROCESS;
 
-    escrita : PROCESS (clk) IS
+    escrita : PROCESS (clock) IS
     BEGIN
-        IF rising_edge(clk) THEN
+        IF rising_edge(clock) THEN
             IF WE = '1' THEN
                 banco(to_integer(unsigned(address))) <= input;
             END IF;

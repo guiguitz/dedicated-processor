@@ -19,13 +19,13 @@ ARCHITECTURE estimulos OF tb_hdl_register IS
         );
         PORT (
             entrada_dados : IN STD_LOGIC_VECTOR((largura_dado - 1) DOWNTO 0);
-            WE, clk, reset : IN STD_LOGIC;
+            WE, clock, reset : IN STD_LOGIC;
             saida_dados : OUT STD_LOGIC_VECTOR((largura_dado - 1) DOWNTO 0)
         );
     END COMPONENT;
 
     SIGNAL entrada_dados : STD_LOGIC_VECTOR((32 - 1) DOWNTO 0);
-    SIGNAL WE, clk, reset : STD_LOGIC;
+    SIGNAL WE, clock, reset : STD_LOGIC;
     SIGNAL saida_dados : STD_LOGIC_VECTOR((32 - 1) DOWNTO 0);
 
     -- Definição das configurações de clock
@@ -35,31 +35,31 @@ ARCHITECTURE estimulos OF tb_hdl_register IS
 BEGIN
     -- instancia o componente
     WE <= '1';
-    instancia : hdl_register GENERIC MAP(largura_dado => 32) PORT MAP(entrada_dados, WE, clk, reset, saida_dados);
+    instancia : hdl_register GENERIC MAP(largura_dado => 32) PORT MAP(entrada_dados, WE, clock, reset, saida_dados);
     -- processo para gerar o sinal de clock
     gera_clock : PROCESS
     BEGIN
         WAIT FOR OFFSET;
         CLOCK_LOOP : LOOP
-            clk <= '0';
+            clock <= '0';
             entrada_dados <= X"0000000A";
             -- WE <= '1';
             WAIT FOR (PERIODO - (PERIODO * DUTY_CYCLE));
-            clk <= '1';
+            clock <= '1';
             WAIT FOR (PERIODO * DUTY_CYCLE);
 
-            clk <= '0';
+            clock <= '0';
             entrada_dados <= X"FFFFFFFF";
             -- WE <= '1';
             WAIT FOR (PERIODO - (PERIODO * DUTY_CYCLE));
-            clk <= '1';
+            clock <= '1';
             WAIT FOR (PERIODO * DUTY_CYCLE);
 
-            clk <= '0';
+            clock <= '0';
             entrada_dados <= X"0C0C0C0C";
             -- WE <= '0';
             WAIT FOR (PERIODO - (PERIODO * DUTY_CYCLE));
-            clk <= '1';
+            clock <= '1';
             WAIT FOR (PERIODO * DUTY_CYCLE);
 
         END LOOP CLOCK_LOOP;
@@ -69,7 +69,7 @@ BEGIN
     BEGIN
         reset <= '1';
         FOR i IN 1 TO 2 LOOP
-            WAIT UNTIL rising_edge(clk);
+            WAIT UNTIL rising_edge(clock);
         END LOOP;
         reset <= '0';
         WAIT;

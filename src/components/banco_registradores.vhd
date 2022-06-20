@@ -22,7 +22,7 @@ ENTITY banco_registradores IS
         ent_Rd_dado : IN STD_LOGIC_VECTOR((largura_dado - 1) DOWNTO 0); -- Write Data, Data to write
         sai_Rs_dado : OUT STD_LOGIC_VECTOR((largura_dado - 1) DOWNTO 0); -- Read Data 1
         sai_Rt_dado : OUT STD_LOGIC_VECTOR((largura_dado - 1) DOWNTO 0); -- Read Data 2
-        clk, WE : IN STD_LOGIC -- RegWrite
+        clock, WE : IN STD_LOGIC -- RegWrite
     );
 END banco_registradores;
 
@@ -30,7 +30,7 @@ ARCHITECTURE comportamental OF banco_registradores IS
     TYPE registerfile IS ARRAY(0 TO ((2 ** largura_ende) - 1)) OF STD_LOGIC_VECTOR((largura_dado - 1) DOWNTO 0);
     SIGNAL banco : registerfile;
 BEGIN
-    leitura : PROCESS (clk) IS
+    leitura : PROCESS (clock) IS
     BEGIN
         -- lê o hdl_register de endereço Rs da instruction apontada por PC no ciclo anterior,
         -- lê o hdl_register de endereço Rt da instruction apontada por PC no ciclo anterior.
@@ -38,9 +38,9 @@ BEGIN
         sai_Rt_dado <= banco(to_integer(unsigned(ent_Rt_ende)));
     END PROCESS;
 
-    escrita : PROCESS (clk) IS
+    escrita : PROCESS (clock) IS
     BEGIN
-        IF rising_edge(clk) THEN
+        IF rising_edge(clock) THEN
             IF WE = '1' THEN
                 banco(to_integer(unsigned(ent_Rd_ende))) <= ent_Rd_dado;
             END IF;

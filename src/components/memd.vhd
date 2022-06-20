@@ -13,7 +13,7 @@ ENTITY memd IS
         MD_ADDR_WIDTH : NATURAL -- tamanho do endereco da memoria de dados em bits
     );
     PORT (
-        clk : IN STD_LOGIC;
+        clock : IN STD_LOGIC;
         write_data : IN STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0);
         memd_address : IN STD_LOGIC_VECTOR(MD_ADDR_WIDTH - 1 DOWNTO 0);
         read_data : OUT STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0)
@@ -27,9 +27,9 @@ ARCHITECTURE comportamental OF memd IS
     SIGNAL ram_addr : STD_LOGIC_VECTOR(MD_ADDR_WIDTH - 1 DOWNTO 0);
 BEGIN
     ram_addr <= memd_address(MD_ADDR_WIDTH - 1 DOWNTO 0);
-    PROCESS (clk)
+    PROCESS (clock)
     BEGIN
-        IF (rising_edge(clk)) THEN
+        IF (rising_edge(clock)) THEN
             ram(to_integer(unsigned(ram_addr))) <= write_data;
         END IF;
     END PROCESS;

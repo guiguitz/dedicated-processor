@@ -12,16 +12,16 @@ ENTITY hdl_register IS
     );
     PORT (
         entrada_dados : IN STD_LOGIC_VECTOR((largura_dado - 1) DOWNTO 0);
-        WE, clk, reset : IN STD_LOGIC;
+        WE, clock, reset : IN STD_LOGIC;
         saida_dados : OUT STD_LOGIC_VECTOR((largura_dado - 1) DOWNTO 0)
     );
 END ENTITY;
 
 ARCHITECTURE comportamental OF hdl_register IS
 BEGIN
-    PROCESS (clk) IS
+    PROCESS (clock) IS
     BEGIN
-        IF (rising_edge(clk)) THEN
+        IF (rising_edge(clock)) THEN
             IF (WE = '1') THEN
                 saida_dados <= entrada_dados;
             END IF;

@@ -13,19 +13,19 @@ ENTITY pc IS
     PORT (
         entrada : IN STD_LOGIC_VECTOR (PC_WIDTH - 1 DOWNTO 0);
         saida : OUT STD_LOGIC_VECTOR(PC_WIDTH - 1 DOWNTO 0);
-        clk : IN STD_LOGIC;
+        clock : IN STD_LOGIC;
         reset : IN STD_LOGIC
     );
 END ENTITY;
 
 ARCHITECTURE comportamental OF pc IS
 BEGIN
-    PROCESS (clk, reset) IS
+    PROCESS (clock, reset) IS
     BEGIN
         IF (reset = '1') THEN
             saida <= (OTHERS => '0');
-        ELSIF (rising_edge(clk)) THEN
-                saida <= entrada;
+        ELSIF (rising_edge(clock)) THEN
+            saida <= entrada;
         END IF;
     END PROCESS;
 END comportamental;

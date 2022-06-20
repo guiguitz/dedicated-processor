@@ -10,7 +10,6 @@ USE ieee.numeric_std.ALL;
 
 ENTITY single_cycle_data_path IS
     GENERIC (
-        -- declare todos os tamanhos dos barramentos (sinais) das portas da sua via_dados_ciclo_unico aqui.
         DP_CTRL_BUS_WIDTH : NATURAL := 14; -- tamanho do barramento de control da via de dados (DP) em bits
         DATA_WIDTH : NATURAL := 32; -- tamanho do dado em bits
         PC_WIDTH : NATURAL := 32; -- tamanho da entrada de endereços da MI ou MP em bits (memi.vhd)
@@ -26,7 +25,6 @@ ENTITY single_cycle_data_path IS
         instruction : IN STD_LOGIC_VECTOR(INSTR_WIDTH - 1 DOWNTO 0);
         pc_out : OUT STD_LOGIC_VECTOR(PC_WIDTH - 1 DOWNTO 0);
         saida : OUT STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0);
-        -- We are the champions:
         zero : OUT STD_LOGIC;
         memd_data : IN STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0); -- mmed 'Read Data'
         memd_address : OUT STD_LOGIC_VECTOR(MD_ADDR_WIDTH - 1 DOWNTO 0); -- address
@@ -43,7 +41,7 @@ ARCHITECTURE comportamento OF single_cycle_data_path IS
         PORT (
             entrada : IN STD_LOGIC_VECTOR(PC_WIDTH - 1 DOWNTO 0);
             saida : OUT STD_LOGIC_VECTOR(PC_WIDTH - 1 DOWNTO 0);
-            clk : IN STD_LOGIC;
+            clock : IN STD_LOGIC;
             reset : IN STD_LOGIC
         );
     END COMPONENT;
@@ -71,7 +69,7 @@ ARCHITECTURE comportamento OF single_cycle_data_path IS
             ent_rd_dado : IN STD_LOGIC_VECTOR((largura_dado - 1) DOWNTO 0);
             sai_rs_dado : OUT STD_LOGIC_VECTOR((largura_dado - 1) DOWNTO 0);
             sai_rt_dado : OUT STD_LOGIC_VECTOR((largura_dado - 1) DOWNTO 0);
-            clk : IN STD_LOGIC;
+            clock : IN STD_LOGIC;
             we : IN STD_LOGIC
         );
     END COMPONENT;
@@ -106,7 +104,7 @@ ARCHITECTURE comportamento OF single_cycle_data_path IS
         );
         PORT (
             entrada_dados : IN STD_LOGIC_VECTOR((largura_dado - 1) DOWNTO 0);
-            WE, clk, reset : IN STD_LOGIC;
+            WE, clock, reset : IN STD_LOGIC;
             saida_dados : OUT STD_LOGIC_VECTOR((largura_dado - 1) DOWNTO 0)
         );
     END COMPONENT;
@@ -144,7 +142,7 @@ ARCHITECTURE comportamento OF single_cycle_data_path IS
             address : IN STD_LOGIC_VECTOR((largura_ende - 1) DOWNTO 0);
             input : IN STD_LOGIC_VECTOR((largura_dado - 1) DOWNTO 0);
             output : OUT STD_LOGIC_VECTOR((largura_dado - 1) DOWNTO 0);
-            clk, WE : IN STD_LOGIC
+            clock, WE : IN STD_LOGIC
         );
     END COMPONENT;
 
@@ -166,44 +164,44 @@ ARCHITECTURE comportamento OF single_cycle_data_path IS
     -- ULA signals
     SIGNAL aux_zero : STD_LOGIC;
 
-    -- mux_0 signals:
+    -- mux0 signals:
     SIGNAL aux_epc_m0_dado_ent_0 : STD_LOGIC_VECTOR(PC_WIDTH - 1 DOWNTO 0);
     SIGNAL aux_m5_m0_dado_ent_1 : STD_LOGIC_VECTOR(PC_WIDTH - 1 DOWNTO 0);
     SIGNAL aux_m0_m1_dado_sai : STD_LOGIC_VECTOR(PC_WIDTH - 1 DOWNTO 0);
     SIGNAL aux_ctrl_m0_sele_ent : STD_LOGIC;
 
-    -- mux_1 signals:
+    -- mux1 signals:
     SIGNAL aux_ia_m1_dado_ent_1 : STD_LOGIC_VECTOR(PC_WIDTH - 1 DOWNTO 0);
     SIGNAL aux_m1_pc_entrada : STD_LOGIC_VECTOR(PC_WIDTH - 1 DOWNTO 0);
     SIGNAL aux_ctrl_m1_sele_ent : STD_LOGIC;
 
-    -- mux_2 signals:
+    -- mux2 signals:
     SIGNAL aux_m2_reg_ent_Rd_dado : STD_LOGIC_VECTOR(PC_WIDTH - 1 DOWNTO 0);
     SIGNAL aux_ctrl_m2_sele_ent : STD_LOGIC;
 
-    -- mux_3 signals:
+    -- mux3 signals:
     SIGNAL aux_ctrl_m3_sele_ent : STD_LOGIC;
     SIGNAL aux_m3_ula_entrada_b : STD_LOGIC_VECTOR(PC_WIDTH - 1 DOWNTO 0);
     SIGNAL aux_reg_m3_mmed : STD_LOGIC_VECTOR(PC_WIDTH - 1 DOWNTO 0);
 
-    -- mux_4 signals:
+    -- mux4 signals:
     SIGNAL aux_s0_m4_dado_ent_1 : STD_LOGIC_VECTOR(PC_WIDTH - 1 DOWNTO 0);
     SIGNAL aux_ctrl_m4_sele_ent : STD_LOGIC;
 
-    -- mux_5 signals:
+    -- mux5 signals:
     SIGNAL aux_a1_m5_dado_ent_1 : STD_LOGIC_VECTOR(PC_WIDTH - 1 DOWNTO 0);
 
-    -- mux_6 signals:
+    -- mux6 signals:
     SIGNAL aux_ctrl_m6_sele_ent : STD_LOGIC;
     SIGNAL aux_mmed_m6_dado_ent_1 : STD_LOGIC_VECTOR(PC_WIDTH - 1 DOWNTO 0);
     SIGNAL aux_m6_m2_dado_ent_1 : STD_LOGIC_VECTOR(PC_WIDTH - 1 DOWNTO 0);
     SIGNAL aux_alu_m6_dado_ent_0 : STD_LOGIC_VECTOR(PC_WIDTH - 1 DOWNTO 0);
 
-    -- adder_0:
+    -- adder0:
     SIGNAL aux_a0_m2_m5_pc4 : STD_LOGIC_VECTOR(PC_WIDTH - 1 DOWNTO 0);
     SIGNAL aux_plus_four : unsigned(PC_WIDTH - 1 DOWNTO 0) := x"00000004";
 
-    -- adder_1:
+    -- adder1:
     SIGNAL aux_m4_a1_entrada_b : STD_LOGIC_VECTOR(PC_WIDTH - 1 DOWNTO 0);
 
     -- process branch (BEQ, BNE)
@@ -262,7 +260,7 @@ BEGIN
         ent_rd_dado => aux_m2_reg_ent_Rd_dado,
         sai_rs_dado => aux_reg_alu_entrada_a,
         sai_rt_dado => aux_reg_m3_mmed,
-        clk => clock,
+        clock => clock,
         we => aux_reg_write
     );
 
@@ -270,7 +268,7 @@ BEGIN
     PORT MAP(
         entrada => aux_m1_pc_entrada,
         saida => aux_pc_adder0_mmi,
-        clk => clock,
+        clock => clock,
         -- we => aux_we,
         reset => reset
     );
@@ -299,7 +297,7 @@ BEGIN
     --     port map(
     --         entrada_dados => aux_m0_m1_dado_sai,
     --         -- WE => std_logic_vector("0001"),
-    --         clk => clock,
+    --         clock => clock,
     --         -- reset => std_logic_vector("0001"),
     --         saida_dados => aux_epc_m0_dado_ent_0
     --     );
@@ -369,7 +367,7 @@ BEGIN
     --         -- ent_rd_dado => aux_data_in,
     --         -- sai_rs_dado => aux_data_outrs,
     --         -- sai_rt_dado => aux_data_outrt,
-    --         clk => clock,
+    --         clock => clock,
     --         -- we => aux_reg_write
     --     );
 

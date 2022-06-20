@@ -11,11 +11,11 @@ ARCHITECTURE estimulos OF tb_single_cycle_processor IS
     COMPONENT single_cycle_processor
         PORT (
             reset : IN STD_LOGIC;
-            Clock : IN STD_LOGIC
+            clock : IN STD_LOGIC
         );
     END COMPONENT;
 
-    SIGNAL clk : STD_LOGIC;
+    SIGNAL clock : STD_LOGIC;
     SIGNAL rst : STD_LOGIC;
 
     -- Definição das configurações de clock
@@ -30,16 +30,16 @@ ARCHITECTURE estimulos OF tb_single_cycle_processor IS
     -- FILE arquivo_saida2 : text OPEN write_mode IS "saida2.txt";
 BEGIN
     -- instancia o componente
-    inst_single_cycle_processor : single_cycle_processor PORT MAP(rst, clk);
+    inst_single_cycle_processor : single_cycle_processor PORT MAP(rst, clock);
 
     -- processo para gerar o sinal de clock
     gera_clock : PROCESS
     BEGIN
         WAIT FOR OFFSET;
         CLOCK_LOOP : LOOP
-            clk <= '0';
+            clock <= '0';
             WAIT FOR (PERIODO - (PERIODO * DUTY_CYCLE));
-            clk <= '1';
+            clock <= '1';
             WAIT FOR (PERIODO * DUTY_CYCLE);
         END LOOP CLOCK_LOOP;
     END PROCESS gera_clock;
@@ -48,7 +48,7 @@ BEGIN
     gera_reset : PROCESS
     BEGIN
         rst <= '1';
-        WAIT UNTIL falling_edge(clk);
+        WAIT UNTIL falling_edge(clock);
         rst <= '0';
         WAIT;
     END PROCESS gera_reset;

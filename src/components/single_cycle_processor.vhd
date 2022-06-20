@@ -15,7 +15,7 @@ ENTITY single_cycle_processor IS
     );
     PORT (
         reset : IN STD_LOGIC;
-        Clock : IN STD_LOGIC
+        clock : IN STD_LOGIC
     );
 END single_cycle_processor;
 
@@ -64,10 +64,10 @@ ARCHITECTURE comportamento OF single_cycle_processor IS
             MI_ADDR_WIDTH : NATURAL := 32 -- tamanho do endereço da memória de instruções em número de bits
         );
         PORT (
-            clk : IN STD_LOGIC;
+            clock : IN STD_LOGIC;
             reset : IN STD_LOGIC;
-            Endereco : IN STD_LOGIC_VECTOR(MI_ADDR_WIDTH - 1 DOWNTO 0);
-            Instrucao : OUT STD_LOGIC_VECTOR(INSTR_WIDTH - 1 DOWNTO 0)
+            address : IN STD_LOGIC_VECTOR(MI_ADDR_WIDTH - 1 DOWNTO 0);
+            instruction : OUT STD_LOGIC_VECTOR(INSTR_WIDTH - 1 DOWNTO 0)
         );
     END COMPONENT;
 
@@ -78,52 +78,34 @@ ARCHITECTURE comportamento OF single_cycle_processor IS
             MD_ADDR_WIDTH : NATURAL := 12 -- tamanho do endereco da memoria de dados em bits
         );
         PORT (
-            clk : IN STD_LOGIC;
+            clock : IN STD_LOGIC;
             write_data : IN STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0);
             memd_address : IN STD_LOGIC_VECTOR(MD_ADDR_WIDTH - 1 DOWNTO 0);
             read_data : OUT STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0)
         );
     END COMPONENT;
 
-    -- Declare todos os sinais auxiliares que serão necessários no seu single_cycle_processor a partir deste comentário.
-    -- Você só deve declarar sinais auxiliares se estes forem usados como "fios" para interligar componentes.
-    -- Os sinais auxiliares devem ser compatíveis com o mesmo tipo (std_logic, std_logic_vector, etc.) e o mesmo tamanho dos sinais dos portos dos
-    -- componentes onde serão usados.
-    -- Veja os exemplos abaixo:
-
-    -- A partir deste comentário faça associações necessárias das entradas declaradas na entidade do seu single_cycle_processor com
-    -- os sinais que você acabou de definir.
-    -- Veja os exemplos abaixo:
     SIGNAL aux_instrucao : STD_LOGIC_VECTOR(PROC_INSTR_WIDTH - 1 DOWNTO 0);
     SIGNAL aux_controle : STD_LOGIC_VECTOR(DP_CTRL_BUS_WIDTH - 1 DOWNTO 0);
     SIGNAL aux_data_path_memi : STD_LOGIC_VECTOR(PROC_INSTR_WIDTH - 1 DOWNTO 0);
 
-    -- We are the champions:
     -- Signals for memd
     SIGNAL aux_mmed_dp_memd_data : STD_LOGIC_VECTOR(PROC_INSTR_WIDTH - 1 DOWNTO 0);
     SIGNAL aux_data_path_mmed_memd_address : STD_LOGIC_VECTOR(PROC_ADDR_WIDTH - 1 DOWNTO 0);
     SIGNAL aux_data_path_mmed_write_data : STD_LOGIC_VECTOR(PROC_INSTR_WIDTH - 1 DOWNTO 0);
-BEGIN
-    -- A partir deste comentário instancie todos o componentes que serão usados no seu single_cycle_processor.
-    -- A instanciação do componente deve começar com um nome que você deve atribuir para a referida instancia seguido de : e seguido do nome
-    -- que você atribuiu ao componente.
-    -- Depois segue o port map do referido componente instanciado.
-    -- Para fazer o port map, na parte da esquerda da atribuição "=>" deverá vir o nome de origem da porta do componente e na parte direita da 
-    -- atribuição deve aparecer um dos sinais ("fios") que você definiu anteriormente, ou uma das entradas da entidade single_cycle_processor,
-    -- ou ainda uma das saídas da entidade single_cycle_processor.
-    -- Veja os exemplos de instanciação a seguir:
 
+BEGIN
     instance_memi : memi
     PORT MAP(
-        clk => Clock,
+        clock => clock,
         reset => reset,
-        Endereco => aux_data_path_memi,
-        Instrucao => aux_instrucao
+        address => aux_data_path_memi,
+        instruction => aux_instrucao
     );
 
     instance_memd : memd
     PORT MAP(
-        clk => Clock,
+        clock => clock,
         write_data => aux_data_path_mmed_write_data,
         memd_address => aux_data_path_mmed_memd_address,
         read_data => aux_mmed_dp_memd_data
@@ -135,9 +117,9 @@ BEGIN
         control => aux_controle -- control da via
     );
 
-    instance_via_de_dados_ciclo_unico : single_cycle_data_path
+    instance_single_cycle_data_path : single_cycle_data_path
     PORT MAP(
-        clock => Clock,
+        clock => clock,
         reset => reset,
         control => aux_controle,
         instruction => aux_instrucao,
