@@ -11,20 +11,19 @@ USE ieee.numeric_std.ALL;
 ENTITY single_cycle_data_path IS
     GENERIC (
         -- declare todos os tamanhos dos barramentos (sinais) das portas da sua via_dados_ciclo_unico aqui.
-        DP_CTRL_BUS_WIDTH : NATURAL := 14; -- tamanho do barramento de controle da via de dados (DP) em bits
+        DP_CTRL_BUS_WIDTH : NATURAL := 14; -- tamanho do barramento de control da via de dados (DP) em bits
         DATA_WIDTH : NATURAL := 32; -- tamanho do dado em bits
         PC_WIDTH : NATURAL := 32; -- tamanho da entrada de endereços da MI ou MP em bits (memi.vhd)
         FR_ADDR_WIDTH : NATURAL := 5; -- tamanho da linha de endereços do banco de registradores em bits
-        ULA_CTRL_WIDTH : NATURAL := 4; -- tamanho da linha de controle da ULA
-        INSTR_WIDTH : NATURAL := 32; -- tamanho da instrução em bits
+        ULA_CTRL_WIDTH : NATURAL := 4; -- tamanho da linha de control da ULA
+        INSTR_WIDTH : NATURAL := 32; -- tamanho da instruction em bits
         MD_ADDR_WIDTH : NATURAL := 12 -- tamanho do endereco da memoria de dados em bits
     );
     PORT (
-        -- declare todas as portas da sua via_dados_ciclo_unico aqui.
         clock : IN STD_LOGIC;
         reset : IN STD_LOGIC;
-        controle : IN STD_LOGIC_VECTOR(DP_CTRL_BUS_WIDTH - 1 DOWNTO 0);
-        instrucao : IN STD_LOGIC_VECTOR(INSTR_WIDTH - 1 DOWNTO 0);
+        control : IN STD_LOGIC_VECTOR(DP_CTRL_BUS_WIDTH - 1 DOWNTO 0);
+        instruction : IN STD_LOGIC_VECTOR(INSTR_WIDTH - 1 DOWNTO 0);
         pc_out : OUT STD_LOGIC_VECTOR(PC_WIDTH - 1 DOWNTO 0);
         saida : OUT STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0);
         -- We are the champions:
@@ -37,7 +36,6 @@ END ENTITY single_cycle_data_path;
 
 ARCHITECTURE comportamento OF single_cycle_data_path IS
 
-    -- declare todos os componentes que serão necessários na sua single_cycle_data_path a partir deste comentário
     COMPONENT pc IS
         GENERIC (
             PC_WIDTH : NATURAL := 32
@@ -50,7 +48,7 @@ ARCHITECTURE comportamento OF single_cycle_data_path IS
         );
     END COMPONENT;
 
-    COMPONENT somador IS
+    COMPONENT adder IS
         GENERIC (
             largura_dado : NATURAL := 32
         );
@@ -150,11 +148,8 @@ ARCHITECTURE comportamento OF single_cycle_data_path IS
         );
     END COMPONENT;
 
-    -- Declare todos os sinais auxiliares que serão necessários na sua single_cycle_data_path a partir deste comentário.
-    -- Você só deve declarar sinais auxiliares se estes forem usados como "fios" para interligar componentes.
-    -- Os sinais auxiliares devem ser compatíveis com o mesmo tipo (std_logic, std_logic_vector, etc.) e o mesmo tamanho dos sinais dos portos dos
-    -- componentes onde serão usados.
-    -- Veja os exemplos abaixo:
+    -- SIGNAL_NAME_PATTERN: aux_<src>_<dst>_<dst_port>
+
     SIGNAL aux_read_rs : STD_LOGIC_VECTOR(fr_addr_width - 1 DOWNTO 0);
     SIGNAL aux_read_rt : STD_LOGIC_VECTOR(fr_addr_width - 1 DOWNTO 0);
     SIGNAL aux_write_rd : STD_LOGIC_VECTOR(fr_addr_width - 1 DOWNTO 0);
@@ -165,11 +160,9 @@ ARCHITECTURE comportamento OF single_cycle_data_path IS
 
     SIGNAL aux_ula_ctrl : STD_LOGIC_VECTOR(ula_ctrl_width - 1 DOWNTO 0);
 
-    SIGNAL aux_pc_out : STD_LOGIC_VECTOR(PC_WIDTH - 1 DOWNTO 0);
+    SIGNAL aux_pc_adder0_mmi : STD_LOGIC_VECTOR(PC_WIDTH - 1 DOWNTO 0);
     SIGNAL aux_novo_pc : STD_LOGIC_VECTOR(PC_WIDTH - 1 DOWNTO 0);
 
-    -- We are the champions:
-    -- Our Pattern: aux_<src>_<dst>_<dst_port>
     -- ULA signals
     SIGNAL aux_zero : STD_LOGIC;
 
@@ -232,40 +225,27 @@ ARCHITECTURE comportamento OF single_cycle_data_path IS
 
 BEGIN
 
-    -- A partir deste comentário faça associações necessárias das entradas declaradas na entidade da sua via_dados_ciclo_unico com
-    -- os sinais que você acabou de definir.
-    -- Veja os exemplos abaixo:
-    aux_reg_write <= controle(2); -- RegWrite
-    aux_ula_ctrl <= controle(8 DOWNTO 5); -- AluOp
-    -- aux_we <= controle(4); -- MemWrite
+    aux_reg_write <= control(2); -- RegWrite
+    aux_ula_ctrl <= control(8 DOWNTO 5); -- AluOp
+    -- aux_we <= control(4); -- MemWrite
     saida <= aux_data_outrt;
-    pc_out <= aux_pc_out;
+    pc_out <= aux_pc_adder0_mmi;
 
-    -- We are the champions:
-    aux_ctrl_m0_sele_ent <= controle(1); -- PcSrc
-    aux_ctrl_m1_sele_ent <= controle(0); -- ItController
-    aux_branchNEQ <= controle(11); -- BranchNEQ
-    aux_branchEQ <= controle(10); -- BranchEQ
-    aux_ctrl_m6_sele_ent <= controle(9); -- MemToReg
+    aux_ctrl_m0_sele_ent <= control(1); -- PcSrc
+    aux_ctrl_m1_sele_ent <= control(0); -- ItController
+    aux_branchNEQ <= control(11); -- BranchNEQ
+    aux_branchEQ <= control(10); -- BranchEQ
+    aux_ctrl_m6_sele_ent <= control(9); -- MemToReg
     aux_mmed_m6_dado_ent_1 <= memd_data;
-    aux_mmi_se_entrada_Rs <= instrucao(31 DOWNTO 20);
-    aux_ctrl_m2_sele_ent <= controle(13); -- RegDst
-    aux_ctrl_m3_sele_ent <= controle(3); -- AluSrc
+    aux_mmi_se_entrada_Rs <= instruction(31 DOWNTO 20);
+    aux_ctrl_m2_sele_ent <= control(13); -- RegDst
+    aux_ctrl_m3_sele_ent <= control(3); -- AluSrc
     memd_write_data <= aux_reg_m3_mmed;
-    aux_mmi_reg_ent_Rs_ende <= instrucao(19 DOWNTO 15);
-    aux_mmi_reg_ent_Rt_ende <= instrucao(24 DOWNTO 20);
-    aux_mmi_reg_ent_Rd_ende <= instrucao(11 DOWNTO 7);
+    aux_mmi_reg_ent_Rs_ende <= instruction(19 DOWNTO 15);
+    aux_mmi_reg_ent_Rt_ende <= instruction(24 DOWNTO 20);
+    aux_mmi_reg_ent_Rd_ende <= instruction(11 DOWNTO 7);
 
-    -- A partir deste comentário instancie todos o componentes que serão usados na sua single_cycle_data_path.
-    -- A instanciação do componente deve começar com um nome que você deve atribuir para a referida instancia seguido de : e seguido do nome
-    -- que você atribuiu ao componente.
-    -- Depois segue o port map do referido componente instanciado.
-    -- Para fazer o port map, na parte da esquerda da atribuição "=>" deverá vir o nome de origem da porta do componente e na parte direita da
-    -- ou ainda uma das saídas da entidade single_cycle_data_path.
-    -- atribuição deve aparecer um dos sinais ("fios") que você definiu anteriormente, ou uma das entradas da entidade single_cycle_data_path,
-    -- Veja os exemplos de instanciação a seguir:
-
-    instancia_ula1 : ula
+    instance_ula1 : ula
     PORT MAP(
         entrada_a => aux_reg_alu_entrada_a,
         entrada_b => aux_m3_ula_entrada_b,
@@ -274,7 +254,7 @@ BEGIN
         zero => aux_zero
     );
 
-    instancia_banco_registradores : banco_registradores
+    instance_banco_registradores : banco_registradores
     PORT MAP(
         ent_rs_ende => aux_mmi_reg_ent_Rs_ende,
         ent_rt_ende => aux_mmi_reg_ent_Rt_ende,
@@ -286,36 +266,36 @@ BEGIN
         we => aux_reg_write
     );
 
-    instancia_pc : pc
+    instance_pc : pc
     PORT MAP(
         entrada => aux_m1_pc_entrada,
-        saida => aux_pc_out,
+        saida => aux_pc_adder0_mmi,
         clk => clock,
         -- we => aux_we,
         reset => reset
     );
 
-    instancia_somador0 : somador
+    instance_adder0 : adder
     PORT MAP(
-        entrada_a => aux_pc_out,
+        entrada_a => aux_pc_adder0_mmi,
         entrada_b => STD_LOGIC_VECTOR(aux_plus_four),
         saida => aux_a0_m2_m5_pc4
     );
 
-    instancia_somador1 : somador
+    instance_adder1 : adder
     PORT MAP(
-        entrada_a => aux_pc_out,
+        entrada_a => aux_pc_adder0_mmi,
         entrada_b => aux_m4_a1_entrada_b,
         saida => aux_a1_m5_dado_ent_1
     );
 
-    instancia_sign_extend : extensor
+    instance_sign_extend : extensor
     PORT MAP(
         entrada_Rs => aux_mmi_se_entrada_Rs,
         saida => aux_se_m3_m4_shifter
     );
 
-    -- instancia_epc : hdl_register
+    -- instance_epc : hdl_register
     --     port map(
     --         entrada_dados => aux_m0_m1_dado_sai,
     --         -- WE => std_logic_vector("0001"),
@@ -324,7 +304,7 @@ BEGIN
     --         saida_dados => aux_epc_m0_dado_ent_0
     --     );
 
-    instancia_mux_0 : mux21
+    instance_mux0 : mux21
     PORT MAP(
         dado_ent_0 => aux_epc_m0_dado_ent_0,
         dado_ent_1 => aux_m5_m0_dado_ent_1,
@@ -332,7 +312,7 @@ BEGIN
         dado_sai => aux_m0_m1_dado_sai
     );
 
-    instancia_mux_1 : mux21
+    instance_mux1 : mux21
     PORT MAP(
         dado_ent_0 => aux_m0_m1_dado_sai,
         dado_ent_1 => aux_ia_m1_dado_ent_1,
@@ -340,7 +320,7 @@ BEGIN
         dado_sai => aux_m1_pc_entrada
     );
 
-    instancia_mux_2 : mux21
+    instance_mux2 : mux21
     PORT MAP(
         dado_ent_0 => aux_a0_m2_m5_pc4,
         dado_ent_1 => aux_m6_m2_dado_ent_1,
@@ -348,7 +328,7 @@ BEGIN
         dado_sai => aux_m2_reg_ent_Rd_dado
     );
 
-    instancia_mux_3 : mux21
+    instance_mux3 : mux21
     PORT MAP(
         dado_ent_0 => aux_reg_m3_mmed,
         dado_ent_1 => aux_se_m3_m4_shifter,
@@ -356,7 +336,7 @@ BEGIN
         dado_sai => aux_m3_ula_entrada_b
     );
 
-    instancia_mux_4 : mux21
+    instance_mux4 : mux21
     PORT MAP(
         dado_ent_0 => aux_se_m3_m4_shifter,
         dado_ent_1 => aux_s0_m4_dado_ent_1,
@@ -364,7 +344,7 @@ BEGIN
         dado_sai => aux_m4_a1_entrada_b
     );
 
-    instancia_mux_5 : mux21
+    instance_mux5 : mux21
     PORT MAP(
         dado_ent_0 => aux_a0_m2_m5_pc4,
         dado_ent_1 => aux_a1_m5_dado_ent_1,
@@ -372,7 +352,7 @@ BEGIN
         dado_sai => aux_m5_m0_dado_ent_1
     );
 
-    instancia_mux_6 : mux21
+    instance_mux6 : mux21
     PORT MAP(
         dado_ent_0 => aux_alu_m6_dado_ent_0,
         dado_ent_1 => aux_mmed_m6_dado_ent_1,
@@ -380,7 +360,7 @@ BEGIN
         dado_sai => aux_m6_m2_dado_ent_1
     );
 
-    -- instancia_interrupt_address_registers : interrupt_address_registers
+    -- instance_interrupt_address_registers : interrupt_address_registers
     --     port map(
     --         output => aux_ia_m1_dado_ent_1,
     --         -- ent_rs_ende => aux_read_rs,
@@ -393,7 +373,7 @@ BEGIN
     --         -- we => aux_reg_write
     --     );
 
-    instancia_shifter : two_bits_shifter
+    instance_shifter : two_bits_shifter
     PORT MAP(
         input => aux_se_m3_m4_shifter,
         output => aux_s0_m4_dado_ent_1

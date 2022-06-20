@@ -17,7 +17,7 @@ ghdl -a $COMPONENTS_PATH/extensor.vhd
 ghdl -a $COMPONENTS_PATH/memi.vhd
 ghdl -a $COMPONENTS_PATH/mux21.vhd
 ghdl -a $COMPONENTS_PATH/pc.vhd
-ghdl -a $COMPONENTS_PATH/somador.vhd
+ghdl -a $COMPONENTS_PATH/adder.vhd
 ghdl -a $COMPONENTS_PATH/interrupt_address_registers.vhd
 ghdl -a $COMPONENTS_PATH/single_cycle_control_unit.vhd
 ghdl -a $COMPONENTS_PATH/single_cycle_data_path.vhd

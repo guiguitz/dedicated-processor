@@ -7,7 +7,7 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
 
-ENTITY somador IS
+ENTITY adder IS
     GENERIC (
         largura_dado : NATURAL
     );
@@ -17,9 +17,9 @@ ENTITY somador IS
         entrada_b : IN STD_LOGIC_VECTOR((largura_dado - 1) DOWNTO 0);
         saida : OUT STD_LOGIC_VECTOR((largura_dado - 1) DOWNTO 0)
     );
-END somador;
+END adder;
 
-ARCHITECTURE dataflow OF somador IS
+ARCHITECTURE dataflow OF adder IS
 BEGIN
     saida <= STD_LOGIC_VECTOR(unsigned(entrada_a) + unsigned(entrada_b));
 END dataflow;

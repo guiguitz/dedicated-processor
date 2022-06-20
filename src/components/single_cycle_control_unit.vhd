@@ -2,13 +2,13 @@
 -- Escola de Engenharia
 -- Departamento de Engenharia Eletrônica
 -- Autoria: Professor Ricardo de Oliveira Duarte
--- Unidade de controle ciclo único (look-up table) do processador
+-- Unidade de control ciclo único (look-up table) do processador
 -- puramente combinacional
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
 
--- unidade de controle
+-- unidade de control
 ENTITY single_cycle_control_unit IS
     GENERIC (
         INSTR_WIDTH : NATURAL := 32;
@@ -17,29 +17,23 @@ ENTITY single_cycle_control_unit IS
         ULA_CTRL_WIDTH : NATURAL := 4
     );
     PORT (
-        instrucao : IN STD_LOGIC_VECTOR(INSTR_WIDTH - 1 DOWNTO 0); -- instrução
-        controle : OUT STD_LOGIC_VECTOR(DP_CTRL_BUS_WIDTH - 1 DOWNTO 0) -- controle da via
+        instruction : IN STD_LOGIC_VECTOR(INSTR_WIDTH - 1 DOWNTO 0); -- instruction
+        control : OUT STD_LOGIC_VECTOR(DP_CTRL_BUS_WIDTH - 1 DOWNTO 0) -- control da via
     );
 END single_cycle_control_unit;
 
 ARCHITECTURE beh OF single_cycle_control_unit IS
-    -- As linhas abaixo não produzem erro de compilação no Quartus II, mas no Modelsim (GHDL) produzem.
-    --signal inst_aux : std_logic_vector (INSTR_WIDTH-1 downto 0);            -- instrucao
-    --signal opcode   : std_logic_vector (OPCODE_WIDTH-1 downto 0);           -- opcode
-    --signal ctrl_aux : std_logic_vector (DP_CTRL_BUS_WIDTH-1 downto 0);      -- controle
 
-    SIGNAL inst_aux : STD_LOGIC_VECTOR (31 DOWNTO 0); -- instrucao
+    SIGNAL inst_aux : STD_LOGIC_VECTOR (31 DOWNTO 0); -- instruction
     SIGNAL opcode : STD_LOGIC_VECTOR (6 DOWNTO 0); -- opcode
     SIGNAL funct3 : STD_LOGIC_VECTOR (2 DOWNTO 0); -- funct3
-    SIGNAL ctrl_aux : STD_LOGIC_VECTOR (13 DOWNTO 0); -- controle
+    SIGNAL ctrl_aux : STD_LOGIC_VECTOR (13 DOWNTO 0); -- control
     -- RegDst | Jump | Branch NEQ | Branch EQ | MemToReg | AluOp (4) | MemWrite | AluSrc | RegWrite | PcSrc | ITController
 
     -- NOT USING MemWrite SO FAR.
 
 BEGIN
-    inst_aux <= instrucao;
-    -- A linha abaixo não produz erro de compilação no Quartus II, mas no Modelsim (GHDL) produz.
-    --    opcode <= inst_aux (INSTR_WIDTH-1 downto INSTR_WIDTH-OPCODE_WIDTH);
+    inst_aux <= instruction;
     opcode <= inst_aux (6 DOWNTO 0); -- opcode
     funct3 <= inst_aux (14 DOWNTO 12); -- funct3
 
@@ -66,7 +60,6 @@ BEGIN
                     WHEN OTHERS =>
                         ctrl_aux <= "10000000000010"; -- nop
                 END CASE; -- funct3
-                -- Rtype
 
             WHEN "0010011" => -- ADDI, SLTI, NOP
                 CASE funct3 IS
@@ -82,7 +75,6 @@ BEGIN
                     WHEN OTHERS =>
                         ctrl_aux <= "10000000000010"; -- nop
                 END CASE; -- funct3
-                -- ADDI, SLTI, NOP
 
             WHEN "0000011" => -- LW, LB
                 CASE funct3 IS
@@ -95,7 +87,6 @@ BEGIN
                     WHEN OTHERS =>
                         ctrl_aux <= "10000000000010"; -- nop
                 END CASE; -- funct3
-                -- LW, LB
 
             WHEN "0100011" => -- SW, SB, BEQ, BNE
                 CASE funct3 IS
@@ -114,35 +105,24 @@ BEGIN
                     WHEN OTHERS =>
                         ctrl_aux <= "10000000000010"; -- nop
                 END CASE; -- funct3
-                -- SW, SB, BEQ, BNE
 
             WHEN "0000010" => -- J
-                -- J
                 ctrl_aux <= "11110000000010"; -- X'3C02
-                -- J
 
             WHEN "1101111" => -- JAL
-                -- JAL
                 ctrl_aux <= "00110000000110";
-                -- JAL
 
             WHEN "1100111" => -- JARL
-                -- JARL
                 ctrl_aux <= "00110000001110";
-                -- JARL
 
             WHEN "1110011" => -- ECALL
-                -- ECALL
                 ctrl_aux <= "00000000000001";
-                -- ECALL
 
-                -- None, nop
-            WHEN OTHERS =>
+            WHEN OTHERS => -- None, nop
                 ctrl_aux <= "10000000000010"; -- nop
-                -- None, nop
 
         END CASE; -- opcode
 
     END PROCESS;
-    controle <= ctrl_aux;
+    control <= ctrl_aux;
 END beh;

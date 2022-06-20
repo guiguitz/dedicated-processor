@@ -9,9 +9,9 @@ USE IEEE.std_logic_1164.ALL;
 ENTITY single_cycle_processor IS
     GENERIC (
         DATA_WIDTH : NATURAL := 32; -- tamanho do barramento de dados em bits
-        PROC_INSTR_WIDTH : NATURAL := 32; -- tamanho da instrução do processador em bits
+        PROC_INSTR_WIDTH : NATURAL := 32; -- tamanho da instruction do processador em bits
         PROC_ADDR_WIDTH : NATURAL := 12; -- tamanho do endereço da memória de programa do processador em bits
-        DP_CTRL_BUS_WIDTH : NATURAL := 14 -- tamanho do barramento de controle em bits
+        DP_CTRL_BUS_WIDTH : NATURAL := 14 -- tamanho do barramento de control em bits
     );
     PORT (
         reset : IN STD_LOGIC;
@@ -20,27 +20,23 @@ ENTITY single_cycle_processor IS
 END single_cycle_processor;
 
 ARCHITECTURE comportamento OF single_cycle_processor IS
-    -- declare todos os componentes que serão necessários no seu single_cycle_processor a partir deste comentário
     COMPONENT single_cycle_data_path IS
         GENERIC (
-            -- declare todos os tamanhos dos barramentos (sinais) das portas da sua via_dados_ciclo_unico aqui.
-            DP_CTRL_BUS_WIDTH : NATURAL := 14; -- tamanho do barramento de controle da via de dados (DP) em bits
+            DP_CTRL_BUS_WIDTH : NATURAL := 14; -- tamanho do barramento de control da via de dados (DP) em bits
             DATA_WIDTH : NATURAL := 32; -- tamanho do dado em bits
             PC_WIDTH : NATURAL := 32; -- tamanho da entrada de endereços da MI ou MP em bits (memi.vhd)
             FR_ADDR_WIDTH : NATURAL := 5; -- tamanho da linha de endereços do banco de registradores em bits
-            ULA_CTRL_WIDTH : NATURAL := 4; -- tamanho da linha de controle da ULA
-            INSTR_WIDTH : NATURAL := 32; -- tamanho da instrução em bits
+            ULA_CTRL_WIDTH : NATURAL := 4; -- tamanho da linha de control da ULA
+            INSTR_WIDTH : NATURAL := 32; -- tamanho da instruction em bits
             MD_ADDR_WIDTH : NATURAL := 12 -- tamanho do endereco da memoria de dados em bits
         );
         PORT (
-            -- declare todas as portas da sua via_dados_ciclo_unico aqui.
             clock : IN STD_LOGIC;
             reset : IN STD_LOGIC;
-            controle : IN STD_LOGIC_VECTOR (DP_CTRL_BUS_WIDTH - 1 DOWNTO 0);
-            instrucao : IN STD_LOGIC_VECTOR (INSTR_WIDTH - 1 DOWNTO 0);
+            control : IN STD_LOGIC_VECTOR (DP_CTRL_BUS_WIDTH - 1 DOWNTO 0);
+            instruction : IN STD_LOGIC_VECTOR (INSTR_WIDTH - 1 DOWNTO 0);
             pc_out : OUT STD_LOGIC_VECTOR (PC_WIDTH - 1 DOWNTO 0);
             saida : OUT STD_LOGIC_VECTOR (DATA_WIDTH - 1 DOWNTO 0);
-            -- We are the champions:
             zero : OUT STD_LOGIC;
             memd_data : IN STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0);
             memd_address : OUT STD_LOGIC_VECTOR(MD_ADDR_WIDTH - 1 DOWNTO 0);
@@ -56,15 +52,15 @@ ARCHITECTURE comportamento OF single_cycle_processor IS
             ULA_CTRL_WIDTH : NATURAL := 4
         );
         PORT (
-            instrucao : IN STD_LOGIC_VECTOR(INSTR_WIDTH - 1 DOWNTO 0); -- instrução
-            controle : OUT STD_LOGIC_VECTOR(DP_CTRL_BUS_WIDTH - 1 DOWNTO 0) -- controle da via
+            instruction : IN STD_LOGIC_VECTOR(INSTR_WIDTH - 1 DOWNTO 0); -- instruction
+            control : OUT STD_LOGIC_VECTOR(DP_CTRL_BUS_WIDTH - 1 DOWNTO 0) -- control da via
             -- RegDst | Jump | Branch NEQ | Branch EQ | MemToReg | AluOp (4) | MemWrite | AluSrc | RegWrite | PcSrc | ITController
         );
     END COMPONENT;
 
     COMPONENT memi IS
         GENERIC (
-            INSTR_WIDTH : NATURAL := 32; -- tamanho da instrução em número de bits
+            INSTR_WIDTH : NATURAL := 32; -- tamanho da instruction em número de bits
             MI_ADDR_WIDTH : NATURAL := 32 -- tamanho do endereço da memória de instruções em número de bits
         );
         PORT (
@@ -100,13 +96,13 @@ ARCHITECTURE comportamento OF single_cycle_processor IS
     -- Veja os exemplos abaixo:
     SIGNAL aux_instrucao : STD_LOGIC_VECTOR(PROC_INSTR_WIDTH - 1 DOWNTO 0);
     SIGNAL aux_controle : STD_LOGIC_VECTOR(DP_CTRL_BUS_WIDTH - 1 DOWNTO 0);
-    SIGNAL aux_endereco : STD_LOGIC_VECTOR(PROC_INSTR_WIDTH - 1 DOWNTO 0);
+    SIGNAL aux_data_path_memi : STD_LOGIC_VECTOR(PROC_INSTR_WIDTH - 1 DOWNTO 0);
 
     -- We are the champions:
     -- Signals for memd
     SIGNAL aux_mmed_dp_memd_data : STD_LOGIC_VECTOR(PROC_INSTR_WIDTH - 1 DOWNTO 0);
-    SIGNAL aux_dp_mmed_memd_address : STD_LOGIC_VECTOR(PROC_ADDR_WIDTH - 1 DOWNTO 0);
-    SIGNAL aux_dp_mmed_write_data : STD_LOGIC_VECTOR(PROC_INSTR_WIDTH - 1 DOWNTO 0);
+    SIGNAL aux_data_path_mmed_memd_address : STD_LOGIC_VECTOR(PROC_ADDR_WIDTH - 1 DOWNTO 0);
+    SIGNAL aux_data_path_mmed_write_data : STD_LOGIC_VECTOR(PROC_INSTR_WIDTH - 1 DOWNTO 0);
 BEGIN
     -- A partir deste comentário instancie todos o componentes que serão usados no seu single_cycle_processor.
     -- A instanciação do componente deve começar com um nome que você deve atribuir para a referida instancia seguido de : e seguido do nome
@@ -117,38 +113,37 @@ BEGIN
     -- ou ainda uma das saídas da entidade single_cycle_processor.
     -- Veja os exemplos de instanciação a seguir:
 
-    instancia_memi : memi
+    instance_memi : memi
     PORT MAP(
         clk => Clock,
         reset => reset,
-        Endereco => aux_endereco,
+        Endereco => aux_data_path_memi,
         Instrucao => aux_instrucao
     );
 
-    instancia_memd : memd
+    instance_memd : memd
     PORT MAP(
         clk => Clock,
-        write_data => aux_dp_mmed_write_data,
-        memd_address => aux_dp_mmed_memd_address,
+        write_data => aux_data_path_mmed_write_data,
+        memd_address => aux_data_path_mmed_memd_address,
         read_data => aux_mmed_dp_memd_data
     );
 
-    instancia_single_cycle_control_unit : single_cycle_control_unit
+    instance_single_cycle_control_unit : single_cycle_control_unit
     PORT MAP(
-        instrucao => aux_instrucao, -- instrução
-        controle => aux_controle -- controle da via
+        instruction => aux_instrucao, -- instruction
+        control => aux_controle -- control da via
     );
 
-    instancia_via_de_dados_ciclo_unico : single_cycle_data_path
+    instance_via_de_dados_ciclo_unico : single_cycle_data_path
     PORT MAP(
-        -- declare todas as portas da sua via_dados_ciclo_unico aqui.
         clock => Clock,
         reset => reset,
-        controle => aux_controle,
-        instrucao => aux_instrucao,
+        control => aux_controle,
+        instruction => aux_instrucao,
         memd_data => aux_mmed_dp_memd_data,
-        memd_address => aux_dp_mmed_memd_address,
-        memd_write_data => aux_dp_mmed_write_data,
-        pc_out => aux_endereco
+        memd_address => aux_data_path_mmed_memd_address,
+        memd_write_data => aux_data_path_mmed_write_data,
+        pc_out => aux_data_path_memi
     );
 END comportamento;

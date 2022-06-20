@@ -40,18 +40,18 @@ ARCHITECTURE estimulos OF tb_single_cycle_control_unit IS
             ULA_CTRL_WIDTH : NATURAL := 4
         );
         PORT (
-            instrucao : IN STD_LOGIC_VECTOR(INSTR_WIDTH - 1 DOWNTO 0); -- instrução
-            controle : OUT STD_LOGIC_VECTOR(DP_CTRL_BUS_WIDTH - 1 DOWNTO 0) -- controle da via
+            instruction : IN STD_LOGIC_VECTOR(INSTR_WIDTH - 1 DOWNTO 0); -- instruction
+            control : OUT STD_LOGIC_VECTOR(DP_CTRL_BUS_WIDTH - 1 DOWNTO 0) -- control da via
         );
     END COMPONENT;
 
-    SIGNAL instrucao : STD_LOGIC_VECTOR((32 - 1) DOWNTO 0);
-    SIGNAL controle : STD_LOGIC_VECTOR((14 - 1) DOWNTO 0);
+    SIGNAL instruction : STD_LOGIC_VECTOR((32 - 1) DOWNTO 0);
+    SIGNAL control : STD_LOGIC_VECTOR((14 - 1) DOWNTO 0);
 
     CONSTANT OFFSET : TIME := 5 ns;
 BEGIN
     -- instancia o componente
-    instancia : single_cycle_control_unit PORT MAP(instrucao, controle);
+    instancia : single_cycle_control_unit PORT MAP(instruction, control);
     -- processo para gerar o sinal de clock
     test_ctrl : PROCESS
     BEGIN
@@ -59,39 +59,39 @@ BEGIN
         CLOCK_LOOP : LOOP
 
             -- ADD
-            instrucao <= B"00000000000000000000000000110011";
+            instruction <= B"00000000000000000000000000110011";
             WAIT FOR OFFSET;
 
             -- SLL
-            instrucao <= B"00000000000000000010000000110011";
+            instruction <= B"00000000000000000010000000110011";
             WAIT FOR OFFSET;
 
             -- ADDI
-            instrucao <= B"00000000000000000000000000010011";
+            instruction <= B"00000000000000000000000000010011";
             WAIT FOR OFFSET;
 
             -- NOP
-            instrucao <= B"00000000000000000010000000010011";
+            instruction <= B"00000000000000000010000000010011";
             WAIT FOR OFFSET;
 
             -- LW
-            instrucao <= B"00000000000000000010000000000011";
+            instruction <= B"00000000000000000010000000000011";
             WAIT FOR OFFSET;
 
             -- BNE
-            instrucao <= B"00000000000000000001000000100011";
+            instruction <= B"00000000000000000001000000100011";
             WAIT FOR OFFSET;
 
             -- BEQ
-            instrucao <= B"00000000000000000011000000100011";
+            instruction <= B"00000000000000000011000000100011";
             WAIT FOR OFFSET;
 
             -- SW
-            instrucao <= B"00000000000000000010000000100011";
+            instruction <= B"00000000000000000010000000100011";
             WAIT FOR OFFSET;
 
             -- J
-            instrucao <= B"00000000000000000000000000000010";
+            instruction <= B"00000000000000000000000000000010";
             WAIT FOR OFFSET;
 
         END LOOP CLOCK_LOOP;

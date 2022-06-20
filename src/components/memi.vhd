@@ -9,7 +9,7 @@ USE ieee.numeric_std.ALL;
 
 ENTITY memi IS
     GENERIC (
-        INSTR_WIDTH : NATURAL := 32; -- tamanho da instrução em número de bits
+        INSTR_WIDTH : NATURAL := 32; -- tamanho da instruction em número de bits
         MI_ADDR_WIDTH : NATURAL := 32 -- tamanho do endereço da memória de instruções em número de bits
     );
     PORT (
