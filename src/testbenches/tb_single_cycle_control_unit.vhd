@@ -1,37 +1,14 @@
--- Universidade Federal de Minas Gerais
--- Escola de Engenharia
--- Departamento de Engenharia Eletrônica
--- Autoria: Professor Ricardo de Oliveira Duarte
-
--- Rtype
--- ADD: 00000000000000000 000 00000 0110011
--- SLL: 00000000000000000 010 00000 0110011
-
--- ADDI, NOP
--- ADDI: 00000000000000000 000 00000 0010011
--- NOP: 00000000000000000 010 00000 0010011
-
--- LW
--- LW: 00000000000000000 010 00000 0000011
-
--- SW, BEQ, BNE
--- BNE: 00000000000000000 001 00000 0100011
--- BEQ: 00000000000000000 011 00000 0100011
--- SW: 00000000000000000 010 00000 0100011
-
--- J
--- LW: 00000000000000000 000 00000 0000010
-
-
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
+
+LIBRARY work;
+USE work.binary_instructions_package.ALL;
 
 ENTITY tb_single_cycle_control_unit IS
 END tb_single_cycle_control_unit;
 
 ARCHITECTURE estimulos OF tb_single_cycle_control_unit IS
-    -- Declarar a unidade sob teste
     COMPONENT single_cycle_control_unit
         GENERIC (
             INSTR_WIDTH : NATURAL := 32;
@@ -50,48 +27,47 @@ ARCHITECTURE estimulos OF tb_single_cycle_control_unit IS
 
     CONSTANT OFFSET : TIME := 5 ns;
 BEGIN
-    -- instancia o componente
-    instancia : single_cycle_control_unit PORT MAP(instruction, control);
-    -- processo para gerar o sinal de clock
+    instance_single_cycle_control_unit : single_cycle_control_unit PORT MAP(instruction, control);
+
     test_ctrl : PROCESS
     BEGIN
         WAIT FOR OFFSET;
         CLOCK_LOOP : LOOP
 
             -- ADD
-            instruction <= B"00000000000000000000000000110011";
+            instruction <= ADD_INSTR_BINARY;
             WAIT FOR OFFSET;
 
             -- SLL
-            instruction <= B"00000000000000000010000000110011";
+            instruction <= SLL_INSTR_BINARY;
             WAIT FOR OFFSET;
 
             -- ADDI
-            instruction <= B"00000000000000000000000000010011";
+            instruction <= ADDI_INSTR_BINARY;
             WAIT FOR OFFSET;
 
             -- NOP
-            instruction <= B"00000000000000000010000000010011";
+            instruction <= NOP_INSTR_BINARY;
             WAIT FOR OFFSET;
 
             -- LW
-            instruction <= B"00000000000000000010000000000011";
+            instruction <= LW_INSTR_BINARY;
             WAIT FOR OFFSET;
 
             -- BNE
-            instruction <= B"00000000000000000001000000100011";
+            instruction <= BNE_INSTR_BINARY;
             WAIT FOR OFFSET;
 
             -- BEQ
-            instruction <= B"00000000000000000011000000100011";
+            instruction <= BEQ_INSTR_BINARY;
             WAIT FOR OFFSET;
 
             -- SW
-            instruction <= B"00000000000000000010000000100011";
+            instruction <= SW_INSTR_BINARY;
             WAIT FOR OFFSET;
 
             -- J
-            instruction <= B"00000000000000000000000000000010";
+            instruction <= J_INSTR_BINARY;
             WAIT FOR OFFSET;
 
         END LOOP CLOCK_LOOP;

@@ -2,10 +2,12 @@
 
 COMPONENTS_PATH="../components"
 TESTBENCHES_PATH="../testbenches"
+UTIL_PATH="../util"
 
 ghdl --clean
 
 # Analyzing vhdl files
+ghdl -a $UTIL_PATH/binary_instructions.vhd
 ghdl -a $COMPONENTS_PATH/single_cycle_control_unit.vhd
 ghdl -a $TESTBENCHES_PATH/tb_single_cycle_control_unit.vhd
 
