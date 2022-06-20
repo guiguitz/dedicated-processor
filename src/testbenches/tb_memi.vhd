@@ -13,12 +13,12 @@ ARCHITECTURE estimulos OF tb_memi IS
     COMPONENT memi IS
         GENERIC (
             INSTR_WIDTH : NATURAL := 32;
-            MI_ADDR_WIDTH : NATURAL := 32
+            MI_ADDR_WIDTH : NATURAL := 12
         );
         PORT (
             clock : IN STD_LOGIC;
             reset : IN STD_LOGIC;
-            address : IN STD_LOGIC_VECTOR(MI_ADDR_WIDTH - 1 DOWNTO 0);
+            address : IN STD_LOGIC_VECTOR(INSTR_WIDTH - 1 DOWNTO 0);
             instruction : OUT STD_LOGIC_VECTOR(INSTR_WIDTH - 1 DOWNTO 0);
             write_enable : IN STD_LOGIC;
             write_instruction : IN STD_LOGIC_VECTOR(INSTR_WIDTH - 1 DOWNTO 0)
@@ -38,7 +38,7 @@ ARCHITECTURE estimulos OF tb_memi IS
     CONSTANT MEIO_OFFSET : TIME := 5 ns;
 
 BEGIN
-    instance : memi PORT MAP(clock, reset, aux_address, aux_instruction, aux_write_enable, aux_write_instruction);
+    instance_memi : memi PORT MAP(clock, reset, aux_address, aux_instruction, aux_write_enable, aux_write_instruction);
 
     generate_clock : PROCESS
     BEGIN

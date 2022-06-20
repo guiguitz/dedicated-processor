@@ -12,7 +12,7 @@ ghdl -a $COMPONENTS_PATH/memi.vhd
 ghdl -a $TESTBENCHES_PATH/tb_memi.vhd
 
 # Elaborating SoC
-ghdl -e tb_
+ghdl -e tb_memi
 ghdl -r tb_memi --vcd=tb_memi.vcd --stop-time=1us
 
 # Wave view

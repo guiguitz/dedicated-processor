@@ -58,14 +58,16 @@ ARCHITECTURE comportamento OF single_cycle_processor IS
 
     COMPONENT memi IS
         GENERIC (
-            INSTR_WIDTH : NATURAL := 32; -- tamanho da instruction em número de bits
-            MI_ADDR_WIDTH : NATURAL := 32 -- tamanho do endereço da memória de instruções em número de bits
+            INSTR_WIDTH : NATURAL := 32; -- instruction size in number of bits
+            MI_ADDR_WIDTH : NATURAL := 12 -- instruction memory address size in number of bits
         );
         PORT (
             clock : IN STD_LOGIC;
             reset : IN STD_LOGIC;
-            address : IN STD_LOGIC_VECTOR(MI_ADDR_WIDTH - 1 DOWNTO 0);
-            instruction : OUT STD_LOGIC_VECTOR(INSTR_WIDTH - 1 DOWNTO 0)
+            address : IN STD_LOGIC_VECTOR(INSTR_WIDTH - 1 DOWNTO 0);
+            instruction : OUT STD_LOGIC_VECTOR(INSTR_WIDTH - 1 DOWNTO 0);
+            write_enable : IN STD_LOGIC;
+            write_instruction : IN STD_LOGIC_VECTOR(INSTR_WIDTH - 1 DOWNTO 0)
         );
     END COMPONENT;
 
