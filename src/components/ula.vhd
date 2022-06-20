@@ -85,6 +85,7 @@ BEGIN
             zero <= '0';
             WHEN OTHERS =>
             resultado_ula <= (OTHERS => '0');
+            zero <= '0';
         END CASE;
     END PROCESS;
     saida <= resultado_ula;

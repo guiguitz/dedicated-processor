@@ -37,7 +37,7 @@ BEGIN
     WE <= '1';
     instancia : hdl_register GENERIC MAP(largura_dado => 32) PORT MAP(entrada_dados, WE, clock, reset, saida_dados);
     -- processo para gerar o sinal de clock
-    gera_clock : PROCESS
+    generate_clock : PROCESS
     BEGIN
         WAIT FOR OFFSET;
         CLOCK_LOOP : LOOP
@@ -63,9 +63,9 @@ BEGIN
             WAIT FOR (PERIODO * DUTY_CYCLE);
 
         END LOOP CLOCK_LOOP;
-    END PROCESS gera_clock;
+    END PROCESS generate_clock;
     -- processo para gerar o estimulo de reset
-    gera_reset : PROCESS
+    generate_reset : PROCESS
     BEGIN
         reset <= '1';
         FOR i IN 1 TO 2 LOOP
@@ -73,5 +73,5 @@ BEGIN
         END LOOP;
         reset <= '0';
         WAIT;
-    END PROCESS gera_reset;
+    END PROCESS generate_reset;
 END;

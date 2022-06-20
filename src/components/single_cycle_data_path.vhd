@@ -24,8 +24,6 @@ ENTITY single_cycle_data_path IS
         control : IN STD_LOGIC_VECTOR(DP_CTRL_BUS_WIDTH - 1 DOWNTO 0);
         instruction : IN STD_LOGIC_VECTOR(INSTR_WIDTH - 1 DOWNTO 0);
         pc_out : OUT STD_LOGIC_VECTOR(PC_WIDTH - 1 DOWNTO 0);
-        saida : OUT STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0);
-        zero : OUT STD_LOGIC;
         memd_data : IN STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0); -- mmed 'Read Data'
         memd_address : OUT STD_LOGIC_VECTOR(MD_ADDR_WIDTH - 1 DOWNTO 0); -- address
         memd_write_data : OUT STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0) -- The data to be written in memory
@@ -153,7 +151,6 @@ ARCHITECTURE comportamento OF single_cycle_data_path IS
     SIGNAL aux_write_rd : STD_LOGIC_VECTOR(fr_addr_width - 1 DOWNTO 0);
     SIGNAL aux_data_in : STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0);
     SIGNAL aux_data_outrs : STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0);
-    SIGNAL aux_data_outrt : STD_LOGIC_VECTOR(data_width - 1 DOWNTO 0);
     SIGNAL aux_reg_write : STD_LOGIC;
 
     SIGNAL aux_ula_ctrl : STD_LOGIC_VECTOR(ula_ctrl_width - 1 DOWNTO 0);
@@ -226,7 +223,6 @@ BEGIN
     aux_reg_write <= control(2); -- RegWrite
     aux_ula_ctrl <= control(8 DOWNTO 5); -- AluOp
     -- aux_we <= control(4); -- MemWrite
-    saida <= aux_data_outrt;
     pc_out <= aux_pc_adder0_mmi;
 
     aux_ctrl_m0_sele_ent <= control(1); -- PcSrc

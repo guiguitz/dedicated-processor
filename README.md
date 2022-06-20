@@ -19,12 +19,6 @@
   * [VHDL](https://marketplace.visualstudio.com/items?itemName=puorc.awesome-vhdl)
   * [GHDL Interface](https://marketplace.visualstudio.com/items?itemName=johannesbonk.ghdl-interface)
 
-## Environment Variables
-
-### User Variables
-
-* "C:\Program Files\fpga-toolchain\bin"
-
 ### System Variables
 
 * "C:\msys64\mingw64\bin"

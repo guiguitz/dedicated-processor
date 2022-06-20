@@ -36,8 +36,6 @@ ARCHITECTURE comportamento OF single_cycle_processor IS
             control : IN STD_LOGIC_VECTOR (DP_CTRL_BUS_WIDTH - 1 DOWNTO 0);
             instruction : IN STD_LOGIC_VECTOR (INSTR_WIDTH - 1 DOWNTO 0);
             pc_out : OUT STD_LOGIC_VECTOR (PC_WIDTH - 1 DOWNTO 0);
-            saida : OUT STD_LOGIC_VECTOR (DATA_WIDTH - 1 DOWNTO 0);
-            zero : OUT STD_LOGIC;
             memd_data : IN STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0);
             memd_address : OUT STD_LOGIC_VECTOR(MD_ADDR_WIDTH - 1 DOWNTO 0);
             memd_write_data : OUT STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0)
@@ -85,9 +83,9 @@ ARCHITECTURE comportamento OF single_cycle_processor IS
         );
     END COMPONENT;
 
-    SIGNAL aux_instrucao : STD_LOGIC_VECTOR(PROC_INSTR_WIDTH - 1 DOWNTO 0);
-    SIGNAL aux_controle : STD_LOGIC_VECTOR(DP_CTRL_BUS_WIDTH - 1 DOWNTO 0);
-    SIGNAL aux_data_path_memi : STD_LOGIC_VECTOR(PROC_INSTR_WIDTH - 1 DOWNTO 0);
+    SIGNAL aux_instruction : STD_LOGIC_VECTOR(PROC_INSTR_WIDTH - 1 DOWNTO 0);
+    SIGNAL aux_control : STD_LOGIC_VECTOR(DP_CTRL_BUS_WIDTH - 1 DOWNTO 0);
+    SIGNAL aux_data_path_memi_pc_out : STD_LOGIC_VECTOR(PROC_INSTR_WIDTH - 1 DOWNTO 0);
 
     -- Signals for memd
     SIGNAL aux_mmed_dp_memd_data : STD_LOGIC_VECTOR(PROC_INSTR_WIDTH - 1 DOWNTO 0);
@@ -99,8 +97,8 @@ BEGIN
     PORT MAP(
         clock => clock,
         reset => reset,
-        address => aux_data_path_memi,
-        instruction => aux_instrucao
+        address => aux_data_path_memi_pc_out,
+        instruction => aux_instruction
     );
 
     instance_memd : memd
@@ -113,19 +111,19 @@ BEGIN
 
     instance_single_cycle_control_unit : single_cycle_control_unit
     PORT MAP(
-        instruction => aux_instrucao, -- instruction
-        control => aux_controle -- control da via
+        instruction => aux_instruction, -- instruction
+        control => aux_control -- control da via
     );
 
     instance_single_cycle_data_path : single_cycle_data_path
     PORT MAP(
         clock => clock,
         reset => reset,
-        control => aux_controle,
-        instruction => aux_instrucao,
+        control => aux_control,
+        instruction => aux_instruction,
+        pc_out => aux_data_path_memi_pc_out,
         memd_data => aux_mmed_dp_memd_data,
         memd_address => aux_data_path_mmed_memd_address,
-        memd_write_data => aux_data_path_mmed_write_data,
-        pc_out => aux_data_path_memi
+        memd_write_data => aux_data_path_mmed_write_data
     );
 END comportamento;
