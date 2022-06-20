@@ -1,6 +1,7 @@
 # dedicated-processor
 
 ## General TODO
+- [X] hdl_register testbench
 - [X] ULA testbench
 - [X] Instruction Memory (memi) testbench
 - [ ] Data Memory (memd) testbench

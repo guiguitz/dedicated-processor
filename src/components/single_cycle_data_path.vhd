@@ -96,16 +96,16 @@ ARCHITECTURE comportamento OF single_cycle_data_path IS
         );
     END COMPONENT;
 
-    COMPONENT hdl_register IS
-        GENERIC (
-            largura_dado : NATURAL := 32
-        );
-        PORT (
-            entrada_dados : IN STD_LOGIC_VECTOR((largura_dado - 1) DOWNTO 0);
-            WE, clock, reset : IN STD_LOGIC;
-            saida_dados : OUT STD_LOGIC_VECTOR((largura_dado - 1) DOWNTO 0)
-        );
-    END COMPONENT;
+    -- COMPONENT hdl_register IS
+    --     GENERIC (
+    --         largura_dado : NATURAL := 32
+    --     );
+    --     PORT (
+    --         entrada_dados : IN STD_LOGIC_VECTOR((largura_dado - 1) DOWNTO 0);
+    --         WE, clock, reset : IN STD_LOGIC;
+    --         saida_dados : OUT STD_LOGIC_VECTOR((largura_dado - 1) DOWNTO 0)
+    --     );
+    -- END COMPONENT;
 
     COMPONENT extensor IS
         GENERIC (
