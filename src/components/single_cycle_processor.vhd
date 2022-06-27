@@ -37,7 +37,7 @@ ARCHITECTURE comportamento OF single_cycle_processor IS
             instruction : IN STD_LOGIC_VECTOR (INSTR_WIDTH - 1 DOWNTO 0);
             pc_out : OUT STD_LOGIC_VECTOR (PC_WIDTH - 1 DOWNTO 0);
             memd_data : IN STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0);
-            address : OUT STD_LOGIC_VECTOR(MD_ADDR_WIDTH - 1 DOWNTO 0);
+            memd_address : OUT STD_LOGIC_VECTOR(MD_ADDR_WIDTH - 1 DOWNTO 0);
             memd_write_data : OUT STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0)
         );
     END COMPONENT;
@@ -90,11 +90,15 @@ ARCHITECTURE comportamento OF single_cycle_processor IS
     SIGNAL aux_data_path_memi_pc_out : STD_LOGIC_VECTOR(PROC_INSTR_WIDTH - 1 DOWNTO 0);
 
     -- Signals for memd
-    SIGNAL aux_mmed_dp_memd_data : STD_LOGIC_VECTOR(PROC_INSTR_WIDTH - 1 DOWNTO 0);
-    SIGNAL aux_data_path_mmed_memd_address : STD_LOGIC_VECTOR(PROC_ADDR_WIDTH - 1 DOWNTO 0);
+    SIGNAL aux_memd_write_enable : STD_LOGIC;
+    SIGNAL aux_mmed_data_path_memd_data : STD_LOGIC_VECTOR(PROC_INSTR_WIDTH - 1 DOWNTO 0);
+    SIGNAL aux_data_path_mmed_address : STD_LOGIC_VECTOR(PROC_ADDR_WIDTH - 1 DOWNTO 0);
     SIGNAL aux_data_path_mmed_write_data : STD_LOGIC_VECTOR(PROC_INSTR_WIDTH - 1 DOWNTO 0);
 
 BEGIN
+
+    aux_memd_write_enable <= control(4); -- MemWrite
+
     instance_memi : memi
     PORT MAP(
         clock => clock,
@@ -107,14 +111,15 @@ BEGIN
     PORT MAP(
         clock => clock,
         write_data => aux_data_path_mmed_write_data,
-        address => aux_data_path_mmed_memd_address,
-        read_data => aux_mmed_dp_memd_data
+        address => aux_data_path_memd_address,
+        read_data => aux_mmed_data_path_memd_data,
+        write_enable => aux_memd_write_enable
     );
 
     instance_single_cycle_control_unit : single_cycle_control_unit
     PORT MAP(
         instruction => aux_instruction, -- instruction
-        control => aux_control -- control da via
+        control => aux_control
     );
 
     instance_single_cycle_data_path : single_cycle_data_path
@@ -124,8 +129,8 @@ BEGIN
         control => aux_control,
         instruction => aux_instruction,
         pc_out => aux_data_path_memi_pc_out,
-        memd_data => aux_mmed_dp_memd_data,
-        address => aux_data_path_mmed_memd_address,
+        memd_data => aux_mmed_data_path_memd_data,
+        memd_address => aux_data_path_memd_address,
         memd_write_data => aux_data_path_mmed_write_data
     );
 END comportamento;

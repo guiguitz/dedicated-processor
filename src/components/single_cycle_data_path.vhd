@@ -24,9 +24,9 @@ ENTITY single_cycle_data_path IS
         control : IN STD_LOGIC_VECTOR(DP_CTRL_BUS_WIDTH - 1 DOWNTO 0);
         instruction : IN STD_LOGIC_VECTOR(INSTR_WIDTH - 1 DOWNTO 0);
         pc_out : OUT STD_LOGIC_VECTOR(PC_WIDTH - 1 DOWNTO 0);
-        memd_data : IN STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0); -- mmed 'Read Data'
-        address : OUT STD_LOGIC_VECTOR(MD_ADDR_WIDTH - 1 DOWNTO 0); -- address
-        memd_write_data : OUT STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0) -- The data to be written in memory
+        memd_data : IN STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0); -- memd 'Read Data'
+        memd_address : OUT STD_LOGIC_VECTOR(MD_ADDR_WIDTH - 1 DOWNTO 0); -- memd 'Address'
+        memd_write_data : OUT STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0) -- memd 'Write Data'
     );
 END ENTITY single_cycle_data_path;
 
@@ -223,7 +223,6 @@ BEGIN
     aux_reg_write <= control(2); -- RegWrite
     aux_ula_ctrl <= control(8 DOWNTO 5); -- AluOp
     aux_ctrl_m4_sele_ent <= control(12); -- Jump
-    -- aux_we <= control(4); -- MemWrite
     pc_out <= aux_pc_adder0_mmi;
 
     aux_ctrl_m0_sele_ent <= control(1); -- PcSrc
@@ -236,6 +235,7 @@ BEGIN
     aux_ctrl_m2_sele_ent <= control(13); -- RegDst
     aux_ctrl_m3_sele_ent <= control(3); -- AluSrc
     memd_write_data <= aux_reg_m3_mmed;
+    memd_address <= aux_alu_m6_dado_ent_0;
     aux_mmi_reg_ent_Rs_ende <= instruction(19 DOWNTO 15);
     aux_mmi_reg_ent_Rt_ende <= instruction(24 DOWNTO 20);
     aux_mmi_reg_ent_Rd_ende <= instruction(11 DOWNTO 7);
