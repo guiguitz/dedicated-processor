@@ -55,10 +55,12 @@ sh run_tb_single_cycle_processor.sh; # Single Cycle
 
 ## Dependencies
 
-- [MSYS2 64 bit](https://www.msys2.org/)
+- [msys2-x86_64-20220603](https://www.msys2.org)
   - gcc (Rev8, Built by MSYS2 project) 11.2.0
   - GNU gdb (GDB) 11.2
   - [Python 3.9.12](https://packages.msys2.org/package/mingw-w64-x86_64-python)
+- [GHDL v0.37](https://github.com/ghdl/ghdl/releases/download/v0.37/ghdl-0.37-mingw32-mcode.zip)
+- [gtkwave-3.3.100](https://sourceforge.net/projects/gtkwave/files/gtkwave-3.3.100-bin-win32)
 - [Yosys nightly-20211006](https://github.com/YosysHQ/fpga-toolchain/releases)
 
 ## Additional Softwares
