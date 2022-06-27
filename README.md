@@ -1,20 +1,20 @@
 # dedicated-processor
 
 ## General TODO
-- [X] hdl_register testbench
-- [X] ULA testbench
-- [X] Instruction Memory (memi) testbench
-- [X] Data Memory (memd) testbench
 - [ ] Add seven-segment LEDs to improve the debuggability
 - [ ] Translate all RTL code to English
 ## Single Cycle Processor development
 - [X] Draw DataPath
-- [X] Implement the RTL for Single Cycle DataPath (`single_cycle_data_path.vhd`)
-- [X] Implement the RTL for Single Cycle Control Unit (`single_cycle_control_unit.vhd`)
-- [X] Implement the RTL for Single Cycle processor (`single_cycle_processor.vhd`)
-- [ ] Implement the DataPath testbench (`tb_single_cycle_data_path.vhd`)
-- [X] Implement the Control Unit testbench (`tb_single_cycle_control_unit.vhd`)
-- [X] Implement the Processor testbench (`tb_single_cycle_processor.vhd`)
+- [X] Implement the RTL for Single Cycle DataPath (`Src/Components/single_cycle_data_path.vhd`)
+- [X] Implement the RTL for Single Cycle Control Unit (`Src/Components/single_cycle_control_unit.vhd`)
+- [X] Implement the RTL for Single Cycle processor (`Src/Components/single_cycle_processor.vhd`)
+- [X] hdl_register testbench (`Src/Testbenches/tb_hdl_register.vhd`)
+- [X] ULA testbench (`Src/Testbenches/tb_ula.vhd`)
+- [X] Instruction Memory (memi) testbench (`Src/Testbenches/tb_memi.vhd`)
+- [X] Data Memory (memd) testbench (`Src/Testbenches/tb_memd.vhd`)
+- [ ] Implement the DataPath testbench (`Src/Testbenches/tb_single_cycle_data_path.vhd`)
+- [X] Implement the Control Unit testbench (`Src/Testbenches/tb_single_cycle_control_unit.vhd`)
+- [X] Implement the Processor testbench (`Src/Testbenches/tb_single_cycle_processor.vhd`)
 - [X] Simulations with dummy instructions
 - [ ] Simulations with R-type instructions
 - [ ] Simulations with I-type instructions
