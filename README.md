@@ -7,7 +7,7 @@
 - [X] Data Memory (memd) testbench
 - [ ] Add seven-segment LEDs to improve the debuggability
 - [ ] Translate all RTL code to English
-## Single Cycle TODO
+## Single Cycle Processor development
 - [X] Draw DataPath
 - [X] Implement the RTL for Single Cycle DataPath (`single_cycle_data_path.vhd`)
 - [X] Implement the RTL for Single Cycle Control Unit (`single_cycle_control_unit.vhd`)
@@ -22,27 +22,35 @@
 - [ ] Test on FPGA
 - [ ] Update the DataPath adding the correct signal/component names
 
-## Pipeline TODO
-- [ ] Draw DataPath
+## Peripherals development
+- [ ] Design, implementation and synthesis of the interrupt controller
+- [ ] Simulation and integration of the interrupt controller with the CPU
+- [ ] CPU test with interrupt controller in FPGA kit
+- [ ] Design, implementation and synthesis of the GPIOs interface
+- [ ] Simulation and integration of the GPIOs interface with the CPU and memory
+- [ ] CPU Test with the GPIOs Interface in the FPGA Kit
+- [ ] Design, implementation of programmable TIMERs
+- [ ] Simulation and integration of programmable TIMERs with the CPU and memory
+- [ ] CPU Test of Programmable TIMERs in FPGA Kit
+- [ ] UART design, implementation and synthesis
+- [ ] UART simulation and integration with CPU and memory
+- [ ] CPU Test with UART in FPGA Kit
 
 ## How to run
 ### DataPath testbenches
 ```bash
-cd src/work
+cd Src/Work
 sh run_tb_single_cycle_data_path.sh; # Single Cycle
-sh run_tb_pipeline_data_path.sh; # Pipeline
 ```
 ### Control Unit testbenches
 ```bash
-cd src/work
+cd Src/Work
 sh run_tb_single_cycle_control_unit.sh; # Single Cycle
-sh run_tb_pipeline_control_unit.sh; # Pipeline
 ```
 ### Processor testbenches
 ```bash
-cd src/work
+cd Src/Work
 sh run_tb_single_cycle_processor.sh; # Single Cycle
-sh run_tb_pipeline_processor.sh; # Pipeline
 ```
 
 ## Dependencies
