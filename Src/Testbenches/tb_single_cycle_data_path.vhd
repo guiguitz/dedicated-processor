@@ -43,7 +43,6 @@ ARCHITECTURE estimulos OF tb_single_cycle_data_path IS
     CONSTANT PERIOD : TIME := 20 ns;
     CONSTANT DUTY_CYCLE : real := 0.5;
     CONSTANT OFFSET : TIME := 5 ns;
-    CONSTANT HALF_OFFSET : TIME := 5 ns;
 BEGIN
     instance_single_cycle_data_path : single_cycle_data_path PORT MAP(aux_clock, aux_reset, aux_control, aux_instruction, aux_pc_out, aux_memd_data, aux_memd_address, aux_memd_write_data);
 
@@ -68,53 +67,55 @@ BEGIN
 
     test_ctrl : PROCESS
     BEGIN
-        WAIT FOR OFFSET;
         CLOCK_LOOP : LOOP
+
+            WAIT FOR OFFSET;
+            WAIT FOR PERIOD;
 
             -- ADD
             aux_control <= ADD_CONTROL_UNIT_OUTPUT;
             aux_instruction <= ADD_INSTR_BINARY;
-            WAIT FOR OFFSET;
-
-            -- SLL
-            aux_control <= SLL_CONTROL_UNIT_OUTPUT;
-            aux_instruction <= SLL_INSTR_BINARY;
-            WAIT FOR OFFSET;
+            WAIT FOR PERIOD;
 
             -- ADDI
             aux_control <= ADDI_CONTROL_UNIT_OUTPUT;
             aux_instruction <= ADDI_INSTR_BINARY;
-            WAIT FOR OFFSET;
+            WAIT FOR PERIOD;
+
+            -- SLL
+            aux_control <= SLL_CONTROL_UNIT_OUTPUT;
+            aux_instruction <= SLL_INSTR_BINARY;
+            WAIT FOR PERIOD;
 
             -- NOP
             aux_control <= NOP_CONTROL_UNIT_OUTPUT;
             aux_instruction <= NOP_INSTR_BINARY;
-            WAIT FOR OFFSET;
+            WAIT FOR PERIOD;
 
             -- LW
             aux_control <= LW_CONTROL_UNIT_OUTPUT;
             aux_instruction <= LW_INSTR_BINARY;
-            WAIT FOR OFFSET;
+            WAIT FOR PERIOD;
 
             -- BNE
             aux_control <= BNE_CONTROL_UNIT_OUTPUT;
             aux_instruction <= BNE_INSTR_BINARY;
-            WAIT FOR OFFSET;
+            WAIT FOR PERIOD;
 
             -- BEQ
             aux_control <= BEQ_CONTROL_UNIT_OUTPUT;
             aux_instruction <= BEQ_INSTR_BINARY;
-            WAIT FOR OFFSET;
+            WAIT FOR PERIOD;
 
             -- SW
             aux_control <= SW_CONTROL_UNIT_OUTPUT;
             aux_instruction <= SW_INSTR_BINARY;
-            WAIT FOR OFFSET;
+            WAIT FOR PERIOD;
 
             -- J
             aux_control <= J_CONTROL_UNIT_OUTPUT;
             aux_instruction <= J_INSTR_BINARY;
-            WAIT FOR OFFSET;
+            WAIT FOR PERIOD;
 
         END LOOP CLOCK_LOOP;
     END PROCESS test_ctrl;

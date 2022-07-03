@@ -6,7 +6,7 @@ TESTBENCHES_PATH="../testbenches"
 ghdl --clean
 
 # Analyzing vhdl files
-ghdl -a $COMPONENTS_PATH/banco_registradores.vhd
+ghdl -a $COMPONENTS_PATH/register_file.vhd
 ghdl -a $COMPONENTS_PATH/two_bits_shifter.vhd
 ghdl -a $COMPONENTS_PATH/memd.vhd
 ghdl -a $COMPONENTS_PATH/multiplicador.vhd

@@ -12,7 +12,7 @@ ghdl -a $UTIL_PATH/control_unit_outputs.vhd
 
 ghdl -a $COMPONENTS_PATH/pc.vhd
 ghdl -a $COMPONENTS_PATH/adder.vhd
-ghdl -a $COMPONENTS_PATH/banco_registradores.vhd
+ghdl -a $COMPONENTS_PATH/register_file.vhd
 ghdl -a $COMPONENTS_PATH/alu.vhd
 ghdl -a $COMPONENTS_PATH/mux21.vhd
 ghdl -a $COMPONENTS_PATH/extensor.vhd

@@ -47,20 +47,21 @@ ARCHITECTURE comportamento OF single_cycle_data_path IS
         );
     END COMPONENT;
 
-    COMPONENT banco_registradores IS
+    COMPONENT register_file IS
         GENERIC (
-            largura_dado : NATURAL := 32;
-            largura_ende : NATURAL := 5
+            DATA_WIDTH : NATURAL := 32;
+            ADDRESS_WIDTH : NATURAL := 5
         );
         PORT (
-            ent_rs_ende : IN STD_LOGIC_VECTOR((largura_ende - 1) DOWNTO 0);
-            ent_rt_ende : IN STD_LOGIC_VECTOR((largura_ende - 1) DOWNTO 0);
-            ent_rd_ende : IN STD_LOGIC_VECTOR((largura_ende - 1) DOWNTO 0);
-            ent_rd_dado : IN STD_LOGIC_VECTOR((largura_dado - 1) DOWNTO 0);
-            sai_rs_dado : OUT STD_LOGIC_VECTOR((largura_dado - 1) DOWNTO 0);
-            sai_rt_dado : OUT STD_LOGIC_VECTOR((largura_dado - 1) DOWNTO 0);
             clock : IN STD_LOGIC;
-            we : IN STD_LOGIC
+            reset : IN STD_LOGIC;
+            rs1 : IN STD_LOGIC_VECTOR((ADDRESS_WIDTH - 1) DOWNTO 0); -- rs1, Read Register 1, Instruction [19-15]
+            rs2 : IN STD_LOGIC_VECTOR((ADDRESS_WIDTH - 1) DOWNTO 0); -- rs2, Read Register 2, Instruction [24-20]
+            rd : IN STD_LOGIC_VECTOR((ADDRESS_WIDTH - 1) DOWNTO 0); -- rd, Write Register, Instruction [11-7], Address to access during writing
+            write_data : IN STD_LOGIC_VECTOR((DATA_WIDTH - 1) DOWNTO 0); -- Write Data, Data to write
+            out_rs1 : OUT STD_LOGIC_VECTOR((DATA_WIDTH - 1) DOWNTO 0); -- Read Data 1
+            out_rs2 : OUT STD_LOGIC_VECTOR((DATA_WIDTH - 1) DOWNTO 0); -- Read Data 2
+            we : IN STD_LOGIC -- RegWrite
         );
     END COMPONENT;
 
@@ -112,9 +113,6 @@ ARCHITECTURE comportamento OF single_cycle_data_path IS
     END COMPONENT;
 
     -- SIGNAL_NAME_PATTERN: aux_<src>_<dst>_<dst_port>
-    -- Register
-    SIGNAL aux_register_write : STD_LOGIC;
-
     -- ALU signals
     SIGNAL aux_alu_op : STD_LOGIC_VECTOR(3 DOWNTO 0);
     SIGNAL aux_zero : STD_LOGIC;
@@ -131,7 +129,7 @@ ARCHITECTURE comportamento OF single_cycle_data_path IS
     SIGNAL aux_control_m1_sele_ent : STD_LOGIC;
 
     -- mux2 signals:
-    SIGNAL aux_m2_register_ent_Rd_dado : STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0);
+    SIGNAL aux_m2_register_write_data : STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0);
     SIGNAL aux_control_m2_sele_ent : STD_LOGIC;
 
     -- mux3 signals:
@@ -172,10 +170,11 @@ ARCHITECTURE comportamento OF single_cycle_data_path IS
     -- Alu
     SIGNAL aux_register_alu_entrada_a : STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0);
 
-    -- Register
-    SIGNAL aux_memi_register_ent_Rs_ende : STD_LOGIC_VECTOR(19 DOWNTO 15);
-    SIGNAL aux_memi_register_ent_Rt_ende : STD_LOGIC_VECTOR(24 DOWNTO 20);
-    SIGNAL aux_memi_register_ent_Rd_ende : STD_LOGIC_VECTOR(11 DOWNTO 7);
+    -- Register File
+    SIGNAL aux_register_write : STD_LOGIC;
+    SIGNAL aux_memi_register_rs1 : STD_LOGIC_VECTOR(19 DOWNTO 15);
+    SIGNAL aux_memi_register_rs2 : STD_LOGIC_VECTOR(24 DOWNTO 20);
+    SIGNAL aux_memi_register_rd : STD_LOGIC_VECTOR(11 DOWNTO 7);
 
 BEGIN
 
@@ -195,9 +194,9 @@ BEGIN
     aux_control_m3_sele_ent <= control(3); -- AluSrc
     memd_write_data <= aux_register_m3_memd;
     memd_address <= aux_alu_memd_m6_dado_ent_0;
-    aux_memi_register_ent_Rs_ende <= instruction(19 DOWNTO 15);
-    aux_memi_register_ent_Rt_ende <= instruction(24 DOWNTO 20);
-    aux_memi_register_ent_Rd_ende <= instruction(11 DOWNTO 7);
+    aux_memi_register_rs1 <= instruction(19 DOWNTO 15);
+    aux_memi_register_rs2 <= instruction(24 DOWNTO 20);
+    aux_memi_register_rd <= instruction(11 DOWNTO 7);
 
     instance_alu0 : alu
     PORT MAP(
@@ -208,15 +207,16 @@ BEGIN
         zero => aux_zero
     );
 
-    instance_banco_registradores : banco_registradores
+    instance_register_file : register_file
     PORT MAP(
-        ent_rs_ende => aux_memi_register_ent_Rs_ende,
-        ent_rt_ende => aux_memi_register_ent_Rt_ende,
-        ent_rd_ende => aux_memi_register_ent_Rd_ende,
-        ent_rd_dado => aux_m2_register_ent_Rd_dado,
-        sai_rs_dado => aux_register_alu_entrada_a,
-        sai_rt_dado => aux_register_m3_memd,
         clock => clock,
+        reset => reset,
+        rs1 => aux_memi_register_rs1,
+        rs2 => aux_memi_register_rs2,
+        rd => aux_memi_register_rd,
+        write_data => aux_m2_register_write_data,
+        out_rs1 => aux_register_alu_entrada_a,
+        out_rs2 => aux_register_m3_memd,
         we => aux_register_write
     );
 
@@ -270,7 +270,7 @@ BEGIN
         dado_ent_0 => aux_adder0_m2_m5,
         dado_ent_1 => aux_m6_m2_dado_ent_1,
         sele_ent => aux_control_m2_sele_ent,
-        dado_sai => aux_m2_register_ent_Rd_dado
+        dado_sai => aux_m2_register_write_data
     );
 
     instance_mux3 : mux21

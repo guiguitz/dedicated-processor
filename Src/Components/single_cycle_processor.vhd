@@ -1,8 +1,3 @@
--- Universidade Federal de Minas Gerais
--- Escola de Engenharia
--- Departamento de Engenharia Eletrônica
--- Autoria: Professor Ricardo de Oliveira Duarte
-
 LIBRARY IEEE;
 USE IEEE.std_logic_1164.ALL;
 
@@ -89,9 +84,9 @@ ARCHITECTURE comportamento OF single_cycle_processor IS
 
     -- Signals for memd
     SIGNAL aux_memd_write_enable : STD_LOGIC;
-    SIGNAL aux_mmed_data_path_memd_data : STD_LOGIC_VECTOR(PROC_INSTR_WIDTH - 1 DOWNTO 0);
+    SIGNAL aux_memd_data_path_memd_data : STD_LOGIC_VECTOR(PROC_INSTR_WIDTH - 1 DOWNTO 0);
     SIGNAL aux_data_path_memd_address : STD_LOGIC_VECTOR(PROC_ADDR_WIDTH - 1 DOWNTO 0);
-    SIGNAL aux_data_path_mmed_write_data : STD_LOGIC_VECTOR(PROC_INSTR_WIDTH - 1 DOWNTO 0);
+    SIGNAL aux_data_path_memd_write_data : STD_LOGIC_VECTOR(PROC_INSTR_WIDTH - 1 DOWNTO 0);
 
 BEGIN
 
@@ -108,9 +103,9 @@ BEGIN
     instance_memd : memd
     PORT MAP(
         clock => clock,
-        write_data => aux_data_path_mmed_write_data,
+        write_data => aux_data_path_memd_write_data,
         address => aux_data_path_memd_address,
-        read_data => aux_mmed_data_path_memd_data,
+        read_data => aux_memd_data_path_memd_data,
         write_enable => aux_memd_write_enable
     );
 
@@ -127,8 +122,8 @@ BEGIN
         control => aux_control,
         instruction => aux_instruction,
         pc_out => aux_data_path_memi_pc_out,
-        memd_data => aux_mmed_data_path_memd_data,
+        memd_data => aux_memd_data_path_memd_data,
         memd_address => aux_data_path_memd_address,
-        memd_write_data => aux_data_path_mmed_write_data
+        memd_write_data => aux_data_path_memd_write_data
     );
 END comportamento;
