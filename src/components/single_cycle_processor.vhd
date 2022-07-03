@@ -22,13 +22,11 @@ END single_cycle_processor;
 ARCHITECTURE comportamento OF single_cycle_processor IS
     COMPONENT single_cycle_data_path IS
         GENERIC (
-            DP_CTRL_BUS_WIDTH : NATURAL := 14; -- tamanho do barramento de control da via de dados (DP) em bits
-            DATA_WIDTH : NATURAL := 32; -- tamanho do dado em bits
-            PC_WIDTH : NATURAL := 32; -- tamanho da entrada de endereços da MI ou MP em bits (memi.vhd)
-            FR_ADDR_WIDTH : NATURAL := 5; -- tamanho da linha de endereços do banco de registradores em bits
-            ULA_CTRL_WIDTH : NATURAL := 4; -- tamanho da linha de control da ULA
-            INSTR_WIDTH : NATURAL := 32; -- tamanho da instruction em bits
-            MD_ADDR_WIDTH : NATURAL := 12 -- tamanho do endereco da memoria de dados em bits
+            DP_CTRL_BUS_WIDTH : NATURAL := 14; -- datapath (DP) control bus size in bits
+            DATA_WIDTH : NATURAL := 32; -- data size in bits
+            PC_WIDTH : NATURAL := 32; -- pc size in bits
+            INSTR_WIDTH : NATURAL := 32; -- instruction size in bits
+            MD_ADDR_WIDTH : NATURAL := 12 -- size of data memory address in bits
         );
         PORT (
             clock : IN STD_LOGIC;
@@ -92,12 +90,12 @@ ARCHITECTURE comportamento OF single_cycle_processor IS
     -- Signals for memd
     SIGNAL aux_memd_write_enable : STD_LOGIC;
     SIGNAL aux_mmed_data_path_memd_data : STD_LOGIC_VECTOR(PROC_INSTR_WIDTH - 1 DOWNTO 0);
-    SIGNAL aux_data_path_mmed_address : STD_LOGIC_VECTOR(PROC_ADDR_WIDTH - 1 DOWNTO 0);
+    SIGNAL aux_data_path_memd_address : STD_LOGIC_VECTOR(PROC_ADDR_WIDTH - 1 DOWNTO 0);
     SIGNAL aux_data_path_mmed_write_data : STD_LOGIC_VECTOR(PROC_INSTR_WIDTH - 1 DOWNTO 0);
 
 BEGIN
 
-    aux_memd_write_enable <= control(4); -- MemWrite
+    aux_memd_write_enable <= single_cycle_data_path.control(4); -- MemWrite
 
     instance_memi : memi
     PORT MAP(

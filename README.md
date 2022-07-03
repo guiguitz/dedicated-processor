@@ -71,6 +71,7 @@ sh run_tb_single_cycle_processor.sh; # Single Cycle
 - [Git](https://git-scm.com/downloads)
 - [VSCode](https://code.visualstudio.com/download)
   - [TerosHDL v2.0.7](https://terostechnology.github.io/terosHDLdoc/about/installing.html)
+    - [GNU make v3.81](http://gnuwin32.sourceforge.net/packages/make.htm)
   - [VHDL Formatter](https://marketplace.visualstudio.com/items?itemName=Vinrobot.vhdl-formatter)
   - [istyle-verilog-formatter v1.23](https://github.com/thomasrussellmurphy/istyle-verilog-formatter/releases/tag/v1.23)
   - [VHDL](https://marketplace.visualstudio.com/items?itemName=puorc.awesome-vhdl)

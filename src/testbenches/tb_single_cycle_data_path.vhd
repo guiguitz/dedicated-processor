@@ -6,20 +6,18 @@ LIBRARY work;
 USE work.binary_instructions_package.ALL;
 USE work.control_unit_outputs_package.ALL;
 
-ENTITY tb_single_cycle_control_unit IS
-END tb_single_cycle_control_unit;
+ENTITY tb_single_cycle_data_path IS
+END tb_single_cycle_data_path;
 
-ARCHITECTURE estimulos OF tb_single_cycle_control_unit IS
+ARCHITECTURE estimulos OF tb_single_cycle_data_path IS
 
     COMPONENT single_cycle_data_path IS
         GENERIC (
-            DP_CTRL_BUS_WIDTH : NATURAL := 14; -- tamanho do barramento de control da via de dados (DP) em bits
-            DATA_WIDTH : NATURAL := 32; -- tamanho do dado em bits
-            PC_WIDTH : NATURAL := 32; -- tamanho da entrada de endereços da MI ou MP em bits (memi.vhd)
-            FR_ADDR_WIDTH : NATURAL := 5; -- tamanho da linha de endereços do banco de registradores em bits
-            ULA_CTRL_WIDTH : NATURAL := 4; -- tamanho da linha de control da ULA
-            INSTR_WIDTH : NATURAL := 32; -- tamanho da instruction em bits
-            MD_ADDR_WIDTH : NATURAL := 12 -- tamanho do endereco da memoria de dados em bits
+            DP_CTRL_BUS_WIDTH : NATURAL := 14; -- DataPath (DP) control bus size in bits
+            DATA_WIDTH : NATURAL := 32; -- data size in bits
+            PC_WIDTH : NATURAL := 32; -- pc size in bits
+            INSTR_WIDTH : NATURAL := 32; -- instruction size in bits
+            MD_ADDR_WIDTH : NATURAL := 12 -- size of data memory address in bits
         );
         PORT (
             clock : IN STD_LOGIC;

@@ -1,22 +1,14 @@
--- Universidade Federal de Minas Gerais
--- Escola de Engenharia
--- Departamento de Engenharia Eletrônica
--- Autoria: Professor Ricardo de Oliveira Duarte
--- Via de dados do single_cycle_processor
-
 LIBRARY IEEE;
 USE IEEE.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
 
 ENTITY single_cycle_data_path IS
     GENERIC (
-        DP_CTRL_BUS_WIDTH : NATURAL := 14; -- tamanho do barramento de control da via de dados (DP) em bits
-        DATA_WIDTH : NATURAL := 32; -- tamanho do dado em bits
-        PC_WIDTH : NATURAL := 32; -- tamanho da entrada de endereços da MI ou MP em bits (memi.vhd)
-        FR_ADDR_WIDTH : NATURAL := 5; -- tamanho da linha de endereços do banco de registradores em bits
-        ULA_CTRL_WIDTH : NATURAL := 4; -- tamanho da linha de control da ULA
-        INSTR_WIDTH : NATURAL := 32; -- tamanho da instruction em bits
-        MD_ADDR_WIDTH : NATURAL := 12 -- tamanho do endereco da memoria de dados em bits
+        DP_CTRL_BUS_WIDTH : NATURAL; -- DataPath (DP) control bus size in bits
+        DATA_WIDTH : NATURAL; -- data size in bits
+        PC_WIDTH : NATURAL; -- pc size in bits
+        INSTR_WIDTH : NATURAL; -- instruction size in bits
+        MD_ADDR_WIDTH : NATURAL -- size of data memory address in bits
     );
     PORT (
         clock : IN STD_LOGIC;
