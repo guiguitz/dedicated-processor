@@ -64,7 +64,7 @@ ARCHITECTURE comportamento OF single_cycle_data_path IS
         );
     END COMPONENT;
 
-    COMPONENT ula IS
+    COMPONENT alu IS
         GENERIC (
             largura_dado : NATURAL := 32
         );
@@ -199,7 +199,7 @@ BEGIN
     aux_memi_register_ent_Rt_ende <= instruction(24 DOWNTO 20);
     aux_memi_register_ent_Rd_ende <= instruction(11 DOWNTO 7);
 
-    instance_alu0 : ula
+    instance_alu0 : alu
     PORT MAP(
         entrada_a => aux_register_alu_entrada_a,
         entrada_b => aux_m3_ula_entrada_b,
