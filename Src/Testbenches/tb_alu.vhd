@@ -13,7 +13,7 @@ END tb_ula;
 
 ARCHITECTURE estimulos OF tb_ula IS
     -- Declarar a unidade sob teste
-    COMPONENT ula
+    COMPONENT alu
         GENERIC (
             largura_dado : NATURAL := 32
         );
@@ -36,7 +36,7 @@ ARCHITECTURE estimulos OF tb_ula IS
     CONSTANT OFFSET : TIME := 5 ns;
 BEGIN
     -- instancia o componente
-    instancia : ula GENERIC MAP(largura_dado => 32) PORT MAP(entrada_a, entrada_b, seletor, saida, zero);
+    instancia : alu GENERIC MAP(largura_dado => 32) PORT MAP(entrada_a, entrada_b, seletor, saida, zero);
     -- processo para gerar o sinal de clock
     test_ula : PROCESS
     BEGIN

@@ -6,7 +6,7 @@ TESTBENCHES_PATH="../testbenches"
 ghdl --clean
 
 # Analyzing vhdl files
-ghdl -a $COMPONENTS_PATH/ula.vhd
+ghdl -a $COMPONENTS_PATH/alu.vhd
 ghdl -a $TESTBENCHES_PATH/tb_ula.vhd
 
 # Elaborating SoC

@@ -12,7 +12,7 @@ ghdl -a $COMPONENTS_PATH/memd.vhd
 ghdl -a $COMPONENTS_PATH/multiplicador.vhd
 ghdl -a $COMPONENTS_PATH/mux41.vhd
 ghdl -a $COMPONENTS_PATH/hdl_register.vhd
-ghdl -a $COMPONENTS_PATH/ula.vhd
+ghdl -a $COMPONENTS_PATH/alu.vhd
 ghdl -a $COMPONENTS_PATH/extensor.vhd
 ghdl -a $COMPONENTS_PATH/memi.vhd
 ghdl -a $COMPONENTS_PATH/mux21.vhd

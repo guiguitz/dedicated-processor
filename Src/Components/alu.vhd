@@ -8,7 +8,7 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
 
-ENTITY ula IS
+ENTITY alu IS
     GENERIC (
         largura_dado : NATURAL
     );
@@ -20,9 +20,9 @@ ENTITY ula IS
         saida : OUT STD_LOGIC_VECTOR((largura_dado - 1) DOWNTO 0);
         zero : OUT STD_LOGIC
     );
-END ula;
+END alu;
 
-ARCHITECTURE comportamental OF ula IS
+ARCHITECTURE comportamental OF alu IS
     SIGNAL resultado_ula : STD_LOGIC_VECTOR((largura_dado - 1) DOWNTO 0);
 BEGIN
     PROCESS (entrada_a, entrada_b, seletor) IS
