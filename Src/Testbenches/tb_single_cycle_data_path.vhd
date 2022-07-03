@@ -13,11 +13,11 @@ ARCHITECTURE estimulos OF tb_single_cycle_data_path IS
 
     COMPONENT single_cycle_data_path IS
         GENERIC (
-            DP_CTRL_BUS_WIDTH : NATURAL := 14; -- DataPath (DP) control bus size in bits
+            DP_CTRL_BUS_WIDTH : NATURAL := 14; -- DataPath (DP) aux_control bus size in bits
             DATA_WIDTH : NATURAL := 32; -- data size in bits
             PC_WIDTH : NATURAL := 32; -- pc size in bits
-            INSTR_WIDTH : NATURAL := 32; -- instruction size in bits
-            MD_ADDR_WIDTH : NATURAL := 12 -- size of data memory address in bits
+            INSTR_WIDTH : NATURAL := 32; -- aux_instruction size in bits
+            MD_ADDR_WIDTH : NATURAL := 32 -- size of data memory address in bits
         );
         PORT (
             clock : IN STD_LOGIC;
@@ -37,7 +37,7 @@ ARCHITECTURE estimulos OF tb_single_cycle_data_path IS
     SIGNAL aux_instruction : STD_LOGIC_VECTOR((32 - 1) DOWNTO 0);
     SIGNAL aux_pc_out : STD_LOGIC_VECTOR((32 - 1) DOWNTO 0);
     SIGNAL aux_memd_data : STD_LOGIC_VECTOR((32 - 1) DOWNTO 0);
-    SIGNAL aux_memd_address : STD_LOGIC_VECTOR((12 - 1) DOWNTO 0);
+    SIGNAL aux_memd_address : STD_LOGIC_VECTOR((32 - 1) DOWNTO 0);
     SIGNAL aux_memd_write_data : STD_LOGIC_VECTOR((32 - 1) DOWNTO 0);
 
     CONSTANT PERIOD : TIME := 20 ns;
@@ -51,18 +51,18 @@ BEGIN
     BEGIN
         WAIT FOR OFFSET;
         CLOCK_LOOP : LOOP
-            clock <= '0';
+            aux_clock <= '0';
             WAIT FOR (PERIOD - (PERIOD * DUTY_CYCLE));
-            clock <= '1';
+            aux_clock <= '1';
             WAIT FOR (PERIOD * DUTY_CYCLE);
         END LOOP CLOCK_LOOP;
     END PROCESS generate_clock;
 
     generate_reset : PROCESS
     BEGIN
-        reset <= '1';
-        WAIT UNTIL falling_edge(clock);
-        reset <= '0';
+        aux_reset <= '1';
+        WAIT UNTIL falling_edge(aux_clock);
+        aux_reset <= '0';
         WAIT;
     END PROCESS generate_reset;
 
@@ -72,48 +72,48 @@ BEGIN
         CLOCK_LOOP : LOOP
 
             -- ADD
-            control <= ADD_CONTROL_UNIT_OUTPUT;
-            instruction <= ADD_INSTR_BINARY;
+            aux_control <= ADD_CONTROL_UNIT_OUTPUT;
+            aux_instruction <= ADD_INSTR_BINARY;
             WAIT FOR OFFSET;
 
             -- SLL
-            control <= SLL_CONTROL_UNIT_OUTPUT;
-            instruction <= SLL_INSTR_BINARY;
+            aux_control <= SLL_CONTROL_UNIT_OUTPUT;
+            aux_instruction <= SLL_INSTR_BINARY;
             WAIT FOR OFFSET;
 
             -- ADDI
-            control <= ADDI_CONTROL_UNIT_OUTPUT;
-            instruction <= ADDI_INSTR_BINARY;
+            aux_control <= ADDI_CONTROL_UNIT_OUTPUT;
+            aux_instruction <= ADDI_INSTR_BINARY;
             WAIT FOR OFFSET;
 
             -- NOP
-            control <= NOP_CONTROL_UNIT_OUTPUT;
-            instruction <= NOP_INSTR_BINARY;
+            aux_control <= NOP_CONTROL_UNIT_OUTPUT;
+            aux_instruction <= NOP_INSTR_BINARY;
             WAIT FOR OFFSET;
 
             -- LW
-            control <= LW_CONTROL_UNIT_OUTPUT;
-            instruction <= LW_INSTR_BINARY;
+            aux_control <= LW_CONTROL_UNIT_OUTPUT;
+            aux_instruction <= LW_INSTR_BINARY;
             WAIT FOR OFFSET;
 
             -- BNE
-            control <= BNE_CONTROL_UNIT_OUTPUT;
-            instruction <= BNE_INSTR_BINARY;
+            aux_control <= BNE_CONTROL_UNIT_OUTPUT;
+            aux_instruction <= BNE_INSTR_BINARY;
             WAIT FOR OFFSET;
 
             -- BEQ
-            control <= BEQ_CONTROL_UNIT_OUTPUT;
-            instruction <= BEQ_INSTR_BINARY;
+            aux_control <= BEQ_CONTROL_UNIT_OUTPUT;
+            aux_instruction <= BEQ_INSTR_BINARY;
             WAIT FOR OFFSET;
 
             -- SW
-            control <= SW_CONTROL_UNIT_OUTPUT;
-            instruction <= SW_INSTR_BINARY;
+            aux_control <= SW_CONTROL_UNIT_OUTPUT;
+            aux_instruction <= SW_INSTR_BINARY;
             WAIT FOR OFFSET;
 
             -- J
-            control <= J_CONTROL_UNIT_OUTPUT;
-            instruction <= J_INSTR_BINARY;
+            aux_control <= J_CONTROL_UNIT_OUTPUT;
+            aux_instruction <= J_INSTR_BINARY;
             WAIT FOR OFFSET;
 
         END LOOP CLOCK_LOOP;

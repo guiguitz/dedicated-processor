@@ -22,7 +22,7 @@ END single_cycle_processor;
 ARCHITECTURE comportamento OF single_cycle_processor IS
     COMPONENT single_cycle_data_path IS
         GENERIC (
-            DP_CTRL_BUS_WIDTH : NATURAL := 14; -- datapath (DP) control bus size in bits
+            DP_CTRL_BUS_WIDTH : NATURAL := 14; -- DataPath (DP) control bus size in bits
             DATA_WIDTH : NATURAL := 32; -- data size in bits
             PC_WIDTH : NATURAL := 32; -- pc size in bits
             INSTR_WIDTH : NATURAL := 32; -- instruction size in bits
