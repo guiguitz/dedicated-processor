@@ -27,12 +27,14 @@
 *.smsg
 *.sld
 *.sof
+*.sft
 *.sopc_builder
 *.summary
 *~
 *example*
 *sopc_*
 *.sdc
+*.vho
 
 # ignore Quartus II generated folders
 */db/
