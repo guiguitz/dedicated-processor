@@ -1,7 +1,6 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
-USE std.textio.ALL;
 
 ENTITY tb_single_cycle_processor IS
 END tb_single_cycle_processor;

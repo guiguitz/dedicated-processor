@@ -21,7 +21,7 @@ ARCHITECTURE comportamento OF single_cycle_processor IS
             DATA_WIDTH : NATURAL := 32; -- data size in bits
             PC_WIDTH : NATURAL := 32; -- pc size in bits
             INSTR_WIDTH : NATURAL := 32; -- instruction size in bits
-            MD_ADDR_WIDTH : NATURAL := 12 -- size of data memory address in bits
+            MD_ADDR_WIDTH : NATURAL := 32 -- size of data memory address in bits
         );
         PORT (
             clock : IN STD_LOGIC;
@@ -82,22 +82,28 @@ ARCHITECTURE comportamento OF single_cycle_processor IS
     SIGNAL aux_control : STD_LOGIC_VECTOR(DP_CTRL_BUS_WIDTH - 1 DOWNTO 0);
     SIGNAL aux_data_path_memi_pc_out : STD_LOGIC_VECTOR(PROC_INSTR_WIDTH - 1 DOWNTO 0);
 
+    -- Signals for memi
+    SIGNAL aux_write_enable : STD_LOGIC := '0';
+    SIGNAL aux_write_instruction : STD_LOGIC_VECTOR(PROC_INSTR_WIDTH - 1 DOWNTO 0) := X"00000000";
+
     -- Signals for memd
     SIGNAL aux_memd_write_enable : STD_LOGIC;
-    SIGNAL aux_memd_data_path_memd_data : STD_LOGIC_VECTOR(PROC_INSTR_WIDTH - 1 DOWNTO 0);
-    SIGNAL aux_data_path_memd_address : STD_LOGIC_VECTOR(PROC_ADDR_WIDTH - 1 DOWNTO 0);
-    SIGNAL aux_data_path_memd_write_data : STD_LOGIC_VECTOR(PROC_INSTR_WIDTH - 1 DOWNTO 0);
+    SIGNAL aux_memd_data_path_memd_data : STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0);
+    SIGNAL aux_data_path_memd_address : STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0);
+    SIGNAL aux_data_path_memd_write_data : STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0);
 
 BEGIN
 
-    aux_memd_write_enable <= single_cycle_data_path.control(4); -- MemWrite
+    aux_memd_write_enable <= aux_control(4); -- MemWrite
 
     instance_memi : memi
     PORT MAP(
         clock => clock,
         reset => reset,
         address => aux_data_path_memi_pc_out,
-        instruction => aux_instruction
+        instruction => aux_instruction,
+        write_enable => aux_write_enable,
+        write_instruction => aux_write_instruction
     );
 
     instance_memd : memd
@@ -111,7 +117,7 @@ BEGIN
 
     instance_single_cycle_control_unit : single_cycle_control_unit
     PORT MAP(
-        instruction => aux_instruction, -- instruction
+        instruction => aux_instruction,
         control => aux_control
     );
 

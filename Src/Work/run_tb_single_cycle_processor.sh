@@ -23,7 +23,7 @@ ghdl -a $COMPONENTS_PATH/single_cycle_control_unit.vhd
 ghdl -a $COMPONENTS_PATH/single_cycle_data_path.vhd
 ghdl -a $COMPONENTS_PATH/single_cycle_processor.vhd
 ghdl -a $TESTBENCHES_PATH/tb_single_cycle_processor.vhd
-ghdl -a $TESTBENCHES_PATH/tb_single_cycle_processor.vhd
+
 
 # Elaborating SoC
 ghdl -e tb_single_cycle_processor
