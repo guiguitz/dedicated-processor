@@ -31,6 +31,7 @@ if {$make_assignments} {
 	set_global_assignment -name PROJECT_CREATION_TIME_DATE "15:06:28  DECEMBER 09, 2021"
 	set_global_assignment -name LAST_QUARTUS_VERSION 21.1.0
 
+	# VHDL files
 	set_global_assignment -name VHDL_FILE $COMPONENTS_PATH/register_file.vhd
 	set_global_assignment -name VHDL_FILE $COMPONENTS_PATH/two_bits_shifter.vhd
 	set_global_assignment -name VHDL_FILE $COMPONENTS_PATH/memd.vhd
@@ -43,6 +44,7 @@ if {$make_assignments} {
 	set_global_assignment -name VHDL_FILE $COMPONENTS_PATH/mux21.vhd
 	set_global_assignment -name VHDL_FILE $COMPONENTS_PATH/pc.vhd
 	set_global_assignment -name VHDL_FILE $COMPONENTS_PATH/adder.vhd
+	set_global_assignment -name VHDL_FILE $COMPONENTS_PATH/seven_seg_decoder.vhd
 	set_global_assignment -name VHDL_FILE $COMPONENTS_PATH/interrupt_address_registers.vhd
 	set_global_assignment -name VHDL_FILE $COMPONENTS_PATH/single_cycle_control_unit.vhd
 	set_global_assignment -name VHDL_FILE $COMPONENTS_PATH/single_cycle_data_path.vhd
@@ -57,7 +59,7 @@ if {$make_assignments} {
 	set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id tb_single_cycle_processor
 	set_global_assignment -name EDA_TEST_BENCH_RUN_SIM_FOR "200 ns" -section_id tb_single_cycle_processor
 	set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME tb_single_cycle_processor -section_id tb_single_cycle_processor
-	set_global_assignment -name EDA_TEST_BENCH_FILE source/tb_single_cycle_processor.vhd -section_id tb_single_cycle_processor
+	set_global_assignment -name EDA_TEST_BENCH_FILE $TESTBENCHES_PATH/tb_single_cycle_processor.vhd -section_id tb_single_cycle_processor
 
 	set_global_assignment -name PROJECT_OUTPUT_DIRECTORY .
 	set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
@@ -70,6 +72,7 @@ if {$make_assignments} {
 	set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 	set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
 
+	# Pin assignments
 	set_location_assignment PIN_C10 -to clock
 	set_location_assignment PIN_C11 -to reset
 
