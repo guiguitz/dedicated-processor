@@ -7,6 +7,7 @@ UTIL_PATH="../util"
 ghdl --clean
 
 # Analyzing vhdl files
+ghdl -a $UTIL_PATH/custom_types.vhd
 ghdl -a $UTIL_PATH/testbench_constants.vhd
 ghdl -a $COMPONENTS_PATH/memd.vhd
 ghdl -a $TESTBENCHES_PATH/tb_memd.vhd

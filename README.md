@@ -1,7 +1,7 @@
 # dedicated-processor
 
 ## General TODO
-- [ ] Add seven-segment LEDs to improve the debuggability
+- [X] Add seven-segment LEDs to improve the debuggability
 - [ ] Translate all RTL code to English
 ## Single Cycle Processor development
 - [X] Draw DataPath
