@@ -153,7 +153,6 @@ ARCHITECTURE comportamento OF single_cycle_data_path IS
     -- adder0:
     SIGNAL aux_pc_adder0_adder1 : STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0);
     SIGNAL aux_adder0_m2_m5 : STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0);
-    CONSTANT PLUS_FOUR : STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0) := x"00000004";
 
     -- adder1:
     SIGNAL aux_m4_a1_entrada_b : STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0);
@@ -232,7 +231,7 @@ BEGIN
     instance_adder0 : adder
     PORT MAP(
         entrada_a => aux_pc_adder0_adder1,
-        entrada_b => PLUS_FOUR,
+        entrada_b => x"00000004",
         saida => aux_adder0_m2_m5
     );
 
@@ -313,6 +312,6 @@ BEGIN
 
     PROCESS (aux_zero, aux_bne, aux_beq) IS
     BEGIN
-        aux_m5_sele_ent <= (aux_bne AND (NOT(aux_zero))) OR (aux_bne AND aux_zero);
+        aux_m5_sele_ent <= (aux_bne AND (NOT(aux_zero))) OR (aux_beq AND aux_zero);
     END PROCESS;
 END ARCHITECTURE comportamento;

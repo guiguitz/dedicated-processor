@@ -25,7 +25,7 @@ ARCHITECTURE comportamental OF register_file IS
     TYPE register_file_type IS ARRAY(0 TO ((2 ** ADDRESS_WIDTH) - 1)) OF STD_LOGIC_VECTOR((DATA_WIDTH - 1) DOWNTO 0);
     SIGNAL bank : register_file_type := (OTHERS => (OTHERS => '0'));
 BEGIN
-    reading : PROCESS (clock) IS
+    reading : PROCESS (clock, bank, rs1, rs2) IS
     BEGIN
         out_rs1 <= bank(to_integer(unsigned(rs1)));
         out_rs2 <= bank(to_integer(unsigned(rs2)));
