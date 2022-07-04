@@ -12,6 +12,7 @@
 - [X] ALU testbench (`Src/Testbenches/tb_alu.vhd`)
 - [X] Instruction Memory (memi) testbench (`Src/Testbenches/tb_memi.vhd`)
 - [X] Data Memory (memd) testbench (`Src/Testbenches/tb_memd.vhd`)
+- [X] Register File testbench (`Src/Testbenches/tb_register_file.vhd`)
 - [X] Implement the DataPath testbench (`Src/Testbenches/tb_single_cycle_data_path.vhd`)
 - [X] Implement the Control Unit testbench (`Src/Testbenches/tb_single_cycle_control_unit.vhd`)
 - [X] Implement the Processor testbench (`Src/Testbenches/tb_single_cycle_processor.vhd`)
@@ -37,20 +38,25 @@
 - [ ] CPU Test with UART in FPGA Kit
 
 ## How to run
-### DataPath testbenches
+### DataPath testbench
 ```bash
 cd Src/Work
-sh run_tb_single_cycle_data_path.sh; # Single Cycle
+sh run_tb_single_cycle_data_path.sh
 ```
-### Control Unit testbenches
+### Control Unit testbench
 ```bash
 cd Src/Work
-sh run_tb_single_cycle_control_unit.sh; # Single Cycle
+sh run_tb_single_cycle_control_unit.sh
 ```
-### Processor testbenches
+### Processor testbench
 ```bash
 cd Src/Work
-sh run_tb_single_cycle_processor.sh; # Single Cycle
+sh run_tb_single_cycle_processor.sh
+```
+### Processor run on Quartus II
+```bash
+cd Src/Work
+sh run_quartus_single_cycle_processor.sh
 ```
 
 ## Dependencies
