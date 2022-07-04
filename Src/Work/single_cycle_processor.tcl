@@ -49,6 +49,16 @@ if {$make_assignments} {
 	set_global_assignment -name VHDL_FILE $COMPONENTS_PATH/single_cycle_processor.vhd
 	set_global_assignment -name VHDL_FILE $TESTBENCHES_PATH/tb_single_cycle_processor.vhd
 
+	# Testbench
+	set_global_assignment -name EDA_RUN_TOOL_AUTOMATICALLY OFF -section_id eda_simulation
+	set_global_assignment -name EDA_TEST_BENCH_ENABLE_STATUS TEST_BENCH_MODE -section_id eda_simulation
+	set_global_assignment -name EDA_NATIVELINK_SIMULATION_TEST_BENCH tb_single_cycle_processor -section_id eda_simulation
+	set_global_assignment -name EDA_TEST_BENCH_NAME tb_single_cycle_processor -section_id eda_simulation
+	set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id tb_single_cycle_processor
+	set_global_assignment -name EDA_TEST_BENCH_RUN_SIM_FOR "200 ns" -section_id tb_single_cycle_processor
+	set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME tb_single_cycle_processor -section_id tb_single_cycle_processor
+	set_global_assignment -name EDA_TEST_BENCH_FILE source/tb_single_cycle_processor.vhd -section_id tb_single_cycle_processor
+
 	set_global_assignment -name PROJECT_OUTPUT_DIRECTORY .
 	set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
 	set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
@@ -60,20 +70,8 @@ if {$make_assignments} {
 	set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 	set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
 
-	# set_location_assignment PIN_B10 -to s[3]
-	# set_location_assignment PIN_A10 -to s[2]
-	# set_location_assignment PIN_A9 -to s[1]
-	# set_location_assignment PIN_A8 -to s[0]
-
-	# set_location_assignment PIN_C12 -to x[3]
-	# set_location_assignment PIN_D12 -to x[2]
-	# set_location_assignment PIN_C11 -to x[1]
-	# set_location_assignment PIN_C10 -to x[0]
-
-	# set_location_assignment PIN_A14 -to y[3]
-	# set_location_assignment PIN_A13 -to y[2]
-	# set_location_assignment PIN_B12 -to y[1]
-	# set_location_assignment PIN_A12 -to y[0]
+	set_location_assignment PIN_C10 -to clock
+	set_location_assignment PIN_C11 -to reset
 
 	# Commit assignments
 	export_assignments
