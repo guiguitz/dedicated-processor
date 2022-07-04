@@ -12,11 +12,11 @@
 - [X] ULA testbench (`Src/Testbenches/tb_ula.vhd`)
 - [X] Instruction Memory (memi) testbench (`Src/Testbenches/tb_memi.vhd`)
 - [X] Data Memory (memd) testbench (`Src/Testbenches/tb_memd.vhd`)
-- [ ] Implement the DataPath testbench (`Src/Testbenches/tb_single_cycle_data_path.vhd`)
+- [X] Implement the DataPath testbench (`Src/Testbenches/tb_single_cycle_data_path.vhd`)
 - [X] Implement the Control Unit testbench (`Src/Testbenches/tb_single_cycle_control_unit.vhd`)
 - [X] Implement the Processor testbench (`Src/Testbenches/tb_single_cycle_processor.vhd`)
 - [X] Simulations with dummy instructions
-- [ ] Simulations with R-type instructions
+- [X] Simulations with R-type instructions
 - [ ] Simulations with I-type instructions
 - [ ] Simulations with Branch-type instructions
 - [ ] Test on FPGA
@@ -62,17 +62,14 @@ sh run_tb_single_cycle_processor.sh; # Single Cycle
 - [GHDL v0.37](https://github.com/ghdl/ghdl/releases/download/v0.37/ghdl-0.37-mingw32-mcode.zip)
 - [gtkwave-3.3.100](https://sourceforge.net/projects/gtkwave/files/gtkwave-3.3.100-bin-win32)
 - [Yosys nightly-20211006](https://github.com/YosysHQ/fpga-toolchain/releases)
-
-## Additional Softwares
 - [Quartus-lite-21.1.0.842](https://www.intel.com/content/www/us/en/software-kit/684216/intel-quartus-prime-lite-edition-design-software-version-21-1-for-windows.html)
   - Quartus Lite
-  - Questa
   - MAX 10 FPGA
+
+## Additional Softwares
 - [Git](https://git-scm.com/downloads)
+- [GNU make v3.81](http://gnuwin32.sourceforge.net/packages/make.htm)
 - [VSCode](https://code.visualstudio.com/download)
-  - [TerosHDL v2.0.7](https://terostechnology.github.io/terosHDLdoc/about/installing.html)
-    - [GNU make v3.81](http://gnuwin32.sourceforge.net/packages/make.htm)
   - [VHDL Formatter](https://marketplace.visualstudio.com/items?itemName=Vinrobot.vhdl-formatter)
-  - [istyle-verilog-formatter v1.23](https://github.com/thomasrussellmurphy/istyle-verilog-formatter/releases/tag/v1.23)
   - [VHDL](https://marketplace.visualstudio.com/items?itemName=puorc.awesome-vhdl)
   - [GHDL Interface](https://marketplace.visualstudio.com/items?itemName=johannesbonk.ghdl-interface)
