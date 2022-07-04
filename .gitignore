@@ -2,6 +2,7 @@
 .vscode
 *.cf
 *.vcd
+*.$*
 
 # ignore Quartus II generated files
 *_generation_script*
