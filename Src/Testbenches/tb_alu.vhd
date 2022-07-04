@@ -1,18 +1,11 @@
--- Universidade Federal de Minas Gerais
--- Escola de Engenharia
--- Departamento de Engenharia Eletrônica
--- Autoria: Professor Ricardo de Oliveira Duarte
-
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
 
+ENTITY tb_alu IS
+END tb_alu;
 
-ENTITY tb_ula IS
-END tb_ula;
-
-ARCHITECTURE estimulos OF tb_ula IS
-    -- Declarar a unidade sob teste
+ARCHITECTURE estimulos OF tb_alu IS
     COMPONENT alu
         GENERIC (
             largura_dado : NATURAL := 32
@@ -35,10 +28,10 @@ ARCHITECTURE estimulos OF tb_ula IS
 
     CONSTANT OFFSET : TIME := 5 ns;
 BEGIN
-    -- instancia o componente
-    instancia : alu GENERIC MAP(largura_dado => 32) PORT MAP(entrada_a, entrada_b, seletor, saida, zero);
-    -- processo para gerar o sinal de clock
-    test_ula : PROCESS
+
+    instance_alu : alu GENERIC MAP(largura_dado => 32) PORT MAP(entrada_a, entrada_b, seletor, saida, zero);
+
+    test_alu : PROCESS
     BEGIN
         WAIT FOR OFFSET;
         CLOCK_LOOP : LOOP
@@ -63,5 +56,5 @@ BEGIN
             WAIT FOR OFFSET;
 
         END LOOP CLOCK_LOOP;
-    END PROCESS test_ula;
+    END PROCESS test_alu;
 END;

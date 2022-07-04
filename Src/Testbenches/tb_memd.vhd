@@ -3,7 +3,7 @@ USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
 
 LIBRARY work;
-USE work.binary_instructions_package.ALL;
+USE work.instructions_package.ALL;
 
 ENTITY tb_memd IS
 END tb_memd;

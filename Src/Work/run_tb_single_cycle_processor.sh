@@ -25,7 +25,6 @@ ghdl -a $COMPONENTS_PATH/single_cycle_data_path.vhd
 ghdl -a $COMPONENTS_PATH/single_cycle_processor.vhd
 ghdl -a $TESTBENCHES_PATH/tb_single_cycle_processor.vhd
 
-
 # Elaborating SoC
 ghdl -e tb_single_cycle_processor
 ghdl -r tb_single_cycle_processor --vcd=tb_single_cycle_processor.vcd --stop-time=1us

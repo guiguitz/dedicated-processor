@@ -3,7 +3,7 @@ USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
 
 LIBRARY work;
-USE work.binary_instructions_package.ALL;
+USE work.instructions_package.ALL;
 
 ENTITY tb_single_cycle_control_unit IS
 END tb_single_cycle_control_unit;
@@ -17,8 +17,8 @@ ARCHITECTURE estimulos OF tb_single_cycle_control_unit IS
             ULA_CTRL_WIDTH : NATURAL := 4
         );
         PORT (
-            instruction : IN STD_LOGIC_VECTOR(INSTR_WIDTH - 1 DOWNTO 0); -- instruction
-            control : OUT STD_LOGIC_VECTOR(DP_CTRL_BUS_WIDTH - 1 DOWNTO 0) -- control da via
+            instruction : IN STD_LOGIC_VECTOR(INSTR_WIDTH - 1 DOWNTO 0);
+            control : OUT STD_LOGIC_VECTOR(DP_CTRL_BUS_WIDTH - 1 DOWNTO 0)
         );
     END COMPONENT;
 

@@ -7,9 +7,7 @@ UTIL_PATH="../util"
 ghdl --clean
 
 # Analyzing vhdl files
-ghdl -a $UTIL_PATH/binary_instructions.vhd
-ghdl -a $UTIL_PATH/control_unit_outputs.vhd
-
+ghdl -a $UTIL_PATH/testbench_constants.vhd
 ghdl -a $COMPONENTS_PATH/pc.vhd
 ghdl -a $COMPONENTS_PATH/adder.vhd
 ghdl -a $COMPONENTS_PATH/register_file.vhd
