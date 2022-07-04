@@ -14,7 +14,7 @@ ARCHITECTURE estimulos OF tb_single_cycle_control_unit IS
             INSTR_WIDTH : NATURAL := 32;
             OPCODE_WIDTH : NATURAL := 7;
             DP_CTRL_BUS_WIDTH : NATURAL := 14;
-            ULA_CTRL_WIDTH : NATURAL := 4
+            ALU_CTRL_WIDTH : NATURAL := 4
         );
         PORT (
             instruction : IN STD_LOGIC_VECTOR(INSTR_WIDTH - 1 DOWNTO 0);

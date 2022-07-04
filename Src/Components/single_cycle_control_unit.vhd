@@ -13,7 +13,7 @@ ENTITY single_cycle_control_unit IS
         INSTR_WIDTH : NATURAL := 32;
         OPCODE_WIDTH : NATURAL := 7;
         DP_CTRL_BUS_WIDTH : NATURAL := 14;
-        ULA_CTRL_WIDTH : NATURAL := 4
+        ALU_CTRL_WIDTH : NATURAL := 4
     );
     PORT (
         instruction : IN STD_LOGIC_VECTOR(INSTR_WIDTH - 1 DOWNTO 0);
@@ -28,7 +28,7 @@ ARCHITECTURE beh OF single_cycle_control_unit IS
     SIGNAL aux_funct3 : STD_LOGIC_VECTOR (2 DOWNTO 0); -- funct3
 
     SIGNAL aux_control : STD_LOGIC_VECTOR (13 DOWNTO 0); -- control
-    -- RegDst | Jump | Branch NEQ | Branch EQ | MemToReg | AluOp (4) | MemWrite | AluSrc | RegWrite | PcSrc | ITController
+    -- RegDst & Jump & Branch NEQ & Branch EQ & MemToReg & AluOp(3) & AluOp(2) & AluOp(1) & AluOp(0) & MemWrite & AluSrc & RegWrite & PcSrc & ITController
 
 BEGIN
     aux_instruction <= instruction;

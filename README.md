@@ -9,7 +9,7 @@
 - [X] Implement the RTL for Single Cycle Control Unit (`Src/Components/single_cycle_control_unit.vhd`)
 - [X] Implement the RTL for Single Cycle processor (`Src/Components/single_cycle_processor.vhd`)
 - [X] hdl_register testbench (`Src/Testbenches/tb_hdl_register.vhd`)
-- [X] ULA testbench (`Src/Testbenches/tb_ula.vhd`)
+- [X] ALU testbench (`Src/Testbenches/tb_alu.vhd`)
 - [X] Instruction Memory (memi) testbench (`Src/Testbenches/tb_memi.vhd`)
 - [X] Data Memory (memd) testbench (`Src/Testbenches/tb_memd.vhd`)
 - [X] Implement the DataPath testbench (`Src/Testbenches/tb_single_cycle_data_path.vhd`)
