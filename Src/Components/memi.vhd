@@ -4,8 +4,8 @@ USE ieee.numeric_std.ALL;
 
 ENTITY memi IS
     GENERIC (
-        INSTR_WIDTH : NATURAL := 32; -- instruction size in number of bits
-        MI_ADDR_WIDTH : NATURAL := 12 -- instruction memory address size in number of bits
+        INSTR_WIDTH : NATURAL; -- instruction size in number of bits
+        MI_ADDR_WIDTH : NATURAL -- instruction memory address size in number of bits
     );
     PORT (
         clock : IN STD_LOGIC;
