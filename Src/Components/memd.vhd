@@ -5,11 +5,12 @@ USE work.custom_types_package.ALL;
 
 ENTITY memd IS
     GENERIC (
-        MD_DATA_WIDTH : NATURAL := 32; -- word size in bits
-        MD_ADDR_WIDTH : NATURAL := 12 -- size of data memory address in bits
+        MD_DATA_WIDTH : NATURAL; -- word size in bits
+        MD_ADDR_WIDTH : NATURAL -- size of data memory address in bits
     );
     PORT (
         clock : IN STD_LOGIC;
+        reset : IN STD_LOGIC;
         write_data : IN STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0);
         address : IN STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0);
         read_data : OUT STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0);
@@ -23,10 +24,12 @@ ARCHITECTURE comportamental OF memd IS
     TYPE ram_type IS ARRAY (0 TO 2 ** MD_ADDR_WIDTH) OF STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0);
     SIGNAL ram : ram_type := (OTHERS => (OTHERS => '0'));
 BEGIN
-    PROCESS (clock)
+    PROCESS (clock, reset)
     BEGIN
         IF (rising_edge(clock)) THEN
-            IF (write_enable = '1') THEN
+            IF (reset = '1') THEN
+                rom <= (OTHERS => (OTHERS => '0'));
+            ELSIF (write_enable = '1') THEN
                 ram(to_integer(unsigned(address))) <= write_data;
             ELSE
                 read_data <= ram(to_integer(unsigned(address)));

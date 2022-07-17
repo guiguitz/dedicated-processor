@@ -18,6 +18,7 @@ ARCHITECTURE estimulos OF tb_memd IS
         );
         PORT (
             clock : IN STD_LOGIC;
+            reset : IN STD_LOGIC;
             write_data : IN STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0);
             address : IN STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0);
             read_data : OUT STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0);
@@ -27,6 +28,7 @@ ARCHITECTURE estimulos OF tb_memd IS
     END COMPONENT;
 
     SIGNAL clock : STD_LOGIC;
+    SIGNAL reset : STD_LOGIC;
     SIGNAL aux_write_data : STD_LOGIC_VECTOR(32 - 1 DOWNTO 0);
     SIGNAL aux_memd_address : STD_LOGIC_VECTOR(32 - 1 DOWNTO 0);
     SIGNAL aux_read_data : STD_LOGIC_VECTOR(32 - 1 DOWNTO 0);
@@ -38,7 +40,7 @@ ARCHITECTURE estimulos OF tb_memd IS
     CONSTANT OFFSET : TIME := 5 ns;
 
 BEGIN
-    instance_memd : memd PORT MAP(clock, aux_write_data, aux_memd_address, aux_read_data, aux_write_enable, aux_interface);
+    instance_memd : memd PORT MAP(clock, reset, aux_write_data, aux_memd_address, aux_read_data, aux_write_enable, aux_interface);
 
     generate_clock : PROCESS
     BEGIN
@@ -50,6 +52,14 @@ BEGIN
             WAIT FOR (PERIOD * DUTY_CYCLE);
         END LOOP CLOCK_LOOP;
     END PROCESS generate_clock;
+
+    generate_reset : PROCESS
+    BEGIN
+        reset <= '1';
+        WAIT UNTIL falling_edge(clock);
+        reset <= '0';
+        WAIT;
+    END PROCESS generate_reset;
 
     test_memd : PROCESS
     BEGIN
