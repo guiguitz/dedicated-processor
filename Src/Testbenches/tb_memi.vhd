@@ -35,7 +35,6 @@ ARCHITECTURE estimulos OF tb_memi IS
     CONSTANT PERIOD : TIME := 20 ns;
     CONSTANT DUTY_CYCLE : real := 0.5;
     CONSTANT OFFSET : TIME := 5 ns;
-    CONSTANT MEIO_OFFSET : TIME := 5 ns;
 
 BEGIN
     instance_memi : memi PORT MAP(clock, reset, aux_address, aux_instruction, aux_write_enable, aux_write_instruction);

@@ -17,7 +17,7 @@ ARCHITECTURE estimulos OF tb_single_cycle_data_path IS
             DATA_WIDTH : NATURAL := 32; -- data size in bits
             PC_WIDTH : NATURAL := 32; -- pc size in bits
             INSTR_WIDTH : NATURAL := 32; -- aux_instruction size in bits
-            MD_ADDR_WIDTH : NATURAL := 32 -- size of data memory address in bits
+            MD_WIDTH : NATURAL := 32 -- size of data memory address in bits
         );
         PORT (
             clock : IN STD_LOGIC;
@@ -26,7 +26,7 @@ ARCHITECTURE estimulos OF tb_single_cycle_data_path IS
             instruction : IN STD_LOGIC_VECTOR(INSTR_WIDTH - 1 DOWNTO 0);
             pc_out : OUT STD_LOGIC_VECTOR(PC_WIDTH - 1 DOWNTO 0);
             memd_data : IN STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0); -- memd 'Read Data'
-            memd_address : OUT STD_LOGIC_VECTOR(MD_ADDR_WIDTH - 1 DOWNTO 0); -- memd 'Address'
+            memd_address : OUT STD_LOGIC_VECTOR(MD_WIDTH - 1 DOWNTO 0); -- memd 'Address'
             memd_write_data : OUT STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0) -- memd 'Write Data'
         );
     END COMPONENT;
