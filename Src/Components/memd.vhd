@@ -1,7 +1,7 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
-USE work.leds_package.ALL;
+USE work.custom_types_package.ALL;
 
 ENTITY memd IS
     GENERIC (

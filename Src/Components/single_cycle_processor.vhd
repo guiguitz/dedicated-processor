@@ -1,6 +1,6 @@
 LIBRARY IEEE;
 USE IEEE.std_logic_1164.ALL;
-USE work.leds_package.ALL;
+USE work.custom_types_package.ALL;
 
 ENTITY single_cycle_processor IS
     GENERIC (

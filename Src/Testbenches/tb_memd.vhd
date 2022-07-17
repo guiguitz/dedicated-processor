@@ -4,7 +4,7 @@ USE ieee.numeric_std.ALL;
 
 LIBRARY work;
 USE work.instructions_package.ALL;
-USE work.leds_package.ALL;
+USE work.custom_types_package.ALL;
 
 ENTITY tb_memd IS
 END tb_memd;
