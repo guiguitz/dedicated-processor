@@ -25,10 +25,10 @@ BEGIN
     PROCESS (clock, reset) IS
     BEGIN
         IF (rising_edge(clock)) THEN
-            IF (write_enable = '1') THEN
-                rom(to_integer(unsigned(address))) <= write_instruction;
-            ELSIF (reset = '1') THEN
+            IF (reset = '1') THEN
                 rom <= (OTHERS => (OTHERS => '0'));
+            ELSIF (write_enable = '1') THEN
+                rom(to_integer(unsigned(address))) <= write_instruction;
             ELSE
                 instruction <= rom(to_integer(unsigned(address)));
             END IF;
