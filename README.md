@@ -1,5 +1,8 @@
 # dedicated-processor
 
+## Processor schematic
+![schematic](https://github.com/guiguitz/dedicated-processor/blob/main/Docs/processor-schematic.png)
+
 ## General TODO
 - [X] Add seven-segment LEDs to improve the debuggability
 - [ ] Translate all RTL code to English
