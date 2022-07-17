@@ -90,22 +90,22 @@ PACKAGE interrupt_ctl_pkg IS
     --## Priority interrupt controller.
     COMPONENT interrupt_ctl IS
         GENERIC (
-            RESET_ACTIVE_LEVEL : STD_ULOGIC := '1' --# Asynch. reset control level
+            RESET_ACTIVE_LEVEL : STD_LOGIC := '1' --# Asynch. reset control level
         );
         PORT (
             --# {{clocks|}}
-            Clock : IN STD_ULOGIC; --# System clock
-            Reset : IN STD_ULOGIC; --# Asynchronous reset
+            Clock : IN STD_LOGIC; --# System clock
+            Reset : IN STD_LOGIC; --# Asynchronous reset
 
             --# {{control|}}
-            Int_mask : IN STD_ULOGIC_VECTOR; --# Set bits correspond to active interrupts
-            Int_request : IN STD_ULOGIC_VECTOR; --# Controls used to activate new interrupts
-            Pending : OUT STD_ULOGIC_VECTOR; --# Set bits indicate which interrupts are pending
-            Current : OUT STD_ULOGIC_VECTOR; --# Single set bit for the active interrupt
+            Int_mask : IN STD_LOGIC_VECTOR; --# Set bits correspond to active interrupts
+            Int_request : IN STD_LOGIC_VECTOR; --# Controls used to activate new interrupts
+            Pending : OUT STD_LOGIC_VECTOR; --# Set bits indicate which interrupts are pending
+            Current : OUT STD_LOGIC_VECTOR; --# Single set bit for the active interrupt
 
-            Interrupt : OUT STD_ULOGIC; --# Flag indicating when an interrupt is pending
-            Acknowledge : IN STD_ULOGIC; --# Clear the active interrupt
-            Clear_pending : IN STD_ULOGIC --# Clear all pending interrupts
+            Interrupt : OUT STD_LOGIC; --# Flag indicating when an interrupt is pending
+            Acknowledge : IN STD_LOGIC; --# Clear the active interrupt
+            Clear_pending : IN STD_LOGIC --# Clear all pending interrupts
         );
     END COMPONENT;
 END PACKAGE;
@@ -114,56 +114,56 @@ USE ieee.std_logic_1164.ALL;
 
 ENTITY interrupt_ctl IS
     GENERIC (
-        RESET_ACTIVE_LEVEL : STD_ULOGIC := '1' --# Asynch. reset control level
+        RESET_ACTIVE_LEVEL : STD_LOGIC := '1' --# Asynch. reset control level
     );
     PORT (
         --# {{clocks|}}
-        Clock : IN STD_ULOGIC; --# System clock
-        Reset : IN STD_ULOGIC; --# Asynchronous reset
+        Clock : IN STD_LOGIC; --# System clock
+        Reset : IN STD_LOGIC; --# Asynchronous reset
 
         --# {{control|}}
-        Int_mask : IN STD_ULOGIC_VECTOR; --# Set bits correspond to active interrupts; <- memd
-        Int_request : IN STD_ULOGIC_VECTOR; --# Controls used to activate new interrupts; <- peripheral
-        Pending : OUT STD_ULOGIC_VECTOR; --# Set bits indicate which interrupts are pending -> memd
-        Current : OUT STD_ULOGIC_VECTOR; --# Single set bit for the active interrupt; -> memd
+        Int_mask : IN STD_LOGIC_VECTOR; --# Set bits correspond to active interrupts
+        Int_request : IN STD_LOGIC_VECTOR; --# Controls used to activate new interrupts
+        Pending : OUT STD_LOGIC_VECTOR; --# Set bits indicate which interrupts are pending
+        Current : OUT STD_LOGIC_VECTOR; --# Single set bit for the active interrupt;
 
-        Interrupt : OUT STD_ULOGIC; --# Flag indicating when an interrupt is pending; -> CPU
-        Acknowledge : IN STD_ULOGIC; --# Clear the active interrupt; -> CPU
-        Clear_pending : IN STD_ULOGIC --# Clear all pending interrupts; -> CPU
+        Interrupt : OUT STD_LOGIC; --# Flag indicating when an interrupt is pending
+        Acknowledge : IN STD_LOGIC; --# Clear the active interrupt
+        Clear_pending : IN STD_LOGIC --# Clear all pending interrupts
     );
 END ENTITY;
 
 ARCHITECTURE rtl OF interrupt_ctl IS
-    SIGNAL pending_loc, current_loc : STD_ULOGIC_VECTOR(Int_request'RANGE);
-    SIGNAL interrupt_loc : STD_ULOGIC;
+    SIGNAL pending_loc, current_loc : STD_LOGIC_VECTOR(Int_request'RANGE);
+    SIGNAL interrupt_loc : STD_LOGIC;
 
     -- Priority decoder
     -- Input is a vector of all pending interrupts. Result is a vector with just the
     -- highest priority interrupt bit set.
-    FUNCTION priority_decode(pending : STD_ULOGIC_VECTOR) RETURN STD_ULOGIC_VECTOR IS
-        VARIABLE result : STD_ULOGIC_VECTOR(pending'RANGE);
-        VARIABLE or_chain : STD_ULOGIC;
+    FUNCTION priority_decode(pending_v : STD_LOGIC_VECTOR) RETURN STD_LOGIC_VECTOR IS
+        VARIABLE result : STD_LOGIC_VECTOR(pending_v'RANGE);
+        VARIABLE or_chain : STD_LOGIC;
     BEGIN
         -- Lowest bit has highest priority
-        result(pending'low) := pending(pending'low);
-        or_chain := result(pending'low);
+        result(pending_v'low) := pending_v(pending_v'low);
+        or_chain := result(pending_v'low);
 
         -- Loop through looking for the highest priority interrupt that is pending
-        FOR i IN pending'low + 1 TO pending'high LOOP
-            IF pending(i) = '1' AND or_chain = '0' THEN
+        FOR i IN pending_v'low + 1 TO pending_v'high LOOP
+            IF pending_v(i) = '1' AND or_chain = '0' THEN
                 result(i) := '1';
             ELSE
                 result(i) := '0';
             END IF;
-            or_chain := or_chain OR pending(i);
+            or_chain := or_chain OR pending_v(i);
         END LOOP;
 
         RETURN result;
     END FUNCTION;
 
     -- OR-reduce for compatibility with VHDL-93
-    FUNCTION or_reduce(vec : STD_ULOGIC_VECTOR) RETURN STD_ULOGIC IS
-        VARIABLE or_chain : STD_ULOGIC;
+    FUNCTION or_reduce(vec : STD_LOGIC_VECTOR) RETURN STD_LOGIC IS
+        VARIABLE or_chain : STD_LOGIC;
     BEGIN
         or_chain := '0';
         FOR i IN vec'RANGE LOOP
@@ -176,8 +176,8 @@ ARCHITECTURE rtl OF interrupt_ctl IS
 BEGIN
 
     ic : PROCESS (Clock, Reset) IS
-        VARIABLE clear_int_n, pending_v, current_v : STD_ULOGIC_VECTOR(pending'RANGE);
-        VARIABLE interrupt_v : STD_ULOGIC;
+        VARIABLE clear_int_n, pending_v, current_v : STD_LOGIC_VECTOR(pending'RANGE);
+        VARIABLE interrupt_v : STD_LOGIC;
     BEGIN
 
         -- Embedded checks

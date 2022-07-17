@@ -22,6 +22,7 @@ ghdl -a $COMPONENTS_PATH/pc.vhd
 ghdl -a $COMPONENTS_PATH/adder.vhd
 ghdl -a $COMPONENTS_PATH/seven_seg_decoder.vhd
 ghdl -a $COMPONENTS_PATH/interrupt_address_registers.vhd
+ghdl -a $COMPONENTS_PATH/interrupt_ctl.vhd
 ghdl -a $COMPONENTS_PATH/single_cycle_control_unit.vhd
 ghdl -a $COMPONENTS_PATH/single_cycle_data_path.vhd
 ghdl -a $COMPONENTS_PATH/single_cycle_processor.vhd
@@ -31,5 +32,5 @@ ghdl -a $TESTBENCHES_PATH/tb_single_cycle_processor.vhd
 ghdl -e tb_single_cycle_processor
 ghdl -r tb_single_cycle_processor --vcd=tb_single_cycle_processor.vcd --stop-time=1us
 
-# # Wave view
+# Wave view
 gtkwave -f tb_single_cycle_processor.vcd --script=gtkwave_print.tcl

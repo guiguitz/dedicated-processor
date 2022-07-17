@@ -17,7 +17,12 @@ ENTITY single_cycle_control_unit IS
     );
     PORT (
         instruction : IN STD_LOGIC_VECTOR(INSTR_WIDTH - 1 DOWNTO 0);
-        control : OUT STD_LOGIC_VECTOR(DP_CTRL_BUS_WIDTH - 1 DOWNTO 0)
+        control : OUT STD_LOGIC_VECTOR(DP_CTRL_BUS_WIDTH - 1 DOWNTO 0);
+
+        -- interrupt_ctl ports.
+        Interrupt : OUT STD_LOGIC; --# Flag indicating when an interrupt is pending
+        Acknowledge : IN STD_LOGIC; --# Clear the active interrupt
+        Clear_pending : IN STD_LOGIC --# Clear all pending interrupts
     );
 END single_cycle_control_unit;
 
