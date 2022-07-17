@@ -15,7 +15,7 @@
 
 # Quartus Prime: Generate Tcl File for Project
 # File: single_cycle_processor.tcl
-# Generated on: Mon Jul  4 13:08:05 2022
+# Generated on: Mon Jul  4 18:02:00 2022
 
 # Load Quartus Prime Tcl Project package
 package require ::quartus::project
@@ -101,7 +101,6 @@ if {$make_assignments} {
 	set_global_assignment -name VHDL_FILE ../Components/single_cycle_data_path.vhd
 	set_global_assignment -name VHDL_FILE ../Testbenches/tb_single_cycle_processor.vhd
 	set_global_assignment -name EDA_TEST_BENCH_FILE ../Testbenches/tb_single_cycle_processor.vhd -section_id tb_single_cycle_processor
-	set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
 	set_location_assignment PIN_C10 -to clock
 	set_location_assignment PIN_C11 -to reset
 	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to clock
@@ -210,6 +209,7 @@ if {$make_assignments} {
 	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to leds[1]
 	set_location_assignment PIN_A8 -to leds[0]
 	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to leds[0]
+	set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
 
 	# Including default assignments
 	set_global_assignment -name TIMING_ANALYZER_MULTICORNER_ANALYSIS ON -family "MAX 10"
