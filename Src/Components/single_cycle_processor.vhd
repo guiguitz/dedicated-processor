@@ -100,6 +100,11 @@ ARCHITECTURE comportamento OF single_cycle_processor IS
             Acknowledge : OUT STD_LOGIC; --# Clear the active interrupt
             Clear_pending : OUT STD_LOGIC; --# Clear all pending interrupts
 
+            -- timer peripheral ports.
+            enable_counter_burst_o : OUT STD_LOGIC;
+            counter_burst_value_o : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+            data_i : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+
             -- Output interface ports.
             interface : OUT memd_interface_t
         );
@@ -133,6 +138,17 @@ ARCHITECTURE comportamento OF single_cycle_processor IS
         );
     END COMPONENT;
 
+    COMPONENT timer IS
+        PORT (
+            clk_i : IN STD_LOGIC;
+            reset_i : IN STD_LOGIC;
+            enable_counter_burst_i : IN STD_LOGIC;
+            counter_burst_value_i : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+            counter_burst_flag_o : OUT STD_LOGIC;
+            data_o : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
+        );
+    END COMPONENT;
+
     SIGNAL aux_instruction : STD_LOGIC_VECTOR(PROC_INSTR_WIDTH - 1 DOWNTO 0);
     SIGNAL aux_control : STD_LOGIC_VECTOR(DP_CTRL_BUS_WIDTH - 1 DOWNTO 0);
     SIGNAL aux_data_path_memi_pc_out : STD_LOGIC_VECTOR(PROC_INSTR_WIDTH - 1 DOWNTO 0);
@@ -152,6 +168,12 @@ ARCHITECTURE comportamento OF single_cycle_processor IS
     SIGNAL aux_Acknowledge : STD_LOGIC;
     SIGNAL aux_Clear_pending : STD_LOGIC;
 
+    -- Signals for timer.
+    SIGNAL aux_enable_counter_burst : STD_LOGIC;
+    SIGNAL aux_counter_burst_value : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    SIGNAL aux_counter_burst_flag : STD_LOGIC;
+    SIGNAL aux_data : STD_LOGIC_VECTOR(31 DOWNTO 0);
+
     -- Signals for outputs (LEDs and 7-Seg LEDS)
     SIGNAL aux_interface : memd_interface_t;
     SIGNAL aux_display : display_t;
@@ -166,6 +188,7 @@ BEGIN
     display_5 <= aux_display(4);
     display_6 <= aux_display(5);
     leds <= aux_interface(0)(NUMBER_OF_LEDS - 1 DOWNTO 0);
+    aux_Int_request(0) <= aux_counter_burst_flag; -- timer interrupt
 
     generate_display : FOR i IN 0 TO 5 GENERATE
         instance_seven_seg_decoder : seven_seg_decoder
@@ -205,6 +228,11 @@ BEGIN
         Acknowledge => aux_Acknowledge,
         Clear_pending => aux_Clear_pending,
 
+        -- timer peripheral ports.
+        enable_counter_burst_o => aux_enable_counter_burst,
+        counter_burst_value_o => aux_counter_burst_value,
+        data_i => aux_data,
+
         -- Output interface ports.
         interface => aux_interface
     );
@@ -242,5 +270,15 @@ BEGIN
         Interrupt => aux_Interrupt,
         Acknowledge => aux_Acknowledge,
         Clear_pending => aux_Clear_pending
+    );
+
+    instance_timer : timer
+    PORT MAP(
+        clk_i => clock,
+        reset_i => reset,
+        enable_counter_burst_i => aux_enable_counter_burst,
+        counter_burst_value_i => aux_counter_burst_value,
+        counter_burst_flag_o => aux_counter_burst_flag,
+        data_o => aux_data
     );
 END comportamento;

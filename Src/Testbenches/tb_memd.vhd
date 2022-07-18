@@ -37,6 +37,11 @@ ARCHITECTURE estimulos OF tb_memd IS
             Acknowledge : OUT STD_LOGIC; --# Clear the active interrupt
             Clear_pending : OUT STD_LOGIC; --# Clear all pending interrupts
 
+            -- timer peripheral ports.
+            enable_counter_burst_o : OUT STD_LOGIC;
+            counter_burst_value_o : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+            data_i : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+
             -- Output interface ports.
             interface : OUT memd_interface_t
         );
@@ -52,13 +57,18 @@ ARCHITECTURE estimulos OF tb_memd IS
     SIGNAL aux_address : STD_LOGIC_VECTOR(32 - 1 DOWNTO 0);
     SIGNAL aux_read_data : STD_LOGIC_VECTOR(32 - 1 DOWNTO 0);
 
-    -- interrupt_ctl ports.
+    -- interrupt_ctl signals.
     SIGNAL aux_Int_mask_int_ctl : STD_LOGIC_VECTOR(3 - 1 DOWNTO 0);
     SIGNAL aux_Pending_int_ctl : STD_LOGIC_VECTOR(3 - 1 DOWNTO 0);
     SIGNAL aux_Current_int_ctl : STD_LOGIC_VECTOR(3 - 1 DOWNTO 0);
     SIGNAL aux_Interrupt : STD_LOGIC;
     SIGNAL aux_Acknowledge : STD_LOGIC;
     SIGNAL aux_Clear_pending : STD_LOGIC;
+
+    -- timer peripheral signals.
+    SIGNAL aux_enable_counter_burst : STD_LOGIC;
+    SIGNAL aux_counter_burst_value : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    SIGNAL aux_data : STD_LOGIC_VECTOR(31 DOWNTO 0);
 
     -- Output interface ports.
     SIGNAL aux_interface : memd_interface_t;
@@ -87,6 +97,11 @@ BEGIN
         Interrupt => aux_Interrupt,
         Acknowledge => aux_Acknowledge,
         Clear_pending => aux_Clear_pending,
+
+        -- timer peripheral ports.
+        enable_counter_burst_o => aux_enable_counter_burst,
+        counter_burst_value_o => aux_counter_burst_value,
+        data_i => aux_data,
 
         -- Output interface ports.
         interface => aux_interface

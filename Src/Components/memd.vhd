@@ -7,7 +7,13 @@
 
 -- UART range, for MD_WIDTH == 12 -> ram[3995, 4095];
 -- GPIO range, for MD_WIDTH == 12 -> ram[3894, 3994];
+
 -- TIMER range, for MD_WIDTH == 12 -> ram[3793, 3893];
+--    timer_flags = ram[3793];
+--        enable_counter_burst = ram[3793][0];
+--    counter_burst_value = ram[3794];
+--    data = ram[3795];
+
 -- interrupt flag, for MD_WIDTH == 12 -> ram[3792];
 --     Interrupt = ram[3792][0];
 --     Acknowledge = ram[3792][1];
@@ -47,6 +53,11 @@ ENTITY memd IS
         Acknowledge : OUT STD_LOGIC; --# Clear the active interrupt
         Clear_pending : OUT STD_LOGIC; --# Clear all pending interrupts
 
+        -- timer peripheral ports.
+        enable_counter_burst_o : OUT STD_LOGIC;
+        counter_burst_value_o : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+        data_i : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+
         -- Output interface ports.
         interface : OUT memd_interface_t
     );
@@ -68,6 +79,9 @@ ARCHITECTURE comportamental OF memd IS
     -- TIMER addresses.
     CONSTANT LAST_TIMER_ADDRESS : NATURAL := (FIRST_GPIO_ADDRESS - 1);
     CONSTANT FIRST_TIMER_ADDRESS : NATURAL := (FIRST_GPIO_ADDRESS - 100);
+    CONSTANT TIMER_FLAGS_ADDRESS : NATURAL := (FIRST_TIMER_ADDRESS);
+    CONSTANT TIMER_COUNTER_BURST_VALUE_ADDRESS : NATURAL := (FIRST_TIMER_ADDRESS + 1);
+    CONSTANT TIMER_DATA_ADDRESS : NATURAL := (FIRST_TIMER_ADDRESS + 2);
 
     -- interrupt_ctl registers.
     CONSTANT INT_CTL_INT_MASK_ADDRESS : NATURAL := (LAST_TIMER_ADDRESS - 1);
@@ -108,6 +122,19 @@ BEGIN
             END IF;
         END IF;
     END PROCESS process_interrupt_ctl;
+
+    process_timer : PROCESS (clock, reset)
+    BEGIN
+        IF (rising_edge(clock)) THEN
+            IF (reset = '1') THEN
+                ram <= (OTHERS => (OTHERS => '0'));
+            ELSE
+                enable_counter_burst_o <= ram(TIMER_FLAGS_ADDRESS)(0);
+                counter_burst_value_o <= ram(TIMER_COUNTER_BURST_VALUE_ADDRESS);
+                ram(TIMER_DATA_ADDRESS) <= data_i;
+            END IF;
+        END IF;
+    END PROCESS process_timer;
 
     generate_ifc : FOR i IN 0 TO 6 GENERATE
         interface(i) <= STD_LOGIC_VECTOR(to_unsigned(to_integer(unsigned(ram(i))), 32));
