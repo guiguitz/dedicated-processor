@@ -54,13 +54,8 @@ ARCHITECTURE comportamento OF single_cycle_processor IS
         );
         PORT (
             instruction : IN STD_LOGIC_VECTOR(INSTR_WIDTH - 1 DOWNTO 0);
-            control : OUT STD_LOGIC_VECTOR(DP_CTRL_BUS_WIDTH - 1 DOWNTO 0);
+            control : OUT STD_LOGIC_VECTOR(DP_CTRL_BUS_WIDTH - 1 DOWNTO 0)
             -- RegDst & Jump & Branch NEQ & Branch EQ & MemToReg & AluOp(3) & AluOp(2) & AluOp(1) & AluOp(0) & MemWrite & AluSrc & RegWrite & PcSrc & ITController
-
-            -- interrupt_ctl ports.
-            Interrupt : OUT STD_LOGIC; --# Flag indicating when an interrupt is pending
-            Acknowledge : IN STD_LOGIC; --# Clear the active interrupt
-            Clear_pending : IN STD_LOGIC --# Clear all pending interrupts
         );
     END COMPONENT;
 
@@ -98,9 +93,12 @@ ARCHITECTURE comportamento OF single_cycle_processor IS
             read_data : OUT STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0);
 
             -- interrupt_ctl ports.
-            Int_mask : OUT STD_LOGIC_VECTOR(3 - 1 DOWNTO 0);
-            Pending : IN STD_LOGIC_VECTOR(3 - 1 DOWNTO 0);
-            Current : IN STD_LOGIC_VECTOR(3 - 1 DOWNTO 0);
+            Int_mask : OUT STD_LOGIC_VECTOR(3 - 1 DOWNTO 0); --# Set bits correspond to active interrupts
+            Pending : IN STD_LOGIC_VECTOR(3 - 1 DOWNTO 0); --# Set bits indicate which interrupts are pending
+            Current : IN STD_LOGIC_VECTOR(3 - 1 DOWNTO 0); --# Single set bit for the active interrupt
+            Interrupt : IN STD_LOGIC; --# Flag indicating when an interrupt is pending
+            Acknowledge : OUT STD_LOGIC; --# Clear the active interrupt
+            Clear_pending : OUT STD_LOGIC; --# Clear all pending interrupts
 
             -- Output interface ports.
             interface : OUT memd_interface_t
@@ -140,7 +138,7 @@ ARCHITECTURE comportamento OF single_cycle_processor IS
     SIGNAL aux_data_path_memi_pc_out : STD_LOGIC_VECTOR(PROC_INSTR_WIDTH - 1 DOWNTO 0);
 
     -- Signals for memd
-    SIGNAL aux_memd_write_enable : STD_LOGIC;
+    SIGNAL aux_write_enable : STD_LOGIC;
     SIGNAL aux_memd_data_path_memd_data : STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0);
     SIGNAL aux_data_path_memd_address : STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0);
     SIGNAL aux_data_path_memd_write_data : STD_LOGIC_VECTOR(DATA_WIDTH - 1 DOWNTO 0);
@@ -155,24 +153,24 @@ ARCHITECTURE comportamento OF single_cycle_processor IS
     SIGNAL aux_Clear_pending : STD_LOGIC;
 
     -- Signals for outputs (LEDs and 7-Seg LEDS)
-    SIGNAL aux_memd_interface : memd_interface_t;
+    SIGNAL aux_interface : memd_interface_t;
     SIGNAL aux_display : display_t;
 
 BEGIN
 
-    aux_memd_write_enable <= aux_control(4); -- MemWrite
+    aux_write_enable <= aux_control(4); -- MemWrite
     display_1 <= aux_display(0);
     display_2 <= aux_display(1);
     display_3 <= aux_display(2);
     display_4 <= aux_display(3);
     display_5 <= aux_display(4);
     display_6 <= aux_display(5);
-    leds <= aux_memd_interface(0)(NUMBER_OF_LEDS - 1 DOWNTO 0);
+    leds <= aux_interface(0)(NUMBER_OF_LEDS - 1 DOWNTO 0);
 
     generate_display : FOR i IN 0 TO 5 GENERATE
         instance_seven_seg_decoder : seven_seg_decoder
         PORT MAP(
-            input => aux_memd_interface(i + 1)(3 DOWNTO 0),
+            input => aux_interface(i + 1)(3 DOWNTO 0),
             output => aux_display(i)
         );
     END GENERATE generate_display;
@@ -194,7 +192,7 @@ BEGIN
         reset => reset,
 
         -- CPU ports.
-        write_enable => aux_memd_write_enable,
+        write_enable => aux_write_enable,
         write_data => aux_data_path_memd_write_data,
         address => aux_data_path_memd_address,
         read_data => aux_memd_data_path_memd_data,
@@ -203,20 +201,18 @@ BEGIN
         Int_mask => aux_Int_mask,
         Pending => aux_Pending,
         Current => aux_Current,
+        Interrupt => aux_Interrupt,
+        Acknowledge => aux_Acknowledge,
+        Clear_pending => aux_Clear_pending,
 
         -- Output interface ports.
-        interface => aux_memd_interface
+        interface => aux_interface
     );
 
     instance_single_cycle_control_unit : single_cycle_control_unit
     PORT MAP(
         instruction => aux_instruction,
-        control => aux_control,
-
-        -- interrupt_ctl ports.
-        Interrupt => aux_Interrupt,
-        Acknowledge => aux_Acknowledge,
-        Clear_pending => aux_Clear_pending
+        control => aux_control
     );
 
     instance_single_cycle_data_path : single_cycle_data_path

@@ -1,9 +1,3 @@
--- Universidade Federal de Minas Gerais
--- Escola de Engenharia
--- Departamento de Engenharia Eletrônica
--- Autoria: Professor Ricardo de Oliveira Duarte
--- Unidade de control ciclo único (look-up table) do processador
--- puramente combinacional
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
@@ -17,12 +11,7 @@ ENTITY single_cycle_control_unit IS
     );
     PORT (
         instruction : IN STD_LOGIC_VECTOR(INSTR_WIDTH - 1 DOWNTO 0);
-        control : OUT STD_LOGIC_VECTOR(DP_CTRL_BUS_WIDTH - 1 DOWNTO 0);
-
-        -- interrupt_ctl ports.
-        Interrupt : OUT STD_LOGIC; --# Flag indicating when an interrupt is pending
-        Acknowledge : IN STD_LOGIC; --# Clear the active interrupt
-        Clear_pending : IN STD_LOGIC --# Clear all pending interrupts
+        control : OUT STD_LOGIC_VECTOR(DP_CTRL_BUS_WIDTH - 1 DOWNTO 0)
     );
 END single_cycle_control_unit;
 
@@ -44,69 +33,55 @@ BEGIN
     BEGIN
         CASE aux_opcode IS
             WHEN "0110011" => -- Rtype
-                CASE aux_funct3 IS
-                        -- ADD
+                CASE aux_funct3 IS -- ADD
                     WHEN "000" =>
                         aux_control <= "10000000100110"; -- X'2026
-                        -- SUB
-                    WHEN "001" =>
+                    WHEN "001" => -- SUB
                         aux_control <= "10000001000110";
-                        -- SLL
-                    WHEN "010" =>
+                    WHEN "010" => -- SLL
                         aux_control <= "10000010000110"; -- X'2086
-                        -- SRL
-                    WHEN "011" =>
+                    WHEN "011" => -- SRL
                         aux_control <= "10000010100110";
-                        -- SLT
-                    WHEN "100" =>
+                    WHEN "100" => -- SLT
                         aux_control <= "10000110000110";
-                    WHEN OTHERS =>
-                        aux_control <= "10000000000010"; -- nop
+                    WHEN OTHERS => -- NOP
+                        aux_control <= "10000000000010";
                 END CASE; -- aux_funct3
 
             WHEN "0010011" => -- ADDI, SLTI, NOP
                 CASE aux_funct3 IS
-                        -- ADDI
-                    WHEN "000" =>
+                    WHEN "000" => -- ADDI
                         aux_control <= "10000001101110"; -- X'206E
-                        -- SLTI
-                    WHEN "001" =>
+                    WHEN "001" => -- SLTI
                         aux_control <= "10000110101110";
-                        -- NOP
-                    WHEN "010" =>
+                    WHEN "010" => -- NOP
                         aux_control <= "10000000000010"; -- X'2002
-                    WHEN OTHERS =>
-                        aux_control <= "10000000000010"; -- nop
+                    WHEN OTHERS => -- NOP
+                        aux_control <= "10000000000010";
                 END CASE; -- aux_funct3
 
             WHEN "0000011" => -- LW, LB
                 CASE aux_funct3 IS
-                        -- LB
-                    WHEN "000" =>
+                    WHEN "000" => -- LB
                         aux_control <= "10001100001110";
-                        -- LW
-                    WHEN "010" =>
+                    WHEN "010" => -- LW
                         aux_control <= "10001011001110"; -- X'22CE
-                    WHEN OTHERS =>
-                        aux_control <= "10000000000010"; -- nop
+                    WHEN OTHERS => -- NOP
+                        aux_control <= "10000000000010";
                 END CASE; -- aux_funct3
 
             WHEN "0100011" => -- SW, SB, BEQ, BNE
                 CASE aux_funct3 IS
-                        -- SB
-                    WHEN "000" =>
+                    WHEN "000" => -- SB
                         aux_control <= "10000100111010";
-                        -- BNE
-                    WHEN "001" =>
+                    WHEN "001" => -- BNE
                         aux_control <= "10100101100010"; -- X'2962
-                        -- SW
-                    WHEN "010" =>
+                    WHEN "010" => -- SW
                         aux_control <= "10000011111010"; -- X'20FA
-                        -- BEQ
-                    WHEN "011" =>
+                    WHEN "011" => -- BEQ
                         aux_control <= "10010101000010"; -- X'2542
-                    WHEN OTHERS =>
-                        aux_control <= "10000000000010"; -- nop
+                    WHEN OTHERS => -- NOP
+                        aux_control <= "10000000000010";
                 END CASE; -- aux_funct3
 
             WHEN "0000010" => -- J
@@ -121,8 +96,8 @@ BEGIN
             WHEN "1110011" => -- ECALL
                 aux_control <= "00000000000001";
 
-            WHEN OTHERS => -- None, nop
-                aux_control <= "10000000000010"; -- nop
+            WHEN OTHERS => -- none, NOP
+                aux_control <= "10000000000010";
 
         END CASE; -- aux_opcode
 

@@ -30,9 +30,12 @@ ARCHITECTURE estimulos OF tb_memd IS
             read_data : OUT STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0);
 
             -- interrupt_ctl ports.
-            Int_mask : OUT STD_LOGIC_VECTOR(3 - 1 DOWNTO 0);
-            Pending : IN STD_LOGIC_VECTOR(3 - 1 DOWNTO 0);
-            Current : IN STD_LOGIC_VECTOR(3 - 1 DOWNTO 0);
+            Int_mask : OUT STD_LOGIC_VECTOR(3 - 1 DOWNTO 0); --# Set bits correspond to active interrupts
+            Pending : IN STD_LOGIC_VECTOR(3 - 1 DOWNTO 0); --# Set bits indicate which interrupts are pending
+            Current : IN STD_LOGIC_VECTOR(3 - 1 DOWNTO 0); --# Single set bit for the active interrupt
+            Interrupt : IN STD_LOGIC; --# Flag indicating when an interrupt is pending
+            Acknowledge : OUT STD_LOGIC; --# Clear the active interrupt
+            Clear_pending : OUT STD_LOGIC; --# Clear all pending interrupts
 
             -- Output interface ports.
             interface : OUT memd_interface_t
@@ -53,6 +56,9 @@ ARCHITECTURE estimulos OF tb_memd IS
     SIGNAL aux_Int_mask_int_ctl : STD_LOGIC_VECTOR(3 - 1 DOWNTO 0);
     SIGNAL aux_Pending_int_ctl : STD_LOGIC_VECTOR(3 - 1 DOWNTO 0);
     SIGNAL aux_Current_int_ctl : STD_LOGIC_VECTOR(3 - 1 DOWNTO 0);
+    SIGNAL aux_Interrupt : STD_LOGIC;
+    SIGNAL aux_Acknowledge : STD_LOGIC;
+    SIGNAL aux_Clear_pending : STD_LOGIC;
 
     -- Output interface ports.
     SIGNAL aux_interface : memd_interface_t;
@@ -64,15 +70,25 @@ ARCHITECTURE estimulos OF tb_memd IS
 BEGIN
     instance_memd : memd
     PORT MAP(
+        -- clock and reset ports.
         clock => clock,
         reset => reset,
+
+        -- CPU ports.
         write_enable => aux_write_enable,
         write_data => aux_write_data,
         address => aux_address,
         read_data => aux_read_data,
+
+        -- interrupt_ctl ports.
         Int_mask => aux_Int_mask_int_ctl,
         Pending => aux_Pending_int_ctl,
         Current => aux_Current_int_ctl,
+        Interrupt => aux_Interrupt,
+        Acknowledge => aux_Acknowledge,
+        Clear_pending => aux_Clear_pending,
+
+        -- Output interface ports.
         interface => aux_interface
     );
 

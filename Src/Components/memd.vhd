@@ -3,11 +3,16 @@
 --    # peripheral timer size: 100 B
 --    # peripheral GPIO size: 100 B
 --    # peripheral UART size: 100 B
+--    # interrupt_ctl flags size: 1 B
 
--- UART range, for MD_WIDTH == 12 -> ram[3995, 4095].
--- GPIO range, for MD_WIDTH == 12 -> ram[3894, 3994].
--- TIMER range, for MD_WIDTH == 12 -> ram[3793, 3893].
--- CPU range, for MD_WIDTH == 12 -> ram[0, 3792].
+-- UART range, for MD_WIDTH == 12 -> ram[3995, 4095];
+-- GPIO range, for MD_WIDTH == 12 -> ram[3894, 3994];
+-- TIMER range, for MD_WIDTH == 12 -> ram[3793, 3893];
+-- interrupt flag, for MD_WIDTH == 12 -> ram[3792];
+--     Interrupt = ram[3792][0];
+--     Acknowledge = ram[3792][1];
+--     Clear_pending = ram[3792][2];
+-- CPU range, for MD_WIDTH == 12 -> ram[0, 3791].
 
 --------------------------------------------------------------------
 
@@ -35,9 +40,12 @@ ENTITY memd IS
         read_data : OUT STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0);
 
         -- interrupt_ctl ports.
-        Int_mask : OUT STD_LOGIC_VECTOR(3 - 1 DOWNTO 0);
-        Pending : IN STD_LOGIC_VECTOR(3 - 1 DOWNTO 0);
-        Current : IN STD_LOGIC_VECTOR(3 - 1 DOWNTO 0);
+        Int_mask : OUT STD_LOGIC_VECTOR(3 - 1 DOWNTO 0); --# Set bits correspond to active interrupts
+        Pending : IN STD_LOGIC_VECTOR(3 - 1 DOWNTO 0); --# Set bits indicate which interrupts are pending
+        Current : IN STD_LOGIC_VECTOR(3 - 1 DOWNTO 0); --# Single set bit for the active interrupt
+        Interrupt : IN STD_LOGIC; --# Flag indicating when an interrupt is pending
+        Acknowledge : OUT STD_LOGIC; --# Clear the active interrupt
+        Clear_pending : OUT STD_LOGIC; --# Clear all pending interrupts
 
         -- Output interface ports.
         interface : OUT memd_interface_t
@@ -65,9 +73,10 @@ ARCHITECTURE comportamental OF memd IS
     CONSTANT INT_CTL_INT_MASK_ADDRESS : NATURAL := (LAST_TIMER_ADDRESS - 1);
     CONSTANT INT_CTL_PENDING_ADDRESS : NATURAL := (INT_CTL_INT_MASK_ADDRESS - 1);
     CONSTANT INT_CTL_CURRENT_ADDRESS : NATURAL := (INT_CTL_PENDING_ADDRESS - 1);
+    CONSTANT INT_CTL_FLAGS_ADDRESS : NATURAL := (INT_CTL_CURRENT_ADDRESS - 1);
 
     -- CPU addresses.
-    CONSTANT LAST_CPU_ADDRESS : NATURAL := (FIRST_TIMER_ADDRESS - 1);
+    CONSTANT LAST_CPU_ADDRESS : NATURAL := (INT_CTL_FLAGS_ADDRESS - 1);
     CONSTANT FIRST_CPU_ADDRESS : NATURAL := 0;
 
 BEGIN
@@ -76,7 +85,7 @@ BEGIN
         IF (rising_edge(clock)) THEN
             IF (reset = '1') THEN
                 ram <= (OTHERS => (OTHERS => '0'));
-            ELSIF (write_enable = '1' AND unsigned(address) < LAST_CPU_ADDRESS) THEN
+            ELSIF (write_enable = '1' AND unsigned(address) < MD_SIZE) THEN
                 ram(to_integer(unsigned(address))) <= write_data;
             ELSE
                 read_data <= ram(to_integer(unsigned(address)));
@@ -93,6 +102,9 @@ BEGIN
                 Int_mask <= ram(INT_CTL_INT_MASK_ADDRESS)(3 - 1 DOWNTO 0);
                 ram(INT_CTL_PENDING_ADDRESS)(3 - 1 DOWNTO 0) <= Pending;
                 ram(INT_CTL_CURRENT_ADDRESS)(3 - 1 DOWNTO 0) <= Current;
+                ram(INT_CTL_FLAGS_ADDRESS)(0) <= Interrupt;
+                Acknowledge <= ram(INT_CTL_FLAGS_ADDRESS)(1);
+                Clear_pending <= ram(INT_CTL_FLAGS_ADDRESS)(2);
             END IF;
         END IF;
     END PROCESS process_interrupt_ctl;

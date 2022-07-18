@@ -125,7 +125,7 @@ ENTITY interrupt_ctl IS
         Int_mask : IN STD_LOGIC_VECTOR; --# Set bits correspond to active interrupts
         Int_request : IN STD_LOGIC_VECTOR; --# Controls used to activate new interrupts
         Pending : OUT STD_LOGIC_VECTOR; --# Set bits indicate which interrupts are pending
-        Current : OUT STD_LOGIC_VECTOR; --# Single set bit for the active interrupt;
+        Current : OUT STD_LOGIC_VECTOR; --# Single set bit for the active interrupt
 
         Interrupt : OUT STD_LOGIC; --# Flag indicating when an interrupt is pending
         Acknowledge : IN STD_LOGIC; --# Clear the active interrupt
