@@ -3,6 +3,9 @@
 ## Processor Schematic
 ![schematic](https://github.com/guiguitz/dedicated-processor/blob/main/Docs/processor-schematic.png)
 
+## DataPath Schematic
+![schematic](https://github.com/guiguitz/dedicated-processor/blob/main/Docs/datapath-schematic.png)
+
 ## Testbenches
 - hdl_register: `Src/Testbenches/tb_hdl_register.vhd`
 - ALU: `Src/Testbenches/tb_alu.vhd`
