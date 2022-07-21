@@ -30,17 +30,24 @@ ARCHITECTURE estimulos OF tb_memd IS
             read_data : OUT STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0);
 
             -- interrupt_ctl ports.
-            Int_mask : OUT STD_LOGIC_VECTOR(3 - 1 DOWNTO 0); --# Set bits correspond to active interrupts
-            Pending : IN STD_LOGIC_VECTOR(3 - 1 DOWNTO 0); --# Set bits indicate which interrupts are pending
-            Current : IN STD_LOGIC_VECTOR(3 - 1 DOWNTO 0); --# Single set bit for the active interrupt
-            Interrupt : IN STD_LOGIC; --# Flag indicating when an interrupt is pending
-            Acknowledge : OUT STD_LOGIC; --# Clear the active interrupt
-            Clear_pending : OUT STD_LOGIC; --# Clear all pending interrupts
+            interrupt_ctl_Int_mask : OUT STD_LOGIC_VECTOR(3 - 1 DOWNTO 0); --# Set bits correspond to active interrupts
+            interrupt_ctl_Pending : IN STD_LOGIC_VECTOR(3 - 1 DOWNTO 0); --# Set bits indicate which interrupts are pending
+            interrupt_ctl_Current : IN STD_LOGIC_VECTOR(3 - 1 DOWNTO 0); --# Single set bit for the active interrupt
+            interrupt_ctl_Interrupt : IN STD_LOGIC; --# Flag indicating when an interrupt is pending
+            interrupt_ctl_Acknowledge : OUT STD_LOGIC; --# Clear the active interrupt
+            interrupt_ctl_Clear_pending : OUT STD_LOGIC; --# Clear all pending interrupts
+
+            -- gpio ports.
+            gpio_we_o : OUT STD_LOGIC;
+            gpio_data_o : OUT STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0);
+            gpio_addr_o : OUT STD_LOGIC;
+            gpio_data_i : IN STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0);
+            gpio_port_dir : IN STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0);
 
             -- timer peripheral ports.
-            enable_counter_burst_o : OUT STD_LOGIC;
-            counter_burst_value_o : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-            data_i : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+            timer_enable_counter_burst_o : OUT STD_LOGIC;
+            timer_counter_burst_value_o : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+            timer_data_i : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
 
             -- Output interface ports.
             interface : OUT memd_interface_t
@@ -58,17 +65,26 @@ ARCHITECTURE estimulos OF tb_memd IS
     SIGNAL aux_read_data : STD_LOGIC_VECTOR(32 - 1 DOWNTO 0);
 
     -- interrupt_ctl signals.
-    SIGNAL aux_Int_mask_int_ctl : STD_LOGIC_VECTOR(3 - 1 DOWNTO 0);
-    SIGNAL aux_Pending_int_ctl : STD_LOGIC_VECTOR(3 - 1 DOWNTO 0);
-    SIGNAL aux_Current_int_ctl : STD_LOGIC_VECTOR(3 - 1 DOWNTO 0);
-    SIGNAL aux_Interrupt : STD_LOGIC;
-    SIGNAL aux_Acknowledge : STD_LOGIC;
-    SIGNAL aux_Clear_pending : STD_LOGIC;
+    SIGNAL aux_interrupt_ctl_Int_mask : STD_LOGIC_VECTOR(3 - 1 DOWNTO 0);
+    SIGNAL aux_interrupt_ctl_Pending : STD_LOGIC_VECTOR(3 - 1 DOWNTO 0);
+    SIGNAL aux_interrupt_ctl_Current : STD_LOGIC_VECTOR(3 - 1 DOWNTO 0);
+    SIGNAL aux_interrupt_ctl_Interrupt : STD_LOGIC;
+    SIGNAL aux_interrupt_ctl_Acknowledge : STD_LOGIC;
+    SIGNAL aux_interrupt_ctl_Clear_pending : STD_LOGIC;
 
     -- timer peripheral signals.
-    SIGNAL aux_enable_counter_burst : STD_LOGIC;
-    SIGNAL aux_counter_burst_value : STD_LOGIC_VECTOR(31 DOWNTO 0);
-    SIGNAL aux_data : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    SIGNAL aux_timer_enable_counter_burst : STD_LOGIC;
+    SIGNAL aux_timer_counter_burst_value : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    SIGNAL aux_timer_data : STD_LOGIC_VECTOR(31 DOWNTO 0);
+
+    -- Signals for gpio.
+    SIGNAL aux_gpio_we : STD_LOGIC;
+    SIGNAL aux_gpio_data_i : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    SIGNAL aux_gpio_addr : STD_LOGIC;
+    SIGNAL aux_gpio_data_o : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    SIGNAL aux_gpio_port_in : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    SIGNAL aux_gpio_port_out : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    SIGNAL aux_gpio_port_dir : STD_LOGIC_VECTOR(31 DOWNTO 0);
 
     -- Output interface ports.
     SIGNAL aux_interface : memd_interface_t;
@@ -91,17 +107,24 @@ BEGIN
         read_data => aux_read_data,
 
         -- interrupt_ctl ports.
-        Int_mask => aux_Int_mask_int_ctl,
-        Pending => aux_Pending_int_ctl,
-        Current => aux_Current_int_ctl,
-        Interrupt => aux_Interrupt,
-        Acknowledge => aux_Acknowledge,
-        Clear_pending => aux_Clear_pending,
+        interrupt_ctl_Int_mask => aux_interrupt_ctl_Int_mask,
+        interrupt_ctl_Pending => aux_interrupt_ctl_Pending,
+        interrupt_ctl_Current => aux_interrupt_ctl_Current,
+        interrupt_ctl_Interrupt => aux_interrupt_ctl_Interrupt,
+        interrupt_ctl_Acknowledge => aux_interrupt_ctl_Acknowledge,
+        interrupt_ctl_Clear_pending => aux_interrupt_ctl_Clear_pending,
+
+        -- gpio peripheral ports.
+        gpio_we_o => aux_gpio_we,
+        gpio_data_o => aux_gpio_data_o,
+        gpio_addr_o => aux_gpio_addr,
+        gpio_data_i => aux_gpio_data_i,
+        gpio_port_dir => aux_gpio_port_dir,
 
         -- timer peripheral ports.
-        enable_counter_burst_o => aux_enable_counter_burst,
-        counter_burst_value_o => aux_counter_burst_value,
-        data_i => aux_data,
+        timer_enable_counter_burst_o => aux_timer_enable_counter_burst,
+        timer_counter_burst_value_o => aux_timer_counter_burst_value,
+        timer_data_i => aux_timer_data,
 
         -- Output interface ports.
         interface => aux_interface

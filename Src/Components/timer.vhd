@@ -18,7 +18,7 @@ END ENTITY timer;
 ARCHITECTURE Behave OF timer IS
     SIGNAL reset : STD_LOGIC;
     SIGNAL cnt : unsigned(31 DOWNTO 0);
-    SIGNAL aux_counter_burst_value : unsigned(31 DOWNTO 0);
+    SIGNAL aux_timer_counter_burst_value : unsigned(31 DOWNTO 0);
 BEGIN
     -- Carry generation
     do_timer : PROCESS (clk_i)
@@ -28,7 +28,7 @@ BEGIN
                 cnt <= (OTHERS => '0');
             ELSE
                 cnt <= cnt + 1;
-                IF enable_counter_burst_i = '1' AND cnt = aux_counter_burst_value THEN
+                IF enable_counter_burst_i = '1' AND cnt = aux_timer_counter_burst_value THEN
                     counter_burst_flag_o <= '1';
                     reset <= '1';
                 else
@@ -38,6 +38,6 @@ BEGIN
         END IF; -- rising_edge(clk_i)
     END PROCESS do_timer;
 
-    aux_counter_burst_value <= unsigned(counter_burst_value_i);
+    aux_timer_counter_burst_value <= unsigned(counter_burst_value_i);
     data_o <= STD_LOGIC_VECTOR(cnt);
 END ARCHITECTURE Behave; -- Entity: timer

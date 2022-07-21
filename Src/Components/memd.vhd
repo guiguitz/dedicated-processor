@@ -5,20 +5,30 @@
 --    # peripheral UART size: 100 B
 --    # interrupt_ctl flags size: 1 B
 
--- UART range, for MD_WIDTH == 12 -> ram[3995, 4095];
--- GPIO range, for MD_WIDTH == 12 -> ram[3894, 3994];
+--
 
--- TIMER range, for MD_WIDTH == 12 -> ram[3793, 3893];
---    timer_flags = ram[3793];
---        enable_counter_burst = ram[3793][0];
---    counter_burst_value = ram[3794];
---    data = ram[3795];
+-- 5) UART range, for MD_WIDTH == 12 -> ram[3995, 4095];
 
--- interrupt flag, for MD_WIDTH == 12 -> ram[3792];
---     Interrupt = ram[3792][0];
---     Acknowledge = ram[3792][1];
---     Clear_pending = ram[3792][2];
--- CPU range, for MD_WIDTH == 12 -> ram[0, 3791].
+-- 4) GPIO range, for MD_WIDTH == 12 -> ram[3894, 3994];
+--    1) gpio_flags = ram[3894];
+--        1) gpio_we = ram[3894][0];
+--        2) gpio_addr = ram[3894][1];
+--    2) gpio_data_i = ram[3895];
+--    3) gpio_data_o = ram[3896];
+--    4) gpio_port_dir = ram[3897];
+
+-- 3) timer range, for MD_WIDTH == 12 -> ram[3793, 3893];
+--    1) timer_flags = ram[3793];
+--        1) timer_enable_counter_burst = ram[3793][0];
+--    2) timer_counter_burst_value = ram[3794];
+--    3) timer_data = ram[3795];
+
+-- 2) interrupt_ctl byte, for MD_WIDTH == 12 -> ram[3792];
+--     1) interrupt_ctl_Interrupt = ram[3792][0];
+--     2) interrupt_ctl_Acknowledge = ram[3792][1];
+--     3)interrupt_ctl_Clear_pending = ram[3792][2];
+
+-- 1) CPU range, for MD_WIDTH == 12 -> ram[0, 3791].
 
 --------------------------------------------------------------------
 
@@ -46,17 +56,24 @@ ENTITY memd IS
         read_data : OUT STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0);
 
         -- interrupt_ctl ports.
-        Int_mask : OUT STD_LOGIC_VECTOR(3 - 1 DOWNTO 0); --# Set bits correspond to active interrupts
-        Pending : IN STD_LOGIC_VECTOR(3 - 1 DOWNTO 0); --# Set bits indicate which interrupts are pending
-        Current : IN STD_LOGIC_VECTOR(3 - 1 DOWNTO 0); --# Single set bit for the active interrupt
-        Interrupt : IN STD_LOGIC; --# Flag indicating when an interrupt is pending
-        Acknowledge : OUT STD_LOGIC; --# Clear the active interrupt
-        Clear_pending : OUT STD_LOGIC; --# Clear all pending interrupts
+        interrupt_ctl_Int_mask : OUT STD_LOGIC_VECTOR(3 - 1 DOWNTO 0); --# Set bits correspond to active interrupts
+        interrupt_ctl_Pending : IN STD_LOGIC_VECTOR(3 - 1 DOWNTO 0); --# Set bits indicate which interrupts are pending
+        interrupt_ctl_Current : IN STD_LOGIC_VECTOR(3 - 1 DOWNTO 0); --# Single set bit for the active interrupt
+        interrupt_ctl_Interrupt : IN STD_LOGIC; --# Flag indicating when an interrupt is pending
+        interrupt_ctl_Acknowledge : OUT STD_LOGIC; --# Clear the active interrupt
+        interrupt_ctl_Clear_pending : OUT STD_LOGIC; --# Clear all pending interrupts
 
         -- timer peripheral ports.
-        enable_counter_burst_o : OUT STD_LOGIC;
-        counter_burst_value_o : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-        data_i : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+        timer_enable_counter_burst_o : OUT STD_LOGIC;
+        timer_counter_burst_value_o : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+        timer_data_i : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+
+        -- gpio ports.
+        gpio_we_o : OUT STD_LOGIC;
+        gpio_data_o : OUT STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0);
+        gpio_addr_o : OUT STD_LOGIC;
+        gpio_data_i : IN STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0);
+        gpio_port_dir : IN STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0);
 
         -- Output interface ports.
         interface : OUT memd_interface_t
@@ -75,6 +92,10 @@ ARCHITECTURE comportamental OF memd IS
     -- GPIO addresses.
     CONSTANT LAST_GPIO_ADDRESS : NATURAL := (FIRST_UART_ADDRESS - 1);
     CONSTANT FIRST_GPIO_ADDRESS : NATURAL := (LAST_GPIO_ADDRESS - 100);
+    CONSTANT GPIO_FLAGS_ADDRESS : NATURAL := (FIRST_GPIO_ADDRESS);
+    CONSTANT GPIO_DATA_I_ADDRESS : NATURAL := (FIRST_GPIO_ADDRESS + 1);
+    CONSTANT GPIO_DATA_O_ADDRESS : NATURAL := (FIRST_GPIO_ADDRESS + 2);
+    CONSTANT GPIO_PORT_DIR_ADDRESS : NATURAL := (FIRST_GPIO_ADDRESS + 3);
 
     -- TIMER addresses.
     CONSTANT LAST_TIMER_ADDRESS : NATURAL := (FIRST_GPIO_ADDRESS - 1);
@@ -113,12 +134,12 @@ BEGIN
             IF (reset = '1') THEN
                 ram <= (OTHERS => (OTHERS => '0'));
             ELSE
-                Int_mask <= ram(INT_CTL_INT_MASK_ADDRESS)(3 - 1 DOWNTO 0);
-                ram(INT_CTL_PENDING_ADDRESS)(3 - 1 DOWNTO 0) <= Pending;
-                ram(INT_CTL_CURRENT_ADDRESS)(3 - 1 DOWNTO 0) <= Current;
-                ram(INT_CTL_FLAGS_ADDRESS)(0) <= Interrupt;
-                Acknowledge <= ram(INT_CTL_FLAGS_ADDRESS)(1);
-                Clear_pending <= ram(INT_CTL_FLAGS_ADDRESS)(2);
+                interrupt_ctl_Int_mask <= ram(INT_CTL_INT_MASK_ADDRESS)(3 - 1 DOWNTO 0);
+                ram(INT_CTL_PENDING_ADDRESS)(3 - 1 DOWNTO 0) <= interrupt_ctl_Pending;
+                ram(INT_CTL_CURRENT_ADDRESS)(3 - 1 DOWNTO 0) <= interrupt_ctl_Current;
+                ram(INT_CTL_FLAGS_ADDRESS)(0) <= interrupt_ctl_Interrupt;
+                interrupt_ctl_Acknowledge <= ram(INT_CTL_FLAGS_ADDRESS)(1);
+                interrupt_ctl_Clear_pending <= ram(INT_CTL_FLAGS_ADDRESS)(2);
             END IF;
         END IF;
     END PROCESS process_interrupt_ctl;
@@ -129,12 +150,27 @@ BEGIN
             IF (reset = '1') THEN
                 ram <= (OTHERS => (OTHERS => '0'));
             ELSE
-                enable_counter_burst_o <= ram(TIMER_FLAGS_ADDRESS)(0);
-                counter_burst_value_o <= ram(TIMER_COUNTER_BURST_VALUE_ADDRESS);
-                ram(TIMER_DATA_ADDRESS) <= data_i;
+                timer_enable_counter_burst_o <= ram(TIMER_FLAGS_ADDRESS)(0);
+                timer_counter_burst_value_o <= ram(TIMER_COUNTER_BURST_VALUE_ADDRESS);
+                ram(TIMER_DATA_ADDRESS) <= timer_data_i;
             END IF;
         END IF;
     END PROCESS process_timer;
+
+    process_gpio : PROCESS (clock, reset)
+    BEGIN
+        IF (rising_edge(clock)) THEN
+            IF (reset = '1') THEN
+                ram <= (OTHERS => (OTHERS => '0'));
+            ELSE
+                gpio_we_o <= ram(GPIO_FLAGS_ADDRESS)(0);
+                gpio_data_o <= ram(GPIO_DATA_O_ADDRESS);
+                gpio_addr_o <= ram(GPIO_FLAGS_ADDRESS)(1);
+                ram(GPIO_DATA_I_ADDRESS) <= gpio_data_i;
+                ram(GPIO_PORT_DIR_ADDRESS) <= gpio_port_dir;
+            END IF;
+        END IF;
+    END PROCESS process_gpio;
 
     generate_ifc : FOR i IN 0 TO 6 GENERATE
         interface(i) <= STD_LOGIC_VECTOR(to_unsigned(to_integer(unsigned(ram(i))), 32));
