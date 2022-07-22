@@ -8,13 +8,13 @@
 
 4. Main Control Unit modeling: [Control signals](https://github.com/guiguitz/dedicated-processor/blob/main/Docs/template_discriminacao_sinais_ctrl.docx)
 
-5. System implementation.
+5. CPU implementation in VHDL.
 
-6. System verification and validation (Testbench and FPGA).
+6. CPU verification and validation (Testbench and FPGA).
 
 7. Interrupt controller modeling.
 
-8. Implementation and validation of peripherals, timer, uart and gpio.
+8. Implementation and validation of peripherals, Timer, Uart and Gpio.
 
 
 ## Processor Schematic
