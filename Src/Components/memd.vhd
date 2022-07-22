@@ -5,9 +5,19 @@
 --    # peripheral UART size: 100 B
 --    # interrupt_ctl flags size: 1 B
 
---
-
 -- 5) UART range, for MD_WIDTH == 12 -> ram[3995, 4095];
+--    1) uart_flags = ram[3995];
+--           addr_i = ram[3995][0];
+--           rden_i = ram[3995][1];
+--           wren_i = ram[3995][2];
+--           ack_o = ram[3995][3];
+--           clkgen_en_o = ram[3995][4];
+--           txd_o = ram[3995][5];
+--           rxd_i = ram[3995][6];
+--    2) uart_data_i = ram[3996];
+--    3) uart_data_o = ram[3997];
+--    4) uart_clkgen_en_o = ram[3998];
+--    5) uart_clkgen_i = ram[3999](7 - 1 DOWNTO 0);
 
 -- 4) GPIO range, for MD_WIDTH == 12 -> ram[3894, 3994];
 --    1) gpio_flags = ram[3894];
@@ -26,7 +36,7 @@
 -- 2) interrupt_ctl byte, for MD_WIDTH == 12 -> ram[3792];
 --     1) interrupt_ctl_Interrupt = ram[3792][0];
 --     2) interrupt_ctl_Acknowledge = ram[3792][1];
---     3)interrupt_ctl_Clear_pending = ram[3792][2];
+--     3) interrupt_ctl_Clear_pending = ram[3792][2];
 
 -- 1) CPU range, for MD_WIDTH == 12 -> ram[0, 3791].
 
@@ -75,6 +85,18 @@ ENTITY memd IS
         gpio_data_i : IN STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0);
         gpio_port_dir : IN STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0);
 
+        -- uart ports.
+        uart_addr_o : OUT STD_LOGIC; -- global clock line
+        uart_rden_o : OUT STD_LOGIC; -- read enable
+        uart_wren_o : OUT STD_LOGIC; -- write enable
+        uart_ack_o : OUT STD_LOGIC; -- transfer acknowledge
+        uart_clkgen_en_o : OUT STD_LOGIC; -- enable clock generator
+        uart_clkgen_o : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
+        uart_rxd_i : IN STD_LOGIC;
+        uart_txd_o : OUT STD_LOGIC;
+        uart_cts_i : IN STD_LOGIC;
+        uart_rts_o : OUT STD_LOGIC;
+
         -- Output interface ports.
         interface : OUT memd_interface_t
     );
@@ -88,6 +110,8 @@ ARCHITECTURE comportamental OF memd IS
     -- UART addresses.
     CONSTANT LAST_UART_ADDRESS : NATURAL := (MD_SIZE - 1);
     CONSTANT FIRST_UART_ADDRESS : NATURAL := (LAST_UART_ADDRESS - 100);
+    CONSTANT UART_FLAGS_ADDRESS : NATURAL := (FIRST_UART_ADDRESS);
+    CONSTANT UART_CLKGEN_O_ADDRESS : NATURAL := (FIRST_UART_ADDRESS + 1);
 
     -- GPIO addresses.
     CONSTANT LAST_GPIO_ADDRESS : NATURAL := (FIRST_UART_ADDRESS - 1);
@@ -171,6 +195,26 @@ BEGIN
             END IF;
         END IF;
     END PROCESS process_gpio;
+
+    process_uart : PROCESS (clock, reset)
+    BEGIN
+        IF (rising_edge(clock)) THEN
+            IF (reset = '1') THEN
+                ram <= (OTHERS => (OTHERS => '0'));
+            ELSE
+                uart_addr_o <= ram(UART_FLAGS_ADDRESS)(0);
+                uart_rden_o <= ram(UART_FLAGS_ADDRESS)(1);
+                uart_wren_o <= ram(UART_FLAGS_ADDRESS)(2);
+                uart_ack_o <= ram(UART_FLAGS_ADDRESS)(3);
+                uart_clkgen_en_o <= ram(UART_FLAGS_ADDRESS)(4);
+                uart_clkgen_o <= ram(UART_CLKGEN_O_ADDRESS)(7 DOWNTO 0);
+                ram(UART_FLAGS_ADDRESS)(5) <= uart_rxd_i;
+                uart_txd_o <= ram(UART_FLAGS_ADDRESS)(6);
+                ram(UART_FLAGS_ADDRESS)(7) <= uart_cts_i;
+                uart_rts_o <= ram(UART_FLAGS_ADDRESS)(8);
+            END IF;
+        END IF;
+    END PROCESS process_uart;
 
     generate_ifc : FOR i IN 0 TO 6 GENERATE
         interface(i) <= STD_LOGIC_VECTOR(to_unsigned(to_integer(unsigned(ram(i))), 32));

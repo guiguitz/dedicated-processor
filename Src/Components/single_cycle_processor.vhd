@@ -100,6 +100,11 @@ ARCHITECTURE comportamento OF single_cycle_processor IS
             interrupt_ctl_Acknowledge : OUT STD_LOGIC; --# Clear the active interrupt
             interrupt_ctl_Clear_pending : OUT STD_LOGIC; --# Clear all pending interrupts
 
+            -- timer peripheral ports.
+            timer_enable_counter_burst_o : OUT STD_LOGIC;
+            timer_counter_burst_value_o : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+            timer_data_i : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+
             -- gpio ports.
             gpio_we_o : OUT STD_LOGIC;
             gpio_data_o : OUT STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0);
@@ -107,10 +112,17 @@ ARCHITECTURE comportamento OF single_cycle_processor IS
             gpio_data_i : IN STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0);
             gpio_port_dir : IN STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0);
 
-            -- timer peripheral ports.
-            timer_enable_counter_burst_o : OUT STD_LOGIC;
-            timer_counter_burst_value_o : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-            timer_data_i : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+            -- uart ports.
+            uart_addr_o : OUT STD_LOGIC; -- global clock line
+            uart_rden_o : OUT STD_LOGIC; -- read enable
+            uart_wren_o : OUT STD_LOGIC; -- write enable
+            uart_ack_o : OUT STD_LOGIC; -- transfer acknowledge
+            uart_clkgen_en_o : OUT STD_LOGIC; -- enable clock generator
+            uart_clkgen_o : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
+            uart_rxd_i : IN STD_LOGIC;
+            uart_txd_o : OUT STD_LOGIC;
+            uart_cts_i : IN STD_LOGIC;
+            uart_rts_o : OUT STD_LOGIC;
 
             -- Output interface ports.
             interface : OUT memd_interface_t
@@ -135,7 +147,7 @@ ARCHITECTURE comportamento OF single_cycle_processor IS
 
             --# {{control|}}
             Int_mask : IN STD_LOGIC_VECTOR (3 - 1 DOWNTO 0); --# Set bits correspond to active interrupts
-            Int_request : IN STD_LOGIC_VECTOR(3 - 1 DOWNTO 0); --# Controls used to activate new interrupts
+            Int_request : IN STD_LOGIC_VECTOR(4 - 1 DOWNTO 0); --# Controls used to activate new interrupts
             Pending : OUT STD_LOGIC_VECTOR(3 - 1 DOWNTO 0); --# Set bits indicate which interrupts are pending
             Current : OUT STD_LOGIC_VECTOR(3 - 1 DOWNTO 0); --# Single set bit for the active interrupt
 
@@ -174,6 +186,36 @@ ARCHITECTURE comportamento OF single_cycle_processor IS
         );
     END COMPONENT;
 
+    COMPONENT neorv32_uart IS
+        GENERIC (
+            UART_PRIMARY : BOOLEAN := true; -- true = primary UART (UART0), false = secondary UART (UART1)
+            UART_RX_FIFO : NATURAL := 4; -- RX fifo depth, has to be a power of two, min 1
+            UART_TX_FIFO : NATURAL := 4 -- TX fifo depth, has to be a power of two, min 1
+        );
+        PORT (
+            -- host access --
+            clk_i : IN STD_LOGIC; -- global clock line
+            addr_i : IN STD_LOGIC_VECTOR(31 DOWNTO 0); -- address
+            rden_i : IN STD_LOGIC; -- read enable
+            wren_i : IN STD_LOGIC; -- write enable
+            data_i : IN STD_LOGIC_VECTOR(31 DOWNTO 0); -- data in
+            data_o : OUT STD_LOGIC_VECTOR(31 DOWNTO 0); -- data out
+            ack_o : OUT STD_LOGIC; -- transfer acknowledge
+            -- clock generator --
+            clkgen_en_o : OUT STD_LOGIC; -- enable clock generator
+            clkgen_i : IN STD_LOGIC_VECTOR(07 DOWNTO 0);
+            -- com lines --
+            uart_txd_o : OUT STD_LOGIC;
+            uart_rxd_i : IN STD_LOGIC;
+            -- hardware flow control --
+            uart_rts_o : OUT STD_LOGIC; -- UART.RX ready to receive ("RTR"), low-active, optional
+            uart_cts_i : IN STD_LOGIC; -- UART.TX allowed to transmit, low-active, optional
+            -- interrupts --
+            irq_rxd_o : OUT STD_LOGIC; -- uart data received interrupt
+            irq_txd_o : OUT STD_LOGIC -- uart transmission done interrupt
+        );
+    END COMPONENT;
+
     SIGNAL aux_instruction : STD_LOGIC_VECTOR(PROC_INSTR_WIDTH - 1 DOWNTO 0);
     SIGNAL aux_control : STD_LOGIC_VECTOR(DP_CTRL_BUS_WIDTH - 1 DOWNTO 0);
     SIGNAL aux_data_path_memi_pc_out : STD_LOGIC_VECTOR(PROC_INSTR_WIDTH - 1 DOWNTO 0);
@@ -188,7 +230,7 @@ ARCHITECTURE comportamento OF single_cycle_processor IS
     SIGNAL aux_interrupt_ctl_Int_mask : STD_LOGIC_VECTOR(3 - 1 DOWNTO 0);
     SIGNAL aux_interrupt_ctl_Pending : STD_LOGIC_VECTOR(3 - 1 DOWNTO 0);
     SIGNAL aux_interrupt_ctl_Current : STD_LOGIC_VECTOR(3 - 1 DOWNTO 0);
-    SIGNAL aux_interrupt_ctl_Int_request : STD_LOGIC_VECTOR(3 - 1 DOWNTO 0);
+    SIGNAL aux_interrupt_ctl_Int_request : STD_LOGIC_VECTOR(4 - 1 DOWNTO 0);
     SIGNAL aux_interrupt_ctl_Interrupt : STD_LOGIC;
     SIGNAL aux_interrupt_ctl_Acknowledge : STD_LOGIC;
     SIGNAL aux_interrupt_ctl_Clear_pending : STD_LOGIC;
@@ -209,6 +251,22 @@ ARCHITECTURE comportamento OF single_cycle_processor IS
     SIGNAL aux_gpio_port_dir : STD_LOGIC_VECTOR(31 DOWNTO 0);
     SIGNAL aux_gpio_interrupt_flag : STD_LOGIC;
 
+    -- Signals for uart.
+    SIGNAL aux_uart_addr_i : STD_LOGIC_VECTOR(31 DOWNTO 0); -- address
+    SIGNAL aux_uart_rden_i : STD_LOGIC; -- read enable
+    SIGNAL aux_uart_wren_i : STD_LOGIC; -- write enable
+    SIGNAL aux_uart_data_i : STD_LOGIC_VECTOR(31 DOWNTO 0); -- data in
+    SIGNAL aux_uart_data_o : STD_LOGIC_VECTOR(31 DOWNTO 0); -- data out
+    SIGNAL aux_uart_ack_o : STD_LOGIC; -- transfer acknowledge
+    SIGNAL aux_uart_clkgen_en_o : STD_LOGIC; -- enable clock generator
+    SIGNAL aux_uart_clkgen_i : STD_LOGIC_VECTOR(7 DOWNTO 0);
+    SIGNAL aux_uart_txd_o : STD_LOGIC;
+    SIGNAL aux_uart_rxd_i : STD_LOGIC;
+    SIGNAL aux_uart_rts_o : STD_LOGIC; -- UART.RX ready to receive ("RTR"), low-active, optional
+    SIGNAL aux_uart_cts_i : STD_LOGIC; -- UART.TX allowed to transmit, low-active, optional
+    SIGNAL aux_uart_irq_rxd_o : STD_LOGIC; -- uart data received interrupt
+    SIGNAL aux_uart_irq_txd_o : STD_LOGIC; -- uart transmission done interrupt
+
     -- Signals for outputs (LEDs and 7-Seg LEDS)
     SIGNAL aux_interface : memd_interface_t;
     SIGNAL aux_display : display_t;
@@ -225,6 +283,8 @@ BEGIN
     leds <= aux_interface(0)(NUMBER_OF_LEDS - 1 DOWNTO 0);
     aux_interrupt_ctl_Int_request(0) <= aux_timer_counter_burst_flag; -- timer interrupt
     aux_interrupt_ctl_Int_request(1) <= aux_gpio_interrupt_flag; -- gpio interrupt
+    aux_interrupt_ctl_Int_request(2) <= aux_uart_irq_rxd_o; -- uart interrupt
+    aux_interrupt_ctl_Int_request(3) <= aux_uart_irq_txd_o; -- uart interrupt
 
     generate_display : FOR i IN 0 TO 5 GENERATE
         instance_seven_seg_decoder : seven_seg_decoder
@@ -268,6 +328,18 @@ BEGIN
         timer_enable_counter_burst_o => aux_timer_enable_counter_burst,
         timer_counter_burst_value_o => aux_timer_counter_burst_value,
         timer_data_i => aux_timer_data,
+
+        -- uart ports.
+        uart_addr_o => aux_uart_addr_o,
+        uart_rden_o => aux_uart_rden_o,
+        uart_wren_o => aux_uart_wren_o,
+        uart_ack_o => aux_uart_ack_o,
+        uart_clkgen_en_o => aux_uart_clkgen_en_o,
+        uart_clkgen_o => uart_clkgen_o,
+        uart_rxd_i => aux_uart_rxd_i,
+        uart_txd_o => aux_uart_txd_o,
+        uart_cts_i => aux_uart_cts_i,
+        uart_rts_o => aux_uart_rts_o,
 
         -- gpio peripheral ports.
         gpio_we_o => aux_gpio_we,
@@ -340,5 +412,30 @@ BEGIN
         port_dir => aux_gpio_port_dir,
         --
         interrupt_flag => aux_gpio_interrupt_flag
+    );
+
+    instance_uart : neorv32_uart
+    PORT MAP(
+        -- host access --
+        clk_i => clock;
+        ,
+        addr_i => aux_uart_addr_i,
+        rden_i => aux_uart_rden_i,
+        wren_i => aux_uart_wren_i,
+        data_i => aux_uart_data_i,
+        data_o => aux_uart_data_o,
+        ack_o => aux_uart_ack_o,
+        -- clock generator --
+        clkgen_en_o => aux_uart_clkgen_en_o,
+        clkgen_i => aux_uart_clkgen_i,
+        -- com lines --
+        uart_txd_o => aux_uart_txd_o,
+        uart_rxd_i => aux_uart_rxd_i,
+        -- hardware flow control --
+        uart_rts_o => aux_uart_rts_o,
+        uart_cts_i => aux_uart_cts_i,
+        -- interrupts --
+        irq_rxd_o => aux_uart_irq_rxd_o,
+        irq_txd_o => aux_uart_irq_txd_o
     );
 END comportamento;

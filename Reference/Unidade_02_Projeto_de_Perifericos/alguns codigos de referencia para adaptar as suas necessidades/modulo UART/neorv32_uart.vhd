@@ -73,35 +73,35 @@ entity neorv32_uart is
   );
   port (
     -- host access --
-    clk_i       : in  std_ulogic; -- global clock line
-    addr_i      : in  std_ulogic_vector(31 downto 0); -- address
-    rden_i      : in  std_ulogic; -- read enable
-    wren_i      : in  std_ulogic; -- write enable
-    data_i      : in  std_ulogic_vector(31 downto 0); -- data in
-    data_o      : out std_ulogic_vector(31 downto 0); -- data out
-    ack_o       : out std_ulogic; -- transfer acknowledge
+    clk_i       : in  std_logic; -- global clock line
+    addr_i      : in  std_logic_vector(31 downto 0); -- address
+    rden_i      : in  std_logic; -- read enable
+    wren_i      : in  std_logic; -- write enable
+    data_i      : in  std_logic_vector(31 downto 0); -- data in
+    data_o      : out std_logic_vector(31 downto 0); -- data out
+    ack_o       : out std_logic; -- transfer acknowledge
     -- clock generator --
-    clkgen_en_o : out std_ulogic; -- enable clock generator
-    clkgen_i    : in  std_ulogic_vector(07 downto 0);
+    clkgen_en_o : out std_logic; -- enable clock generator
+    clkgen_i    : in  std_logic_vector(07 downto 0);
     -- com lines --
-    uart_txd_o  : out std_ulogic;
-    uart_rxd_i  : in  std_ulogic;
+    uart_txd_o  : out std_logic;
+    uart_rxd_i  : in  std_logic;
     -- hardware flow control --
-    uart_rts_o  : out std_ulogic; -- UART.RX ready to receive ("RTR"), low-active, optional
-    uart_cts_i  : in  std_ulogic; -- UART.TX allowed to transmit, low-active, optional
+    uart_rts_o  : out std_logic; -- UART.RX ready to receive ("RTR"), low-active, optional
+    uart_cts_i  : in  std_logic; -- UART.TX allowed to transmit, low-active, optional
     -- interrupts --
-    irq_rxd_o   : out std_ulogic; -- uart data received interrupt
-    irq_txd_o   : out std_ulogic  -- uart transmission done interrupt
+    irq_rxd_o   : out std_logic; -- uart data received interrupt
+    irq_txd_o   : out std_logic  -- uart transmission done interrupt
   );
 end neorv32_uart;
 
 architecture neorv32_uart_rtl of neorv32_uart is
 
   -- interface configuration for UART0 / UART1 --
-  constant uart_id_base_c      : std_ulogic_vector(data_width_c-1 downto 0) := cond_sel_stdulogicvector_f(UART_PRIMARY, uart0_base_c,      uart1_base_c);
+  constant uart_id_base_c      : std_logic_vector(data_width_c-1 downto 0) := cond_sel_stdulogicvector_f(UART_PRIMARY, uart0_base_c,      uart1_base_c);
   constant uart_id_size_c      : natural                                    := cond_sel_natural_f(        UART_PRIMARY, uart0_size_c,      uart1_size_c);
-  constant uart_id_ctrl_addr_c : std_ulogic_vector(data_width_c-1 downto 0) := cond_sel_stdulogicvector_f(UART_PRIMARY, uart0_ctrl_addr_c, uart1_ctrl_addr_c);
-  constant uart_id_rtx_addr_c  : std_ulogic_vector(data_width_c-1 downto 0) := cond_sel_stdulogicvector_f(UART_PRIMARY, uart0_rtx_addr_c,  uart1_rtx_addr_c);
+  constant uart_id_ctrl_addr_c : std_logic_vector(data_width_c-1 downto 0) := cond_sel_stdulogicvector_f(UART_PRIMARY, uart0_ctrl_addr_c, uart1_ctrl_addr_c);
+  constant uart_id_rtx_addr_c  : std_logic_vector(data_width_c-1 downto 0) := cond_sel_stdulogicvector_f(UART_PRIMARY, uart0_rtx_addr_c,  uart1_rtx_addr_c);
 
   -- IO space: module base address --
   constant hi_abb_c : natural := index_size_f(io_size_c)-1; -- high address boundary bit
@@ -115,7 +115,7 @@ architecture neorv32_uart_rtl of neorv32_uart is
   constant sim_uart_data_file_c   : string  := cond_sel_string_f(UART_PRIMARY, "neorv32.uart0.sim_mode.data.out", "neorv32.uart1.sim_mode.data.out");
 
   -- control register --
-  signal ctrl : std_ulogic_vector(31 downto 0);
+  signal ctrl : std_logic_vector(31 downto 0);
 
   -- control register bits --
   constant ctrl_baud00_c   : natural :=  0; -- r/w: baud config bit 0
@@ -161,31 +161,31 @@ architecture neorv32_uart_rtl of neorv32_uart is
   constant data_rx_avail_c : natural := 31; -- r/-: RX data available
 
   -- access control --
-  signal acc_en : std_ulogic; -- module access enable
-  signal addr   : std_ulogic_vector(31 downto 0); -- access address
-  signal wren   : std_ulogic; -- word write enable
-  signal rden   : std_ulogic; -- read enable
+  signal acc_en : std_logic; -- module access enable
+  signal addr   : std_logic_vector(31 downto 0); -- access address
+  signal wren   : std_logic; -- word write enable
+  signal rden   : std_logic; -- read enable
 
   -- clock generator --
-  signal uart_clk : std_ulogic;
+  signal uart_clk : std_logic;
 
   -- numbers of bits in transmission frame --
-  signal num_bits : std_ulogic_vector(3 downto 0);
+  signal num_bits : std_logic_vector(3 downto 0);
 
   -- hardware flow-control IO buffer --
-  signal uart_cts_ff : std_ulogic_vector(1 downto 0);
-  signal uart_rts    : std_ulogic;
+  signal uart_cts_ff : std_logic_vector(1 downto 0);
+  signal uart_rts    : std_logic;
 
   -- UART transmitter --
   type tx_state_t is (S_TX_IDLE, S_TX_GET, S_TX_CHECK, S_TX_TRANSMIT, S_TX_SIM);
   type tx_engine_t is record
     state    : tx_state_t;
-    busy     : std_ulogic;
-    done     : std_ulogic;
-    bitcnt   : std_ulogic_vector(03 downto 0);
-    sreg     : std_ulogic_vector(10 downto 0);
-    baud_cnt : std_ulogic_vector(11 downto 0);
-    cts      : std_ulogic; -- allow new transmission when 1
+    busy     : std_logic;
+    done     : std_logic;
+    bitcnt   : std_logic_vector(03 downto 0);
+    sreg     : std_logic_vector(10 downto 0);
+    baud_cnt : std_logic_vector(11 downto 0);
+    cts      : std_logic; -- allow new transmission when 1
   end record;
   signal tx_engine : tx_engine_t;
 
@@ -193,46 +193,46 @@ architecture neorv32_uart_rtl of neorv32_uart is
   type rx_state_t is (S_RX_IDLE, S_RX_RECEIVE);
   type rx_engine_t is record
     state    : rx_state_t;
-    done     : std_ulogic;
-    sync     : std_ulogic_vector(04 downto 0);
-    bitcnt   : std_ulogic_vector(03 downto 0);
-    sreg     : std_ulogic_vector(09 downto 0);
-    baud_cnt : std_ulogic_vector(11 downto 0);
-    overr    : std_ulogic;
-    rtr      : std_ulogic; -- ready to receive when 1
+    done     : std_logic;
+    sync     : std_logic_vector(04 downto 0);
+    bitcnt   : std_logic_vector(03 downto 0);
+    sreg     : std_logic_vector(09 downto 0);
+    baud_cnt : std_logic_vector(11 downto 0);
+    overr    : std_logic;
+    rtr      : std_logic; -- ready to receive when 1
   end record;
   signal rx_engine : rx_engine_t;
 
   -- TX FIFO --
   type tx_buffer_t is record
-    we    : std_ulogic; -- write enable
-    re    : std_ulogic; -- read enable
-    clear : std_ulogic; -- sync reset, high-active
-    wdata : std_ulogic_vector(31 downto 0); -- write data
-    rdata : std_ulogic_vector(31 downto 0); -- read data
-    avail : std_ulogic; -- data available?
-    free  : std_ulogic; -- free entry available?
-    half  : std_ulogic; -- half full
+    we    : std_logic; -- write enable
+    re    : std_logic; -- read enable
+    clear : std_logic; -- sync reset, high-active
+    wdata : std_logic_vector(31 downto 0); -- write data
+    rdata : std_logic_vector(31 downto 0); -- read data
+    avail : std_logic; -- data available?
+    free  : std_logic; -- free entry available?
+    half  : std_logic; -- half full
   end record;
   signal tx_buffer : tx_buffer_t;
 
   -- RX FIFO --
   type rx_buffer_t is record
-    we    : std_ulogic; -- write enable
-    re    : std_ulogic; -- read enable
-    clear : std_ulogic; -- sync reset, high-active
-    wdata : std_ulogic_vector(9 downto 0); -- write data
-    rdata : std_ulogic_vector(9 downto 0); -- read data
-    avail : std_ulogic; -- data available?
-    free  : std_ulogic; -- free entry available?
-    half  : std_ulogic; -- half full
+    we    : std_logic; -- write enable
+    re    : std_logic; -- read enable
+    clear : std_logic; -- sync reset, high-active
+    wdata : std_logic_vector(9 downto 0); -- write data
+    rdata : std_logic_vector(9 downto 0); -- read data
+    avail : std_logic; -- data available?
+    free  : std_logic; -- free entry available?
+    half  : std_logic; -- half full
   end record;
   signal rx_buffer : rx_buffer_t;
 
   -- interrupt generator --
   type irq_t is record
-    set : std_ulogic;
-    buf : std_ulogic_vector(1 downto 0);
+    set : std_logic;
+    buf : std_logic_vector(1 downto 0);
   end record;
   signal rx_irq, tx_irq : irq_t;
 
@@ -410,10 +410,10 @@ begin
             if (uart_clk = '1') then
               if (or_reduce_f(tx_engine.baud_cnt) = '0') then -- bit done?
                 tx_engine.baud_cnt <= ctrl(ctrl_baud11_c downto ctrl_baud00_c);
-                tx_engine.bitcnt   <= std_ulogic_vector(unsigned(tx_engine.bitcnt) - 1);
+                tx_engine.bitcnt   <= std_logic_vector(unsigned(tx_engine.bitcnt) - 1);
                 tx_engine.sreg     <= '1' & tx_engine.sreg(tx_engine.sreg'left downto 1);
               else
-                tx_engine.baud_cnt <= std_ulogic_vector(unsigned(tx_engine.baud_cnt) - 1);
+                tx_engine.baud_cnt <= std_logic_vector(unsigned(tx_engine.baud_cnt) - 1);
               end if;
             end if;
             uart_txd_o <= tx_engine.sreg(0);
@@ -470,10 +470,10 @@ begin
             if (uart_clk = '1') then
               if (or_reduce_f(rx_engine.baud_cnt) = '0') then -- bit done
                 rx_engine.baud_cnt <= ctrl(ctrl_baud11_c downto ctrl_baud00_c);
-                rx_engine.bitcnt   <= std_ulogic_vector(unsigned(rx_engine.bitcnt) - 1);
+                rx_engine.bitcnt   <= std_logic_vector(unsigned(rx_engine.bitcnt) - 1);
                 rx_engine.sreg     <= rx_engine.sync(2) & rx_engine.sreg(rx_engine.sreg'left downto 1);
               else
-                rx_engine.baud_cnt <= std_ulogic_vector(unsigned(rx_engine.baud_cnt) - 1);
+                rx_engine.baud_cnt <= std_logic_vector(unsigned(rx_engine.baud_cnt) - 1);
               end if;
             end if;
             if (or_reduce_f(rx_engine.bitcnt) = '0') then -- all bits received?

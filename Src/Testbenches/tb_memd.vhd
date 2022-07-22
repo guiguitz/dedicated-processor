@@ -37,6 +37,11 @@ ARCHITECTURE estimulos OF tb_memd IS
             interrupt_ctl_Acknowledge : OUT STD_LOGIC; --# Clear the active interrupt
             interrupt_ctl_Clear_pending : OUT STD_LOGIC; --# Clear all pending interrupts
 
+            -- timer peripheral ports.
+            timer_enable_counter_burst_o : OUT STD_LOGIC;
+            timer_counter_burst_value_o : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+            timer_data_i : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+
             -- gpio ports.
             gpio_we_o : OUT STD_LOGIC;
             gpio_data_o : OUT STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0);
@@ -44,10 +49,17 @@ ARCHITECTURE estimulos OF tb_memd IS
             gpio_data_i : IN STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0);
             gpio_port_dir : IN STD_LOGIC_VECTOR(MD_DATA_WIDTH - 1 DOWNTO 0);
 
-            -- timer peripheral ports.
-            timer_enable_counter_burst_o : OUT STD_LOGIC;
-            timer_counter_burst_value_o : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-            timer_data_i : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+            -- uart ports.
+            uart_addr_o : OUT STD_LOGIC; -- global clock line
+            uart_rden_o : OUT STD_LOGIC; -- read enable
+            uart_wren_o : OUT STD_LOGIC; -- write enable
+            uart_ack_o : OUT STD_LOGIC; -- transfer acknowledge
+            uart_clkgen_en_o : OUT STD_LOGIC; -- enable clock generator
+            uart_clkgen_o : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
+            uart_rxd_i : IN STD_LOGIC;
+            uart_txd_o : OUT STD_LOGIC;
+            uart_cts_i : IN STD_LOGIC;
+            uart_rts_o : OUT STD_LOGIC;
 
             -- Output interface ports.
             interface : OUT memd_interface_t
@@ -86,6 +98,22 @@ ARCHITECTURE estimulos OF tb_memd IS
     SIGNAL aux_gpio_port_out : STD_LOGIC_VECTOR(31 DOWNTO 0);
     SIGNAL aux_gpio_port_dir : STD_LOGIC_VECTOR(31 DOWNTO 0);
 
+    -- Signals for uart.
+    SIGNAL aux_uart_addr_i : STD_LOGIC_VECTOR(31 DOWNTO 0); -- address
+    SIGNAL aux_uart_rden_i : STD_LOGIC; -- read enable
+    SIGNAL aux_uart_wren_i : STD_LOGIC; -- write enable
+    SIGNAL aux_uart_data_i : STD_LOGIC_VECTOR(31 DOWNTO 0); -- data in
+    SIGNAL aux_uart_data_o : STD_LOGIC_VECTOR(31 DOWNTO 0); -- data out
+    SIGNAL aux_uart_ack_o : STD_LOGIC; -- transfer acknowledge
+    SIGNAL aux_uart_clkgen_en_o : STD_LOGIC; -- enable clock generator
+    SIGNAL aux_uart_clkgen_i : STD_LOGIC_VECTOR(7 DOWNTO 0);
+    SIGNAL aux_uart_txd_o : STD_LOGIC;
+    SIGNAL aux_uart_rxd_i : STD_LOGIC;
+    SIGNAL aux_uart_rts_o : STD_LOGIC; -- UART.RX ready to receive ("RTR"), low-active, optional
+    SIGNAL aux_uart_cts_i : STD_LOGIC; -- UART.TX allowed to transmit, low-active, optional
+    SIGNAL aux_uart_irq_rxd_o : STD_LOGIC; -- uart data received interrupt
+    SIGNAL aux_uart_irq_txd_o : STD_LOGIC; -- uart transmission done interrupt
+
     -- Output interface ports.
     SIGNAL aux_interface : memd_interface_t;
 
@@ -114,20 +142,29 @@ BEGIN
         interrupt_ctl_Acknowledge => aux_interrupt_ctl_Acknowledge,
         interrupt_ctl_Clear_pending => aux_interrupt_ctl_Clear_pending,
 
-        -- gpio peripheral ports.
-        gpio_we_o => aux_gpio_we,
-        gpio_data_o => aux_gpio_data_o,
-        gpio_addr_o => aux_gpio_addr,
-        gpio_data_i => aux_gpio_data_i,
-        gpio_port_dir => aux_gpio_port_dir,
-
         -- timer peripheral ports.
         timer_enable_counter_burst_o => aux_timer_enable_counter_burst,
         timer_counter_burst_value_o => aux_timer_counter_burst_value,
         timer_data_i => aux_timer_data,
 
-        -- Output interface ports.
-        interface => aux_interface
+        -- uart ports.
+        uart_addr_o => aux_uart_addr_o,
+        uart_rden_o => aux_uart_rden_o,
+        uart_wren_o => aux_uart_wren_o,
+        uart_ack_o => aux_uart_ack_o,
+        uart_clkgen_en_o => aux_uart_clkgen_en_o,
+        uart_clkgen_o => uart_clkgen_o,
+        uart_rxd_i => aux_uart_rxd_i,
+        uart_txd_o => aux_uart_txd_o,
+        uart_cts_i => aux_uart_cts_i,
+        uart_rts_o => aux_uart_rts_o,
+
+        -- gpio peripheral ports.
+        gpio_we_o => aux_gpio_we,
+        gpio_data_o => aux_gpio_data_o,
+        gpio_addr_o => aux_gpio_addr,
+        gpio_data_i => aux_gpio_data_i,
+        gpio_port_dir => aux_gpio_port_dir
     );
 
     generate_clock : PROCESS
