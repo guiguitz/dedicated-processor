@@ -4,7 +4,8 @@
 
 This project was developed as a work in the discipline of Computer Architecture and Organization Lab at UFMG - Prof. Ricardo de Oliveira Duarte - Department of Electronic Engineering.
 
-Implemented in VHDL using GHDL for synthesis and gtkwave for wave view and simulations. Tested in the Altera DE10 FPGA development kit.
+The project aims to implemented a 32-bit processor, inspired in the RISC-V. Implemented in VHDL using GHDL for synthesis and gtkwave for wave view and simulations. Tested in the Altera DE10 FPGA development kit.
+
 ## General Flow of the Project
 1. Definition of initial project requirements: [project requirements](https://github.com/guiguitz/dedicated-processor/blob/main/Docs/template_mapa_de_memoria%20-%20Guilherme%2C%20Matheus%20e%20Thiago.pdf)
 
@@ -64,6 +65,7 @@ sh run_tb_single_cycle_processor.sh
 ## Simulation example
 
 In the following image we can see the wave view for the alu component, on its testbench.
+
 ![schematic](https://github.com/guiguitz/dedicated-processor/blob/main/Docs/alu_debug.png)
 
 ## How to run using Quartus II
