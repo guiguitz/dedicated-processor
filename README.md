@@ -1,4 +1,9 @@
 # dedicated-processor
+## General Flow of Projects
+1. Definition of initial project requirements:
+  (schematic)(https://github.com/guiguitz/dedicated-processor/blob/main/Docs/template_mapa_de_memoria%20-%20Guilherme%2C%20Matheus%20e%20Thiago.pdf)
+2. Detailing the project requirements (instruction set).
+  (schematic)(https://github.com/guiguitz/dedicated-processor/blob/main/Docs/template_discriminacao_instrucao%20-%20Guilherme%2C%20Matheus%20e%20Thiago.docx)
 
 ## Processor Schematic
 ![schematic](https://github.com/guiguitz/dedicated-processor/blob/main/Docs/processor-schematic.png)
@@ -44,14 +49,14 @@ sh run_quartus_single_cycle_processor.sh
 - [X] Design, implementation and synthesis of the interrupt controller
 - [X] Simulation and integration of the interrupt controller with the CPU
 - [ ] CPU test with interrupt controller in FPGA kit
-- [ ] Design, implementation and synthesis of the GPIOs interface
-- [ ] Simulation and integration of the GPIOs interface with the CPU and memory
+- [X] Design, implementation and synthesis of the GPIOs interface
+- [X] Simulation and integration of the GPIOs interface with the CPU and memory
 - [ ] CPU Test with the GPIOs Interface in the FPGA Kit
 - [X] Design, implementation of programmable TIMERs
 - [X] Simulation and integration of programmable TIMERs with the CPU and memory
 - [ ] CPU Test of Programmable TIMERs in FPGA Kit
-- [ ] UART design, implementation and synthesis
-- [ ] UART simulation and integration with CPU and memory
+- [X] UART design, implementation and synthesis
+- [X] UART simulation and integration with CPU and memory
 - [ ] CPU Test with UART in FPGA Kit
 
 ## Dependencies
