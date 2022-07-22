@@ -2,17 +2,17 @@
 ## General Flow of Projects
 1. Definition of initial project requirements:
 
-  (schematic)(https://github.com/guiguitz/dedicated-processor/blob/main/Docs/template_mapa_de_memoria%20-%20Guilherme%2C%20Matheus%20e%20Thiago.pdf)
+  [project requirements](https://github.com/guiguitz/dedicated-processor/blob/main/Docs/template_mapa_de_memoria%20-%20Guilherme%2C%20Matheus%20e%20Thiago.pdf)
   
-2. Detailing the project requirements (instruction set):
+2. Detailing the project requirements:
 
-  (schematic)(https://github.com/guiguitz/dedicated-processor/blob/main/Docs/template_discriminacao_instrucao%20-%20Guilherme%2C%20Matheus%20e%20Thiago.docx)
+  [instruction set](https://github.com/guiguitz/dedicated-processor/blob/main/Docs/template_discriminacao_instrucao%20-%20Guilherme%2C%20Matheus%20e%20Thiago.docx)
   
 3. Single cycle CPU modeling (Datapath).
 
 4. Main Control Unit modeling:
 
-  (schematic)(https://github.com/guiguitz/dedicated-processor/blob/main/Docs/template_discriminacao_sinais_ctrl.docx)
+  [Control signals](https://github.com/guiguitz/dedicated-processor/blob/main/Docs/template_discriminacao_sinais_ctrl.docx)
 
 5. System implementation.
 
