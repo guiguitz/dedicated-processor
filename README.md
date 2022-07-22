@@ -1,12 +1,18 @@
 # dedicated-processor
-## General Flow of Projects
-1. Definition of initial project requirements: [project requirements](https://github.com/guiguitz/dedicated-processor/blob/main/Docs/template_mapa_de_memoria%20-%20Guilherme%2C%20Matheus%20e%20Thiago.pdf)
-  
-2. Detailing the project requirements: [instruction set](https://github.com/guiguitz/dedicated-processor/blob/main/Docs/template_discriminacao_instrucao%20-%20Guilherme%2C%20Matheus%20e%20Thiago.docx)
-  
-3. Single cycle CPU modeling (Datapath).
 
-4. Main Control Unit modeling: [Control signals](https://github.com/guiguitz/dedicated-processor/blob/main/Docs/template_discriminacao_sinais_ctrl.docx)
+## Introduction
+
+This project was developed as a work in the discipline of Computer Architecture and Organization Lab at UFMG - Prof. Ricardo de Oliveira Duarte - Department of Electronic Engineering.
+
+Implemented in VHDL using GHDL for synthesis and gtkwave for wave view and simulations. Tested in the Altera DE10 FPGA development kit.
+## General Flow of the Project
+1. Definition of initial project requirements: [project requirements](https://github.com/guiguitz/dedicated-processor/blob/main/Docs/template_mapa_de_memoria%20-%20Guilherme%2C%20Matheus%20e%20Thiago.pdf)
+
+2. Detailing the project requirements: [instruction set](https://github.com/guiguitz/dedicated-processor/blob/main/Docs/template_discriminacao_instrucao%20-%20Guilherme%2C%20Matheus%20e%20Thiago.pdf)
+
+3. Single cycle CPU modeling (DataPath).
+
+4. Main Control Unit modeling: [Control signals](https://github.com/guiguitz/dedicated-processor/blob/main/Docs/template_discriminacao_sinais_ctrl.pdf)
 
 5. CPU implementation in VHDL.
 
@@ -23,15 +29,20 @@
 ## DataPath Schematic
 ![schematic](https://github.com/guiguitz/dedicated-processor/blob/main/Docs/datapath-schematic.png)
 
+## Peripherals
+- GPIO
+- TIMER
+- UART
+
 ## Testbenches
-- hdl_register: `Src/Testbenches/tb_hdl_register.vhd`
-- ALU: `Src/Testbenches/tb_alu.vhd`
-- Instruction Memory (memi): `Src/Testbenches/tb_memi.vhd`
-- Data Memory (memd): `Src/Testbenches/tb_memd.vhd`
-- Register File: `Src/Testbenches/tb_register_file.vhd`
-- DataPath: `Src/Testbenches/tb_single_cycle_data_path.vhd`
-- Control Unit: `Src/Testbenches/tb_single_cycle_control_unit.vhd`
-- Processor: `Src/Testbenches/tb_single_cycle_processor.vhd`
+- [hdl_register](https://github.com/guiguitz/dedicated-processor/blob/main/Src/Testbenches/tb_hdl_register.vhd)
+- [ALU](https://github.com/guiguitz/dedicated-processor/blob/main/Src/Testbenches/tb_alu.vhd)
+- [Instruction Memory (memi)](https://github.com/guiguitz/dedicated-processor/blob/main/Src/Testbenches/tb_memi.vhd)
+- [Data Memory (memd)](https://github.com/guiguitz/dedicated-processor/blob/main/Src/Testbenches/tb_memd.vhd)
+- [Register File](https://github.com/guiguitz/dedicated-processor/blob/main/Src/Testbenches/tb_register_file.vhd)
+- [DataPath](https://github.com/guiguitz/dedicated-processor/blob/main/Src/Testbenches/tb_single_cycle_data_path.vhd)
+- [Control Unit](https://github.com/guiguitz/dedicated-processor/blob/main/Src/Testbenches/tb_single_cycle_control_unit.vhd)
+- [Processor](https://github.com/guiguitz/dedicated-processor/blob/main/Src/Testbenches/tb_single_cycle_processor.vhd)
 
 ## How to run using ghdl + gtkwave
 ### DataPath testbench
@@ -50,26 +61,17 @@ cd Src/Work
 sh run_tb_single_cycle_processor.sh
 ```
 
+## Simulation example
+
+In the following image we can see the wave view for the alu component, on its testbench.
+![schematic](https://github.com/guiguitz/dedicated-processor/blob/main/Docs/alu_debug.png)
+
 ## How to run using Quartus II
 ### Quartus II
 ```bash
 cd Src/Work
 sh run_quartus_single_cycle_processor.sh
 ```
-
-## Peripherals development
-- [X] Design, implementation and synthesis of the interrupt controller
-- [X] Simulation and integration of the interrupt controller with the CPU
-- [ ] CPU test with interrupt controller in FPGA kit
-- [X] Design, implementation and synthesis of the GPIOs interface
-- [X] Simulation and integration of the GPIOs interface with the CPU and memory
-- [ ] CPU Test with the GPIOs Interface in the FPGA Kit
-- [X] Design, implementation of programmable TIMERs
-- [X] Simulation and integration of programmable TIMERs with the CPU and memory
-- [ ] CPU Test of Programmable TIMERs in FPGA Kit
-- [X] UART design, implementation and synthesis
-- [X] UART simulation and integration with CPU and memory
-- [ ] CPU Test with UART in FPGA Kit
 
 ## Dependencies
 
@@ -90,3 +92,10 @@ sh run_quartus_single_cycle_processor.sh
   - [VHDL Formatter](https://marketplace.visualstudio.com/items?itemName=Vinrobot.vhdl-formatter)
   - [VHDL](https://marketplace.visualstudio.com/items?itemName=puorc.awesome-vhdl)
   - [GHDL Interface](https://marketplace.visualstudio.com/items?itemName=johannesbonk.ghdl-interface)
+
+## Contact the Authors
+Guilherme Amorim: `guilherme.vini65@gmail.com`
+
+Matheus Silva: `mateusilva73@gmail.com`
+
+Thiago Santos: `thiagoSantos.on@gmail.com`
